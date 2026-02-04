@@ -42,39 +42,39 @@
 }
 
 .dark {
-  --background: #08132a;
+  --background: #0f1b33;          /* slightly lighter than #08132a */
   --foreground: #e2edfd;
 
-  --card: #0e1f44;
+  --card: #172547;                /* softer than #0e1f44 */
   --card-foreground: #e2edfd;
 
   --primary: #0c9ced;
   --primary-foreground: #ffffff;
 
-  --secondary: #1854bf;
+  --secondary: #1b5bcc;          /* slightly brighter */
   --secondary-foreground: #ffffff;
 
   --accent: #0c9ced;
   --accent-foreground: #ffffff;
 
-  --muted: #102554;
-  --muted-foreground: #a6c8ff;
+  --muted: #1f2d4b;               /* lighter muted bg */
+  --muted-foreground: #c0d4ff;   /* softer text color */
 
-  --border: #14306b;
-  --input: #0e1f44;
+  --border: #234078;              /* softer border */
+  --input: #172547;               /* card-like input bg */
   --ring: #0c9ced;
 
-  --sidebar: #0b1733;
+  --sidebar: #172b4d;             /* slightly lighter */
   --sidebar-foreground: #e2edfd;
   --sidebar-primary: #0c9ced;
-  --sidebar-accent: #102554;
-  --sidebar-border: #14306b;
+  --sidebar-accent: #1f2d4b;
+  --sidebar-border: #234078;
 
   --chart-1: #0c9ced;
   --chart-2: #4bb7ff;
   --chart-3: #1854bf;
   --chart-4: #1f6bff;
-  --chart-5: #08132a;
+  --chart-5: #0f1b33;
 }
 
 @theme inline {
