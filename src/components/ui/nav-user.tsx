@@ -29,7 +29,7 @@ import {
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { useAuthMeStore } from '@/store/auth/me/me'
-import { decryptData } from '../utils/crypto'
+import { decryptData } from '../../utils/crypto'
 
 export function NavUser({
   user,

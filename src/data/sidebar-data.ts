@@ -26,7 +26,7 @@ import {
 } from "lucide-react";
 
 import { type SidebarData } from "@/types/types";
-import { decryptData } from "@/components/utils/crypto";
+import { decryptData } from "@/utils/crypto";
 
 // Helper function to safely get localStorage values
 const getLocalStorageItem = (key: string, defaultValue: string): string => {

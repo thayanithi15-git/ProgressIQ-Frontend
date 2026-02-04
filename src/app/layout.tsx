@@ -3,9 +3,10 @@ import { ThemeProvider } from "@/components/theme-provider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
-import GlobalNotification from "@/components/notify/snackbar";
+// import GlobalNotification from "@/components/notify/snackbar";
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Toaster } from "@/components/ui/sonner";
+import { cn } from "@/lib/utils";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,9 +44,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} antialiased`}
+        className={cn(poppins.className, "antialiased min-h-screen bg-background")}
       >
-        <GlobalNotification />
+        {/* <GlobalNotification /> */}
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

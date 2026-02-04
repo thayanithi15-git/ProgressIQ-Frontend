@@ -141,9 +141,7 @@
   backdrop-filter: blur(12px);
 }
 
-.font-poppins {
-  font-family: var(--font-poppins), Poppins, sans-serif !important;
-}
+
 
 ::-webkit-scrollbar-thumb {
   background-color: #0c9ced;
