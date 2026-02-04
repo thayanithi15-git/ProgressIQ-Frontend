@@ -1,8 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import UserDashboard from './user';
-import RecruiterDashboard from './recruiter';
 
 const App = () => {
   const [currentView, setCurrentView] = useState('user');
@@ -25,7 +23,7 @@ const App = () => {
       signedInAt: new Date().toISOString()
     };
     localStorage.setItem('credxUser', JSON.stringify(mockUser));
-    setUser(mockUser);
+    // setUser(mockUser);
     setCurrentView('user');
   };
 
@@ -37,8 +35,8 @@ const App = () => {
 
   return (
     <div className="min-h-screen">
-      {currentView === 'user' && user && <UserDashboard />}
-      {currentView === 'recruiter' && user && <RecruiterDashboard />}
+      {/* {currentView === 'user' && user && <UserDashboard />}
+      {currentView === 'recruiter' && user && <RecruiterDashboard />} */}
     </div>
   );
 };
