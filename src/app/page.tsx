@@ -64,21 +64,21 @@ export default function LandingPage() {
     <div className={`min-h-screen ${isDark ? 'dark' : ''} font-poppins`}>
       <style>{`
         :root {
-          --background: ${isDark ? '#08132a' : '#e2edfd'};
-          --foreground: ${isDark ? '#e2edfd' : '#0a1f44'};
-          --card: ${isDark ? '#0e1f44' : '#ffffff'};
-          --card-foreground: ${isDark ? '#e2edfd' : '#0a1f44'};
-          --primary: ${isDark ? '#0c9ced' : '#1854bf'};
+          --background: ${isDark ? 'oklch(0.2223 0.0060 271.1393)' : '#e2edfd'};
+          --foreground: ${isDark ? 'oklch(0.9551 0 0)' : '#0a1f44'};
+          --card: ${isDark ? 'oklch(0.2568 0.0076 274.6528)' : '#ffffff'};
+          --card-foreground: ${isDark ? 'oklch(0.9551 0 0)' : '#0a1f44'};
+          --primary: ${isDark ? 'oklch(0.6132 0.2294 291.7437)' : '#1854bf'};
           --primary-foreground: #ffffff;
-          --secondary: ${isDark ? '#1854bf' : '#0c9ced'};
+          --secondary: ${isDark ? 'oklch(0.2940 0.0130 272.9312)' : '#0c9ced'};
           --secondary-foreground: #ffffff;
-          --accent: #0c9ced;
-          --accent-foreground: #ffffff;
-          --muted: ${isDark ? '#102554' : '#f0f6ff'};
-          --muted-foreground: ${isDark ? '#a6c8ff' : '#4a6fa5'};
-          --border: ${isDark ? '#14306b' : '#c9dcff'};
-          --input: ${isDark ? '#0e1f44' : '#ffffff'};
-          --ring: #0c9ced;
+          --accent: ${isDark ? 'oklch(0.2795 0.0368 260.0310)' : '#0c9ced'};
+          --accent-foreground: ${isDark ? 'oklch(0.7857 0.1153 246.6596)' : '#ffffff'};
+          --muted: ${isDark ? 'oklch(0.2940 0.0130 272.9312)' : '#f0f6ff'};
+          --muted-foreground: ${isDark ? 'oklch(0.7058 0 0)' : '#4a6fa5'};
+          --border: ${isDark ? 'oklch(0.3289 0.0092 268.3843)' : '#c9dcff'};
+          --input: ${isDark ? 'oklch(0.3289 0.0092 268.3843)' : '#ffffff'};
+          --ring: ${isDark ? 'oklch(0.6132 0.2294 291.7437)' : '#0c9ced'};
         }
       `}</style>
 
@@ -184,7 +184,7 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             className="text-center mb-16"
           >
-            <Badge className="bg-accent/10 text-accent mb-4">Role-Based Features</Badge>
+            <Badge className="bg-accent/10 text-accent-foreground mb-4">Role-Based Features</Badge>
             <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
               Tailored for Every Role
             </h2>
@@ -201,7 +201,7 @@ export default function LandingPage() {
               transition={{ delay: 0 }}
             >
               <Card className="h-full overflow-hidden hover:shadow-xl transition-all border-2 border-primary">
-                <div className="h-2 bg-gradient-to-r from-primary to-secondary"></div>
+                <div className="h-2 bg-gradient-to-r from-primary to-accent"></div>
                 <CardHeader className="space-y-4">
                   <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
                     <ShieldCheck className="w-6 h-6 text-primary" />
@@ -243,11 +243,11 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <Card className="h-full overflow-hidden hover:shadow-xl transition-all border-2 border-secondary md:border-secondary md:scale-105">
-                <div className="h-2 bg-gradient-to-r from-secondary to-primary"></div>
+              <Card className="h-full overflow-hidden hover:shadow-xl transition-all border-2 border-accent md:scale-105">
+                <div className="h-2 bg-gradient-to-r from-accent to-primary"></div>
                 <CardHeader className="space-y-4">
-                  <div className="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center">
-                    <Briefcase className="w-6 h-6 text-secondary" />
+                  <div className="w-12 h-12 bg-accent/20 rounded-lg flex items-center justify-center">
+                    <Briefcase className="w-6 h-6 text-accent-foreground" />
                   </div>
                   <CardTitle className="text-2xl">Mentor Dashboard</CardTitle>
                   <CardDescription>Student guidance and performance tracking</CardDescription>
@@ -263,15 +263,15 @@ export default function LandingPage() {
                       "Task management",
                     ].map((feature, idx) => (
                       <div key={idx} className="flex items-start gap-2">
-                        <div className="w-5 h-5 rounded-full bg-secondary/20 flex items-center justify-center mt-0.5 flex-shrink-0">
-                          <div className="w-2 h-2 rounded-full bg-secondary"></div>
+                        <div className="w-5 h-5 rounded-full bg-accent/30 flex items-center justify-center mt-0.5 flex-shrink-0">
+                          <div className="w-2 h-2 rounded-full bg-accent-foreground"></div>
                         </div>
                         <span className="text-foreground text-sm">{feature}</span>
                       </div>
                     ))}
                   </div>
                   <Button
-                    className="w-full bg-secondary text-white mt-4"
+                    className="w-full bg-accent text-white mt-4 hover:bg-accent/90"
                     onClick={() => router.push('/mentor/signin')}
                   >
                     <LogIn className="w-4 h-4 mr-2" />
@@ -286,11 +286,11 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <Card className="h-full overflow-hidden hover:shadow-xl transition-all border-2 border-accent">
-                <div className="h-2 bg-gradient-to-r from-accent to-primary"></div>
+              <Card className="h-full overflow-hidden hover:shadow-xl transition-all border-2 border-[oklch(0.7459_0.1483_156.4499)]">
+                <div className="h-2 bg-gradient-to-r from-[oklch(0.7459_0.1483_156.4499)] to-primary"></div>
                 <CardHeader className="space-y-4">
-                  <div className="w-12 h-12 bg-accent/10 rounded-lg flex items-center justify-center">
-                    <BookOpen className="w-6 h-6 text-accent" />
+                  <div className="w-12 h-12 bg-[oklch(0.7459_0.1483_156.4499)]/10 rounded-lg flex items-center justify-center">
+                    <BookOpen className="w-6 h-6 text-[oklch(0.7459_0.1483_156.4499)]" />
                   </div>
                   <CardTitle className="text-2xl">Student Dashboard</CardTitle>
                   <CardDescription>Activity tracking and progress monitoring</CardDescription>
@@ -306,15 +306,15 @@ export default function LandingPage() {
                       "Ranking & analytics",
                     ].map((feature, idx) => (
                       <div key={idx} className="flex items-start gap-2">
-                        <div className="w-5 h-5 rounded-full bg-accent/20 flex items-center justify-center mt-0.5 flex-shrink-0">
-                          <div className="w-2 h-2 rounded-full bg-accent"></div>
+                        <div className="w-5 h-5 rounded-full bg-[oklch(0.7459_0.1483_156.4499)]/20 flex items-center justify-center mt-0.5 flex-shrink-0">
+                          <div className="w-2 h-2 rounded-full bg-[oklch(0.7459_0.1483_156.4499)]"></div>
                         </div>
                         <span className="text-foreground text-sm">{feature}</span>
                       </div>
                     ))}
                   </div>
                   <Button
-                    className="w-full bg-accent text-white mt-4"
+                    className="w-full bg-[oklch(0.7459_0.1483_156.4499)] text-white mt-4 hover:bg-[oklch(0.7459_0.1483_156.4499)]/90"
                     onClick={() => router.push('/student/signin')}
                   >
                     <LogIn className="w-4 h-4 mr-2" />
@@ -327,7 +327,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="py-20 px-4 bg-gradient-to-br from-primary to-secondary text-white">
+      <section className="py-20 px-4 bg-gradient-to-br from-primary to-accent text-white">
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -426,7 +426,7 @@ function FeatureCard({
     >
       <Card className={`h-full hover:shadow-lg transition-all hover:border-primary/50 ${isDark ? 'hover:bg-primary/5' : 'hover:bg-primary/10'}`}>
         <CardContent className="p-6 space-y-4">
-          <div className="p-3 bg-secondary/20 w-fit rounded-lg">{icon}</div>
+          <div className="p-3 bg-primary/20 w-fit rounded-lg">{icon}</div>
           <h4 className="font-bold text-lg text-foreground">{title}</h4>
           <p className="text-muted-foreground text-sm leading-relaxed">{desc}</p>
         </CardContent>

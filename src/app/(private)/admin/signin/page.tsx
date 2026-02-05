@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
-import { Lock, Mail, Shield, ArrowRight, Eye, EyeOff } from "lucide-react";
+import { Lock, Mail, Shield, ArrowRight, Eye, EyeOff, Users, TrendingUp, BookOpen, Award, CheckCircle, BarChart3 } from "lucide-react";
 import { useAdminAuthStore } from "@/store/auth/admin";
 import GlobalNotification from "@/components/notify/notification";
 import Banner from "@/assets/loginBanner.jpg";
@@ -51,12 +51,62 @@ export default function AdminLoginPage() {
     }
   };
 
+  const features = [
+    {
+      icon: Users,
+      title: "Student Management",
+      description: "Comprehensive student profile tracking and performance monitoring"
+    },
+    {
+      icon: BookOpen,
+      title: "Mentor Coordination",
+      description: "Streamlined mentor assignment and communication tools"
+    },
+    {
+      icon: BarChart3,
+      title: "Analytics Dashboard",
+      description: "Real-time insights and detailed progress reports"
+    },
+    {
+      icon: Award,
+      title: "Achievement Tracking",
+      description: "Monitor milestones and celebrate student successes"
+    }
+  ];
+
+  const stats = [
+    { label: "System Uptime", value: "99.9%", icon: CheckCircle },
+    { label: "Active Users", value: "1,234", icon: Users },
+    { label: "Success Rate", value: "98.5%", icon: TrendingUp }
+  ];
+
   return (
     <>
       <GlobalNotification />
       <div className="min-h-screen grid lg:grid-cols-2 font-poppins bg-background">
-        
-        <div className="flex items-center justify-center p-6">
+        {/* Left Side - Login Form */}
+        <div className="flex items-center flex-col justify-center p-6">
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            className="w-full flex"
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <Image
+                src={"/progress_iq.png"}
+                alt="Progress IQ Logo"
+                width={50}
+                height={50}
+                className="w-12 h-12"
+              />
+              <div>
+                <h1 className="text-3xl text-foreground font-black tracking-tight">Progress IQ</h1>
+                <p className="text-foreground/80 text-sm font-semibold">Administrator Portal</p>
+              </div>
+            </div>
+          </motion.div>
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -77,7 +127,7 @@ export default function AdminLoginPage() {
               <p className="text-secondary font-semibold">Administrator Portal</p>
             </div>
 
-            <Card className="border-2 border-border shadow-2xl shadow-border/50 p-8">
+            <Card className="border-2 shadow-none mt-5 border-border p-3">
               <CardHeader className="space-y-3 pb-8">
                 <CardTitle className="text-3xl font-black text-foreground text-center">
                   Admin Access
@@ -97,7 +147,7 @@ export default function AdminLoginPage() {
                         name="email"
                         type="email"
                         placeholder="admin@progressiq.com"
-                        className="pl-12 h-12 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                        className="pl-12 h-12 border-1 shadow-none border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                         value={form.email}
                         onChange={handleChange}
                         required
@@ -113,7 +163,7 @@ export default function AdminLoginPage() {
                         name="password"
                         type={showPassword ? "text" : "password"}
                         placeholder="Enter your password"
-                        className="pl-12 pr-12 h-12 border-2 border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                        className="pl-12 pr-12 h-12 border-1 shadow-none border-border focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
                         value={form.password}
                         onChange={handleChange}
                         required
@@ -129,14 +179,14 @@ export default function AdminLoginPage() {
                   </div>
 
                   <div className="flex items-center justify-between text-sm pt-2">
-                    <a className="text-primary hover:text-secondary font-semibold cursor-pointer hover:underline transition-colors">
+                    <a className="text-primary underline hover:text-secondary font-semibold cursor-pointer hover:underline transition-colors">
                       Forgot password?
                     </a>
                   </div>
 
                   <Button
                     type="submit"
-                    className="w-full h-12 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground font-bold text-base shadow-lg shadow-primary/30 transition-all hover:shadow-xl hover:shadow-primary/40"
+                    className="w-full h-12 bg-gradient-to-r from-primary to-primary/70 hover:from-primary/90 hover:to-secondary/90 text-primary-foreground font-bold text-base shadow-lg shadow-primary/30 transition-all hover:shadow-xl hover:shadow-primary/40"
                     disabled={isLoading}
                   >
                     {isLoading ? (
@@ -155,7 +205,7 @@ export default function AdminLoginPage() {
                   <div className="text-center pt-4">
                     <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
                       <Shield className="w-3 h-3" />
-                      Secured with 256-bit encryption
+                      Secured data with end-to-end encryption
                     </p>
                   </div>
                 </form>
@@ -164,80 +214,99 @@ export default function AdminLoginPage() {
           </motion.div>
         </div>
 
-        <div className="hidden lg:flex relative overflow-hidden bg-gradient-to-br from-primary via-secondary to-primary">
-
-          <Image
-            src={Banner}
-            alt="Login Banner"
-            fill
-            className="object-cover opacity-30"
-            priority
-          />
-
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-secondary/0 to-primary/40" />
-
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-secondary to-primary rounded-full blur-3xl animate-pulse" />
-            <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-primary to-secondary rounded-full blur-3xl animate-pulse delay-1000" />
+        {/* Right Side - Enhanced Clean UI */}
+        <div className="hidden lg:flex relative overflow-hidden bg-gradient-to-br from-primary/35 via-background to-primary/35">
+          {/* Background Image with Overlay */}
+          <div className="absolute inset-0">
+            <Image
+              src={Banner}
+              alt="Login Banner"
+              fill
+              className="object-cover opacity-5"
+              priority
+            />
           </div>
 
+          {/* Decorative Elements */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
+            <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-secondary/40 rounded-full blur-3xl" />
+          </div>
+
+          {/* Grid Pattern */}
           <div
-            className="absolute inset-0 opacity-[0.03]"
+            className="absolute inset-0 opacity-[0.02]"
             style={{
-              backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-                       linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+              backgroundImage: `linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+                       linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px)`,
               backgroundSize: '50px 50px'
             }}
           />
 
-          <div className="relative z-10 p-16 flex flex-col justify-between text-white w-full">
+          {/* Content */}
+          <div className="relative z-10 p-12 flex flex-col justify-between w-full">
+            {/* Header */}
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: -30 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
+              className="space-y-4"
             >
-              <div className="flex items-center gap-3 mb-8">
-                <Image
-                  src={"/progress_iq.png"}
-                  alt="Progress IQ Logo"
-                  width={50}
-                  height={50}
-                  className="w-12 h-12"
-                />
-                <div>
-                  <h1 className="text-3xl font-black tracking-tight">Progress IQ</h1>
-                  <p className="text-white/80 text-sm font-semibold">Administrator Portal</p>
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Image
+                    src={"/progress_iq.png"}
+                    alt="Progress IQ Logo"
+                    width={32}
+                    height={32}
+                    className="w-8 h-8"
+                  />
                 </div>
+                <div>
+                  <h1 className="text-2xl text-foreground font-black tracking-tight">Progress IQ</h1>
+                  <p className="text-muted-foreground text-sm font-medium">Administrator Platform</p>
+                </div>
+              </div>
+
+              <div className="mt-8 space-y-2">
+                <h2 className="text-xl font-black text-foreground leading-tight">
+                  Empowering Education
+                  Through Intelligence
+                </h2>
+                <p className="text-muted-foreground text-sm max-w-md">
+                  Manage students, mentors, and track academic progress with our comprehensive platform
+                </p>
               </div>
             </motion.div>
 
+            {/* Features Grid */}
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
               className="space-y-6"
             >
-              <h2 className="text-3xl font-black leading-tight max-w-lg">
-                Admin <span className="text-white">Control</span>
-              </h2>
-              <p className="text-white/90 text-lg max-w-md leading-relaxed">
-                Secure access to system administration, user management, and comprehensive analytics dashboard.
-              </p>
-
-              <div className="flex gap-4 pt-4">
-                <div className="flex-1 p-4 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
-                  <div className="text-3xl font-bold text-white">100%</div>
-                  <div className="text-sm text-white/70">System Uptime</div>
-                </div>
-                <div className="flex-1 p-4 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
-                  <div className="text-3xl font-bold text-white">24/7</div>
-                  <div className="text-sm text-white/70">Monitoring</div>
-                </div>
+              <div className="grid grid-cols-2 gap-4">
+                {features.map((feature, index) => (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.3 + index * 0.1 }}
+                    className="group p-5 bg-card/50 backdrop-blur-sm rounded-2xl border border-border/50 hover:border-primary/50 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300"
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
+                      <feature.icon className="w-5 h-5 text-primary" />
+                    </div>
+                    <h3 className="font-bold text-foreground text-sm mb-1">{feature.title}</h3>
+                    <p className="text-muted-foreground text-xs leading-relaxed">{feature.description}</p>
+                  </motion.div>
+                ))}
               </div>
+
             </motion.div>
           </div>
         </div>
-
       </div>
     </>
   );

@@ -33,9 +33,6 @@ export default function HeroSection() {
 
                 <div className="absolute inset-0">
                     <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:64px_64px]"></div>
-                    {/* <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse"></div> */}
-                    {/* <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-secondary/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }}></div> */}
-                    {/* <div className="absolute top-1/2 left-1/2 w-72 h-72 bg-primary/10 rounded-full blur-2xl"></div> */}
                 </div>
 
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -50,7 +47,7 @@ export default function HeroSection() {
                                 <h1 className="text-6xl font-bold leading-tight">
                                     Smart Activity
                                     <br />
-                                    <span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent animate-gradient">
+                                    <span className="bg-gradient-to-r from-primary via-primary/70 to-primary bg-clip-text text-transparent animate-gradient">
                                         Reporting Platform
                                     </span>
                                 </h1>
@@ -60,7 +57,7 @@ export default function HeroSection() {
                                 </p>
 
                                 <div className="flex flex-col sm:flex-row gap-4">
-                                    {/* <button className="group px-8 py-4 bg-gradient-to-r from-primary to-secondary text-white rounded-xl font-semibold shadow-xl hover:shadow-2xl hover:shadow-primary/50 transition-all hover:scale-105 flex items-center justify-center space-x-2">
+                                    {/* <button className="group px-8 py-4 bg-gradient-to-r from-primary to-accent-foreground text-white rounded-xl font-semibold shadow-xl hover:shadow-2xl hover:shadow-primary/50 transition-all hover:scale-105 flex items-center justify-center space-x-2">
                                         <span>Start Free Today</span>
                                         <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                                     </button> */}
@@ -94,14 +91,14 @@ export default function HeroSection() {
                                 <div className="absolute inset-0 flex items-center justify-center">
 
                                     {[
-                                        { title: "Task Completion", level: "78%", org: "Real-time", color: "from-blue-500 to-cyan-500", rotate: -6, top: 20, left: 0 },
-                                        { title: "Project Submissions", level: "92%", org: "Tracked", color: "from-purple-500 to-pink-500", rotate: 3, top: 80, right: 0 },
-                                        { title: "Certification Progress", level: "85%", org: "Verified", color: "from-green-500 to-teal-500", rotate: -3, bottom: 120, left: 40 },
-                                        { title: "Mentor Feedback", level: "88%", org: "Recorded", color: "from-orange-500 to-red-500", rotate: 6, bottom: 40, right: 20 }
+                                        { title: "Task Completion", level: "78%", org: "Real-time", color: "from-[oklch(0.6132_0.2294_291.7437)] to-[oklch(0.7857_0.1153_246.6596)]", rotate: -6, top: 20, left: 0 },
+                                        { title: "Project Submissions", level: "92%", org: "Tracked", color: "from-[oklch(0.8003_0.1821_151.7110)] to-[oklch(0.7459_0.1483_156.4499)]", rotate: 3, top: 80, right: 0 },
+                                        { title: "Certification Progress", level: "85%", org: "Verified", color: "from-[oklch(0.7459_0.1483_156.4499)] to-[oklch(0.8003_0.1821_151.7110)]", rotate: -3, bottom: 120, left: 40 },
+                                        { title: "Mentor Feedback", level: "88%", org: "Recorded", color: "from-[oklch(0.8077_0.1035_19.5706)] to-[oklch(0.7336_0.1758_50.5517)]", rotate: 6, bottom: 40, right: 20 }
                                     ].map((card, idx) => (
                                         <div
                                             key={idx}
-                                            className="absolute w-72 bg-card border border-border rounded-2xl p-6 shadow-2xl transition-all duration-500 hover:scale-110 hover:z-50 cursor-pointer animate-scale-in"
+                                            className="absolute w-72 bg-card border border-border rounded-2xl p-6 shadow-2xl transition-all duration-500 hover:scale-110 hover:z-50 cursor-pointer animate-scale-in backdrop-blur-sm"
                                             style={{
                                                 transform: `rotate(${card.rotate}deg)`,
                                                 top: card.top ? `${card.top}px` : 'auto',
@@ -117,11 +114,11 @@ export default function HeroSection() {
                                                     <Award className="w-8 h-8 text-white" />
                                                 </div>
                                                 <div className="flex items-center space-x-1">
-                                                    <CheckCircle className="w-5 h-5 text-green-500" />
-                                                    <span className="text-xs font-semibold text-green-500">Verified</span>
+                                                    <CheckCircle className="w-5 h-5 text-[oklch(0.8003_0.1821_151.7110)]" />
+                                                    <span className="text-xs font-semibold text-[oklch(0.8003_0.1821_151.7110)]">Verified</span>
                                                 </div>
                                             </div>
-                                            <h3 className="text-lg font-bold mb-1">{card.title}</h3>
+                                            <h3 className="text-lg font-bold text-foreground">{card.title}</h3>
                                             <p className="text-sm text-muted-foreground mb-3">{card.level}</p>
                                             <div className="flex items-center justify-between pt-3 border-t border-border">
                                                 <span className="text-xs text-muted-foreground">{card.org}</span>

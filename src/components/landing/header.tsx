@@ -40,7 +40,7 @@ export default function HeaderSection() {
               className="w-10 h-10"
             />
             <div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
+              <span className="text-2xl font-bold bg-gradient-to-r from-primary via-primary/70 to-primary bg-clip-text text-transparent">
                 Progress IQ
               </span>
               <div className="text-xs text-muted-foreground">Smart Activity Reporting</div>
@@ -70,7 +70,7 @@ export default function HeaderSection() {
               {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
 
-            <button onClick={handleSignin} className="cursor-pointer px-5 py-2.5 text-sm font-medium bg-gradient-to-r from-primary to-secondary text-white rounded-xl hover:shadow-lg hover:shadow-primary/50 transition-all hover:scale-105">
+            <button onClick={handleSignin} className="cursor-pointer px-5 py-2.5 text-sm font-medium bg-gradient-to-r from-primary to-accent-foreground text-white rounded-xl hover:shadow-lg hover:shadow-primary/50 transition-all hover:scale-105">
               Get Started
             </button>
           </div>
