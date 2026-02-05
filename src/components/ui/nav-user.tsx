@@ -28,7 +28,7 @@ import {
 } from '@/components/ui/sidebar'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { useAuthMeStore } from '@/store/auth/me/me'
+// import { useAuthMeStore } from '@/store/auth/me/me'
 import { decryptData } from '../../utils/crypto'
 
 export function NavUser({
@@ -59,11 +59,11 @@ export function NavUser({
     router.push('/')
   }
 
-  const { fetchMe, userDetails } = useAuthMeStore();
+  // const { fetchMe, userDetails } = useAuthMeStore();
 
-  useEffect(() => {
+  // useEffect(() => {
     // fetchMe();
-  }, [fetchMe])
+  // }, [fetchMe])
 
   function getInitials(name?: string | null): string {
     if (!name || !name.trim()) return ""; // fallback for null/undefined/empty
@@ -77,6 +77,11 @@ export function NavUser({
 
     return (words[0].charAt(0) + words[1].charAt(0)).toUpperCase();
   }
+
+  const userDetails = {
+    name: user.name,
+    email: user.email,
+  };
 
   return (
     <SidebarMenu>

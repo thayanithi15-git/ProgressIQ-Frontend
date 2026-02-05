@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback } from '../ui/avatar';
 import { useSidebarStore } from '@/store/layoutStore';
 import { useThemeStore } from '@/store/layoutStore';
 import { cn } from '@/lib/utils';
+import { getEncryptedItem } from '@/utils/encryption';
 
 type HeaderProps = {
     title?: string;
@@ -15,6 +16,7 @@ type HeaderProps = {
     username?: string;
     desc?: string;
     avatar?: string;
+    HeaderComp?: React.ReactNode;
 };
 
 const Header: React.FC<HeaderProps> = ({
@@ -23,6 +25,7 @@ const Header: React.FC<HeaderProps> = ({
     username = 'User Name',
     desc = 'NSQF Level 4',
     avatar = 'U',
+    HeaderComp,
 }) => {
     const { isOpen, toggleSidebar } = useSidebarStore();
     const { isDark, toggleTheme } = useThemeStore();
@@ -51,6 +54,14 @@ const Header: React.FC<HeaderProps> = ({
             .slice(0, 2);
     };
 
+    const [role, setRole] = useState<string>("student");
+
+    useEffect(() => {
+        const decryptedRole = getEncryptedItem("role") || "student";
+
+        const r = decryptedRole.toLowerCase();
+        setRole(r);
+    }, []);
 
     return (
         <header className="sticky top-0 z-50 w-full border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
@@ -94,12 +105,14 @@ const Header: React.FC<HeaderProps> = ({
                         )}
                     </Button>
 
+                    {HeaderComp}
+
                     <Separator orientation="vertical" className="h-8" />
 
                     <div className="flex items-center gap-3">
                         <div className="hidden text-right sm:block">
-                            <div className="text-sm font-semibold">{sessionData?.username || "User"}</div>
-                            <div className="text-xs text-muted-foreground">{desc}</div>
+                            <div className="text-sm font-semibold">{sessionData?.username || role.charAt(0).toUpperCase() + role.slice(1)}</div>
+                            <div className="text-xs text-muted-foreground">{'Explore'}</div>
                         </div>
                         <Avatar className="h-11 w-11 border-2 border-sidebar-border shadow-sm">
                             <AvatarFallback className={cn(
@@ -108,7 +121,7 @@ const Header: React.FC<HeaderProps> = ({
                                     ? "bg-gradient-to-br from-purple-600 to-pink-600"
                                     : "bg-gradient-to-br from-primary to-accent"
                             )}>
-                                {sessionData?.username ? getUserInitials(sessionData.username) : "U"}
+                                {sessionData?.username ? getUserInitials(sessionData.username) : role.charAt(0).toUpperCase()}
                             </AvatarFallback>
                         </Avatar>
                     </div>

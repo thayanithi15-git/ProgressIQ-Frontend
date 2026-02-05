@@ -24,7 +24,7 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({
   const { isOpen } = useSidebarStore();
 
   return (
-    <div className={cn("min-h-screen bg-background", className)}>
+    <div className={cn("min-h-screen w-screen", className)}>
       {/* Sidebar */}
       {showSidebar && <Sidebar />}
       
@@ -40,7 +40,7 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({
         {/* Main Content */}
         <main className={cn(
           "flex-1",
-          showHeader ? "min-h-[calc(100vh-3.5rem)]" : "min-h-screen",
+          showHeader ? "w-full min-h-[calc(100vh-3.5rem)]" : "min-h-screen",
           contentClassName
         )}>
           {children}

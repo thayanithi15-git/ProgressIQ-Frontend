@@ -26,6 +26,10 @@ export const decryptData = (cipherText: string): string | null => {
 
 export const setEncryptedItem = (key: string, value: string): void => {
   if (typeof window !== 'undefined') {
+    if(key=='token'){
+      localStorage.setItem("token", value);
+      return;
+    }
     const encrypted = encryptData(value);
     localStorage.setItem(key, encrypted);
   }
@@ -33,6 +37,9 @@ export const setEncryptedItem = (key: string, value: string): void => {
 
 export const getEncryptedItem = (key: string): string | null => {
   if (typeof window !== 'undefined') {
+    if(key=='token'){
+      return localStorage.getItem("token");
+    }
     const encrypted = localStorage.getItem(key);
     if (encrypted) {
       return decryptData(encrypted);

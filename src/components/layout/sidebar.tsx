@@ -50,6 +50,9 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { LogOut } from "lucide-react";
+import Image from 'next/image';
+import { getEncryptedItem } from '@/utils/encryption';
+import { adminSections, mentorSections, studentSections } from './sidebarData';
 
 interface SidebarItem {
     icon: React.ElementType;
@@ -59,188 +62,31 @@ interface SidebarItem {
     description?: string;
 }
 
-interface SidebarSection {
-    title: string;
-    items: SidebarItem[];
-}
-
-/* ---------------- User/Learner Sidebar ---------------- */
-const userSections: SidebarSection[] = [
-    {
-        title: "Overview",
-        items: [
-            {
-                icon: LayoutDashboard,
-                label: "Dashboard",
-                href: "/dashboard",
-                description: "Your learning insights and stats",
-            },
-            {
-                icon: Award,
-                label: "Achievements",
-                href: "/dashboard/achievements",
-                description: "Badges, certificates, and milestones",
-            },
-        ],
-    },
-    // {
-    //     title: "Skills & Portfolio",
-    //     items: [
-    //         // {
-    //         //     icon: Target,
-    //         //     label: "Skills Portfolio",
-    //         //     href: "/dashboard/skills",
-    //         //     description: "Manage and showcase your skills",
-    //         // },
-    //         // {
-    //         //     icon: TrendingUp,
-    //         //     label: "Career Pathways",
-    //         //     href: "/dashboard/pathways",
-    //         //     description: "NSQF-aligned career progression",
-    //         // },
-            
-    //     ],
-    // },
-    {
-        title: "Discovery",
-        items: [
-            {
-                icon: GraduationCap,
-                label: "My Courses",
-                href: "/dashboard/mycourses",
-                description: "Courses ongoing",
-            },
-            {
-                icon: NotepadTextDashed,
-                label: "Course Catalog",
-                href: "/dashboard/courses",
-                description: "Browse and enroll in new courses",
-            },
-        ],
-    },
-    {
-        title: "Profile & Settings",
-        items: [
-            {
-                icon: Share2,
-                label: "Profile View",
-                href: "/dashboard/profile",
-                description: "Share your verified profile",
-            },
-            {
-                icon: Settings,
-                label: "Settings",
-                href: "/dashboard/settings",
-                description: "Manage account preferences",
-            },
-        ],
-    },
-];
-
-/* ---------------- Recruiter Sidebar ---------------- */
-const recruiterSections: SidebarSection[] = [
-    {
-        title: "Overview",
-        items: [
-            {
-                icon: LayoutDashboard,
-                label: "Dashboard",
-                href: "/dashboard",
-                description: "Recruitment insights and analytics",
-            },
-            {
-                icon: BarChart3,
-                label: "Analytics",
-                href: "/dashboard/analytics",
-                description: "Hiring metrics and trends",
-            },
-        ],
-    },
-    {
-        title: "Talent Search",
-        items: [    
-            {
-                icon: Users,
-                label: "Candidate Directory",
-                href: "/dashboard/candidates",
-                description: "Browse all verified profiles",
-            },
-            // {
-            //     icon: Shield,
-            //     label: "Verify Credentials",
-            //     href: "/dashboard/verify",
-            //     description: "Instant credential verification",
-            // },
-        ],
-    },
-    // {
-    //     title: "Pipeline Management",
-    //     items: [
-            // {
-            //     icon: Star,
-            //     label: "Shortlisted",
-            //     href: "/dashboard/shortlisted",
-            //     badge: "24",
-            //     description: "Your shortlisted candidates",
-            // },
-            // {
-            //     icon: MessageSquare,
-            //     label: "Messages",
-            //     href: "/dashboard/messages",
-            //     badge: "5",
-            //     description: "Candidate communications",
-            // },
-            // {
-            //     icon: Activity,
-            //     label: "Active Jobs",
-            //     href: "/dashboard/jobs",
-            //     badge: "12",
-            //     description: "Manage job postings",
-            // },
-    //     ],
-    // },
-    {
-        title: "Company & Tools",
-        items: [
-            {
-                icon: Building,
-                label: "Company Profile",
-                href: "/dashboard/company",
-                description: "Manage company information",
-            },
-            {
-                icon: Plus,
-                label: "Post New Job",
-                href: "/dashboard/jobs",
-                description: "Create job listing",
-            },
-        ],
-    },
-    {
-        title: "Support",
-        items: [
-            // {
-            //     icon: HelpCircle,
-            //     label: "Help Center",
-            //     href: "/dashboard/help",
-            //     description: "FAQs and support",
-            // },
-            {
-                icon: Settings,
-                label: "Settings",
-                href: "/dashboard/settings",
-                description: "Account preferences",
-            },
-        ],
-    },
-];
-
 const Sidebar: React.FC = () => {
     const { isOpen } = useSidebarStore();
-    const pathname = usePathname();
     const router = useRouter();
 
     const [sessionData, setSessionData] = useState<any>(null);
+
+    const pathname = usePathname();
+
+  const [role, setRole] = useState<string>("student");
+  const [sections, setSections] = useState<any[]>([]);
+
+  useEffect(() => {
+    const decryptedRole = getEncryptedItem("role") || "student";
+
+    const r = decryptedRole.toLowerCase();
+    setRole(r);
+
+    if (r === "admin") {
+      setSections(adminSections("/admin/dashboard"));
+    } else if (r === "mentor") {
+      setSections(mentorSections("/mentor/dashboard"));
+    } else {
+      setSections(studentSections("/student/dashboard"));
+    }
+  }, []);
 
     // ✅ Load session from localStorage
     useEffect(() => {
@@ -257,12 +103,6 @@ const Sidebar: React.FC = () => {
         setSessionData(null);
         router.push("/");
     };
-
-    // ✅ Decide sidebar sections based on role
-    const sections =
-        sessionData?.role?.toLowerCase() === "recruiter"
-            ? recruiterSections
-            : userSections;
 
     const SidebarButton: React.FC<{
         item: SidebarItem;
@@ -334,34 +174,24 @@ const Sidebar: React.FC = () => {
                 isOpen ? 'w-64' : 'w-16'
             )}>
                 {/* Logo and Description */}
-                <div className="p-4 border-b border-sidebar-border w-full flex items-center justify-center">
-                    <div className="flex items-center gap-3 w-full mx-10">
-                        <div className="flex-shrink-0 items-center justify-center -ml-3">
-                            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg">
-                                <Award className="h-6 w-6 text-white" />
-                            </div>
-                        </div>
+                <div className="p-4 border-b border-sidebar-border w-full gap-3 flex items-center justify-center">
+                    {/* <div className="flex items-center gap-3 w-full mx-10"> */}
+                        <Image
+                            src="/progress_iq.png"
+                            alt="Progress IQ Logo"
+                            width={40}
+                            height={40}
+                            className="w-10 h-10"
+                        />
                         {isOpen && (
-                            <div className="overflow-hidden w-full">
-                                <h1
-                                    className="font-extrabold w-full text-start
-                                        text-2xl 
-                                        bg-gradient-to-r from-primary via-accent to-primary
-                                        bg-clip-text text-transparent
-                                        leading-tight
-                                        drop-shadow-md"
-                                >
-                                    CredX
-                                </h1>
-                                <p className="text-xs text-muted-foreground w-full truncate">
-                                    {sessionData?.role === "recruiter"
-                                        ? "Talent Discovery Portal"
-                                        : "Micro-Credential Platform"
-                                    }
-                                </p>
+                            <div>
+                                <span className="text-2xl font-bold bg-gradient-to-r from-primary via-primary to-primary bg-clip-text text-transparent">
+                                    Progress IQ
+                                </span>
+                                <div className="text-xs text-muted-foreground">Smart Activity Reporting</div>
                             </div>
                         )}
-                    </div>
+                    {/* </div> */}
                 </div>
 
                 {/* Navigation */}
@@ -374,7 +204,7 @@ const Sidebar: React.FC = () => {
                                         {section.title}
                                     </h3>
                                 )}
-                                {section.items.map((item) => {
+                                {section.items.map((item: SidebarItem) => {
                                     const isActive = pathname === item.href;
                                     return (
                                         <SidebarButton
@@ -390,7 +220,6 @@ const Sidebar: React.FC = () => {
                     </nav>
                 </ScrollArea>
 
-                {/* Footer with User Profile */}
                 <div className="p-4 border-t border-sidebar-border">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild className='cursor-pointer'>
@@ -406,14 +235,14 @@ const Sidebar: React.FC = () => {
                                                 ? "bg-gradient-to-br from-purple-600 to-pink-600"
                                                 : "bg-gradient-to-br from-primary to-accent"
                                         )}>
-                                            {sessionData?.username ? getUserInitials(sessionData.username) : "U"}
+                                            {sessionData?.username ? getUserInitials(sessionData.username) : role.charAt(0).toUpperCase()}
                                         </AvatarFallback>
                                     </Avatar>
 
                                     {isOpen && (
                                         <div className="flex-1 min-w-0 text-left">
                                             <p className="text-sm font-medium text-sidebar-foreground truncate">
-                                                {sessionData?.username || "User"}
+                                                {sessionData?.username || role.charAt(0).toUpperCase() + role.slice(1)}
                                             </p>
                                             <p className="text-xs text-muted-foreground truncate">
                                                 {sessionData?.email || ""}
@@ -451,12 +280,12 @@ const Sidebar: React.FC = () => {
                                             ? "bg-gradient-to-br from-purple-600 to-pink-600"
                                             : "bg-gradient-to-br from-primary to-accent"
                                     )}>
-                                        {sessionData?.username ? getUserInitials(sessionData.username) : "U"}
+                                        {sessionData?.username ? getUserInitials(sessionData.username) : role.charAt(0).toUpperCase()}
                                     </AvatarFallback>
                                 </Avatar>
                                 <div className="flex-1 min-w-0">
                                     <p className="text-sm font-semibold text-foreground truncate">
-                                        {sessionData?.username || "User"}
+                                        {sessionData?.username || role.charAt(0).toUpperCase() + role.slice(1)}
                                     </p>
                                     <p className="text-xs text-muted-foreground truncate">
                                         {sessionData?.email || ""}

@@ -20,7 +20,7 @@ api.interceptors.request.use(
   (config) => {
     const token = getToken();
     if (token) {
-      config.headers["x-auth-token"] = token;
+      config.headers["Authorization"] = `Bearer ${token}`;
     }
     return config;
   },
@@ -32,13 +32,13 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      if (typeof window !== 'undefined') {
-        localStorage.removeItem("token");
-        localStorage.removeItem("role");
-        localStorage.removeItem("userId");
-      }
-    }
+    // if (error.response?.status === 401) {
+    //   if (typeof window !== 'undefined') {
+    //     localStorage.removeItem("token");
+    //     localStorage.removeItem("role");
+    //     localStorage.removeItem("userId");
+    //   }
+    // }
     return Promise.reject(error);
   }
 );
