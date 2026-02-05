@@ -61,14 +61,20 @@ export const adminSections = (base: string): SidebarSection[] => [
     items: [
       {
         icon: Users,
+        label: "User Management",
+        href: `${base}/user-manage`,
+        description: "Manage users",
+      },
+      {
+        icon: Users,
         label: "Students",
-        href: `${base}/students`,
+        href: `${base}/students-manage`,
         description: "Manage students",
       },
       {
         icon: Users,
         label: "Mentors",
-        href: `${base}/mentors`,
+        href: `${base}/mentor-manage`,
         description: "Manage mentors",
       },
       {
