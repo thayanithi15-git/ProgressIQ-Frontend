@@ -82,10 +82,6 @@ export interface ReportPreview {
   estimatedFileSize: string;
 }
 
-// ==========================================
-// ZUSTAND STORE
-// ==========================================
-
 interface AdminReportsState {
   // Data States
   currentRequest: ReportRequest | null;
@@ -166,9 +162,6 @@ export const useAdminReportsStore = create<AdminReportsState>((set, get) => ({
   isLoadingPreview: false,
   isLoadingOptions: false,
 
-  // ==========================================
-  // GENERATE REPORT
-  // ==========================================
   generateReport: async (request: ReportRequest) => {
     const { showNotification } = useNotificationStore.getState();
     
@@ -203,7 +196,6 @@ export const useAdminReportsStore = create<AdminReportsState>((set, get) => ({
           'success'
         );
 
-        // Fetch updated history
         setTimeout(() => {
           get().fetchReportHistory();
         }, 1000);
@@ -217,9 +209,6 @@ export const useAdminReportsStore = create<AdminReportsState>((set, get) => ({
     }
   },
 
-  // ==========================================
-  // FETCH REPORT HISTORY
-  // ==========================================
   fetchReportHistory: async () => {
     const { showNotification } = useNotificationStore.getState();
     
@@ -240,9 +229,6 @@ export const useAdminReportsStore = create<AdminReportsState>((set, get) => ({
     }
   },
 
-  // ==========================================
-  // FETCH REPORT PREVIEW
-  // ==========================================
   fetchReportPreview: async (category: ReportCategory, filters: ReportFilter) => {
     const { showNotification } = useNotificationStore.getState();
     
@@ -267,9 +253,6 @@ export const useAdminReportsStore = create<AdminReportsState>((set, get) => ({
     }
   },
 
-  // ==========================================
-  // DOWNLOAD REPORT
-  // ==========================================
   downloadReport: async (reportId: string) => {
     const { showNotification } = useNotificationStore.getState();
     
@@ -280,12 +263,9 @@ export const useAdminReportsStore = create<AdminReportsState>((set, get) => ({
         responseType: 'blob',
       });
 
-      // Create download link
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
-      
-      // Get filename from response headers or use default
       const contentDisposition = response.headers['content-disposition'];
       const filename = contentDisposition
         ? contentDisposition.split('filename=')[1].replace(/"/g, '')
@@ -305,9 +285,6 @@ export const useAdminReportsStore = create<AdminReportsState>((set, get) => ({
     }
   },
 
-  // ==========================================
-  // DELETE REPORT
-  // ==========================================
   deleteReport: async (reportId: string) => {
     const { showNotification } = useNotificationStore.getState();
     
@@ -328,16 +305,12 @@ export const useAdminReportsStore = create<AdminReportsState>((set, get) => ({
     }
   },
 
-  // ==========================================
-  // FILTER SETTERS
-  // ==========================================
   setReportType: (type: ReportType) => {
     set({ selectedType: type });
   },
 
   setReportCategory: (category: ReportCategory) => {
     set({ selectedCategory: category });
-    // Reset filters when category changes
     get().resetFilters();
   },
 
@@ -351,9 +324,6 @@ export const useAdminReportsStore = create<AdminReportsState>((set, get) => ({
     set({ filters: initialFilters, reportPreview: null });
   },
 
-  // ==========================================
-  // FETCH OPTIONS
-  // ==========================================
   fetchDepartments: async () => {
     try {
       const response = await api.get('/api/admin/options/departments');
@@ -398,13 +368,9 @@ export const useAdminReportsStore = create<AdminReportsState>((set, get) => ({
     }
   },
 
-  // ==========================================
-  // UTILITY FUNCTIONS
-  // ==========================================
   validateFilters: () => {
     const { filters } = get();
     
-    // Check if date range is valid
     if (filters.startDate && filters.endDate) {
       const start = new Date(filters.startDate);
       const end = new Date(filters.endDate);
@@ -417,7 +383,6 @@ export const useAdminReportsStore = create<AdminReportsState>((set, get) => ({
       }
     }
     
-    // Check if points range is valid
     if (filters.minPoints !== undefined && filters.maxPoints !== undefined) {
       if (filters.minPoints > filters.maxPoints) {
         useNotificationStore.getState().showNotification(
