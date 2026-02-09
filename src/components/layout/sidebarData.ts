@@ -41,25 +41,6 @@ export const adminSections = (base: string): SidebarSection[] => [
         description: "Admin overview",
       },
       {
-        icon: BarChart3,
-        label: "Reporting",
-        href: `${base}/reports`,
-        description: "Charts & insights",
-      },
-      {
-        icon: Activity,
-        label: "Logs",
-        href: `${base}/logs`,
-        description: "Audit trail",
-      },
-    ],
-  },
-
-  /* ----- 4 ITEMS ----- */
-  {
-    title: "Administration",
-    items: [
-      {
         icon: Users,
         label: "User Management",
         href: `${base}/user-manage`,
@@ -77,17 +58,48 @@ export const adminSections = (base: string): SidebarSection[] => [
         href: `${base}/mentor-manage`,
         description: "Manage mentors",
       },
-      {
-        icon: FolderKanban,
-        label: "Mappings",
-        href: `${base}/mappings`,
-        description: "Mentor-student map",
-      },
+      // {
+      //   icon: Activity,
+      //   label: "Logs",
+      //   href: `${base}/logs`,
+      //   description: "Audit trail",
+      // },
+    ],
+  },
+
+  /* ----- 4 ITEMS ----- */
+  {
+    title: "Administration",
+    items: [
+      // {
+      //   icon: FolderKanban,
+      //   label: "Mappings",
+      //   href: `${base}/mappings`,
+      //   description: "Mentor-student map",
+      // },
       {
         icon: FileText,
-        label: "Projects & Content",
+        label: "Project Details",
         href: `${base}/projects`,
         description: "All projects",
+      },
+      {
+        icon: Award,
+        label: "Certifications",
+        href: `${base}/certifications`,
+        description: "All Certifications",
+      },
+      {
+        icon: ClipboardList,
+        label: "Tasks",
+        href: `${base}/tasks`,
+        description: "All Tasks",
+      },
+      {
+        icon: BarChart3,
+        label: "Reporting",
+        href: `${base}/reports`,
+        description: "Charts & insights",
       },
     ],
   },
