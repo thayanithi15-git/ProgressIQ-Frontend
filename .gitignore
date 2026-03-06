@@ -4,8 +4,6 @@
 .env.development.local
 .env
 
-.next
-
 # dependencies
 /node_modules
 /.pnp
