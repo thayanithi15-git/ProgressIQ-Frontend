@@ -25,8 +25,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { Badge } from "@/components/ui/badge";
-import { ClipboardList, GraduationCap, Calendar } from "lucide-react";
+import {
+  ClipboardList,
+  GraduationCap,
+  Calendar,
+  CheckCircle,
+  Clock,
+  AlertCircle,
+  Loader,
+} from "lucide-react";
 
 import { useAdminTasksStore } from "@/store/admin/tasks";
 
@@ -60,19 +67,45 @@ export default function TasksPage() {
     fetchTasks({ page: 1, filters: { status: s } });
   };
 
-  const getStatusVariant = (status?: string) => {
+  /* STATUS STYLES */
+
+  const getStatusStyle = (status?: string) => {
     switch (status) {
       case "Completed":
-        return "default";
-      case "Ongoing":
+        return {
+          bg: "bg-green-100",
+          text: "text-green-700",
+          icon: <CheckCircle className="w-3.5 h-3.5" />,
+        };
+
       case "In Progress":
-        return "secondary";
+      case "Ongoing":
+        return {
+          bg: "bg-blue-100",
+          text: "text-blue-700",
+          icon: <Loader className="w-3.5 h-3.5" />,
+        };
+
       case "Pending":
-        return "outline";
+        return {
+          bg: "bg-orange-100",
+          text: "text-orange-700",
+          icon: <Clock className="w-3.5 h-3.5" />,
+        };
+
       case "Overdue":
-        return "destructive";
+        return {
+          bg: "bg-red-100",
+          text: "text-red-700",
+          icon: <AlertCircle className="w-3.5 h-3.5" />,
+        };
+
       default:
-        return "outline";
+        return {
+          bg: "bg-gray-100",
+          text: "text-gray-600",
+          icon: <Clock className="w-3.5 h-3.5" />,
+        };
     }
   };
 
@@ -88,9 +121,11 @@ export default function TasksPage() {
       />
 
       <div className="min-h-screen bg-background p-6">
-        <div className="space-y-4">
-          {/* TOP BAR */}
+        <div className="space-y-5">
+
+          {/* SEARCH + FILTER */}
           <div className="flex flex-col sm:flex-row gap-3 sm:items-center justify-between">
+
             <div className="flex gap-2 w-full sm:w-1/2">
               <Input
                 placeholder="Search tasks..."
@@ -98,17 +133,19 @@ export default function TasksPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
+
               <Button onClick={handleSearch} className="py-5">
                 Search
               </Button>
             </div>
 
             <div className="flex gap-2 items-center">
+
               <Select
                 value={status}
                 onValueChange={(value) => handleStatus(value)}
               >
-                <SelectTrigger className="w-[160px] py-5 shadow-none">
+                <SelectTrigger className="w-[170px] py-5 shadow-none">
                   <SelectValue placeholder="All statuses" />
                 </SelectTrigger>
 
@@ -119,6 +156,7 @@ export default function TasksPage() {
                   <SelectItem value="Pending">Pending</SelectItem>
                   <SelectItem value="Overdue">Overdue</SelectItem>
                 </SelectContent>
+
               </Select>
 
               <Button
@@ -128,11 +166,14 @@ export default function TasksPage() {
               >
                 Refresh
               </Button>
+
             </div>
           </div>
 
-          {/* CARDS GRID */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-7">
+          {/* TASK GRID */}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+
             {isLoading && <div>Loading...</div>}
 
             {!isLoading && tasks.length === 0 && (
@@ -143,71 +184,91 @@ export default function TasksPage() {
 
             {tasks.map((t) => {
               const mentor = t.mentorId;
+              const statusStyle = getStatusStyle(t.status);
 
               return (
                 <Card
                   key={t._id}
-                className="group hover:shadow-sm transition-all shadow-none duration-200 border cursor-pointer border-border flex flex-col min-h-[220px]"
+                  className="group hover:shadow-lg transition-all duration-200 border border-border cursor-pointer flex flex-col min-h-[240px]"
                 >
+
                   {/* HEADER */}
+
                   <CardHeader className="pb-2">
-                    <div className="flex justify-between gap-3 items-start">
+
+                    <div className="flex justify-between items-start gap-3">
+
                       <CardTitle className="text-lg font-semibold flex items-center gap-2">
                         <ClipboardList className="w-4 h-4 text-muted-foreground" />
                         {t.title || "Untitled Task"}
                       </CardTitle>
 
-                      <Badge variant={getStatusVariant(t.status)}>
+                      <div
+                        className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${statusStyle.bg} ${statusStyle.text}`}
+                      >
+                        {statusStyle.icon}
                         {t.status || "Unknown"}
-                      </Badge>
+                      </div>
+
                     </div>
 
-                    <CardDescription className="flex items-center gap-2">
+                    <CardDescription className="flex items-center gap-2 mt-1">
                       <GraduationCap className="w-4 h-4 text-muted-foreground" />
                       {mentor?.name || "No mentor assigned"}
                     </CardDescription>
+
                   </CardHeader>
 
-                  {/* BODY */}
+                  {/* CONTENT */}
+
                   <CardContent className="flex-1">
+
                     <p className="text-sm text-muted-foreground line-clamp-2">
                       {t.description || "No description provided"}
                     </p>
 
-                    <div className="mt-3 text-sm text-muted-foreground flex items-center gap-2">
+                    <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground bg-muted px-3 py-2 rounded-md w-fit">
                       <Calendar className="w-4 h-4" />
-                      Due:{" "}
                       {t.dueDate
                         ? new Date(t.dueDate).toLocaleDateString()
-                        : "—"}
+                        : "No due date"}
                     </div>
+
                   </CardContent>
 
-                  <CardFooter className="pt-3 pb-3 border-t flex justify-between items-center">
-                    <div className="text-xs text-muted-foreground">
+                  {/* FOOTER */}
+
+                  <CardFooter className="pt-3 pb-3 border-t flex justify-between text-xs text-muted-foreground">
+
+                    <div>
                       {t.completedAt
-                        ? `Completed on ${new Date(
+                        ? `Completed ${new Date(
                             t.completedAt
                           ).toLocaleDateString()}`
-                        : "Not completed yet"}
+                        : "Not completed"}
                     </div>
 
-                    <div className="text-xs text-muted-foreground">
-                      Mentor: {mentor?.department || "—"}
+                    <div>
+                      {mentor?.department || "—"}
                     </div>
+
                   </CardFooter>
+
                 </Card>
               );
             })}
           </div>
 
           {/* PAGINATION */}
-          <div className="flex items-center justify-between">
+
+          <div className="flex items-center justify-between mt-6">
+
             <div className="text-sm text-muted-foreground">
-              {`Showing ${tasks.length} of ${total}`}
+              Showing {tasks.length} of {total}
             </div>
 
             <div className="flex gap-2">
+
               <Button
                 variant="outline"
                 disabled={page <= 1}
@@ -219,8 +280,8 @@ export default function TasksPage() {
                 Prev
               </Button>
 
-              <div className="px-3 py-2 rounded-md border border-input bg-transparent">
-                {`${page} / ${totalPages}`}
+              <div className="px-3 py-2 rounded-md border border-input">
+                {page} / {totalPages}
               </div>
 
               <Button
@@ -233,8 +294,10 @@ export default function TasksPage() {
               >
                 Next
               </Button>
+
             </div>
           </div>
+
         </div>
       </div>
     </>

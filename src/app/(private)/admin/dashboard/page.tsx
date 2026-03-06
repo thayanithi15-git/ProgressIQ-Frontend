@@ -312,6 +312,167 @@ export default function AdminDashboard() {
           />
         </div>
 
+        {/* Top Students Leaderboard */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+        >
+          <Card className="border-border">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-xl font-bold flex items-center gap-2">
+                    🏆 Top Students Leaderboard
+                  </CardTitle>
+                  <CardDescription>Highest performing students based on points</CardDescription>
+                </div>
+                <Select
+                  value={topStudentsLimit.toString()}
+                  onValueChange={(value) => setTopStudentsLimit(Number(value))}
+                >
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="5">Top 5</SelectItem>
+                    <SelectItem value="10">Top 10</SelectItem>
+                    <SelectItem value="20">Top 20</SelectItem>
+                    <SelectItem value="50">Top 50</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardHeader>
+            <CardContent>
+              {isLoadingStudents ? (
+                <div className="space-y-3">
+                  {[...Array(5)].map((_, i) => (
+                    <Skeleton key={i} className="h-16 w-full" />
+                  ))}
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="w-16">Rank</TableHead>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Department</TableHead>
+                        <TableHead>Year</TableHead>
+                        <TableHead className="text-center">Points</TableHead>
+                        <TableHead className="text-center">Projects</TableHead>
+                        <TableHead className="text-center">Internships</TableHead>
+                        <TableHead className="text-center">Certifications</TableHead>
+                        <TableHead>Designation</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {topStudents.map((student) => (
+                        <TableRow key={student.rank} className="hover:bg-muted/50">
+                          <TableCell className="font-bold text-center">
+                            {student.rank === 1 && <span className="text-2xl">🥇</span>}
+                            {student.rank === 2 && <span className="text-2xl">🥈</span>}
+                            {student.rank === 3 && <span className="text-2xl">🥉</span>}
+                            {student.rank > 3 && <span className="text-lg">{student.rank}</span>}
+                          </TableCell>
+                          <TableCell className="font-semibold">{student.name}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
+                              {student.department}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="text-muted-foreground">{student.year}</TableCell>
+                          <TableCell className="text-center">
+                            <span className="font-black text-lg text-chart-4">{student.points}</span>
+                          </TableCell>
+                          <TableCell className="text-center">{student.projectsCompleted}</TableCell>
+                          <TableCell className="text-center">{student.internshipsCompleted}</TableCell>
+                          <TableCell className="text-center">{student.certificationsEarned}</TableCell>
+                          <TableCell>
+                            <Badge
+                              className={`${student.designation.includes("Gold")
+                                ? "bg-yellow-500 text-black"
+                                : student.designation.includes("Silver")
+                                  ? "bg-gray-400 text-black"
+                                  : "bg-orange-600 text-white"
+                                }`}
+                            >
+                              {student.designation}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Points by Source - Bar Chart */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.55 }}
+        >
+          <Card className="border-border">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="text-xl font-bold">Points Distribution by Source</CardTitle>
+                  <CardDescription>Which activities generate the most points</CardDescription>
+                </div>
+                <div className="flex gap-2">
+                  <FilterButton
+                    value="week"
+                    currentValue={pointsSourceFilter}
+                    onClick={() => setPointsSourceFilter("week")}
+                    label="Week"
+                  />
+                  <FilterButton
+                    value="month"
+                    currentValue={pointsSourceFilter}
+                    onClick={() => setPointsSourceFilter("month")}
+                    label="Month"
+                  />
+                  <FilterButton
+                    value="year"
+                    currentValue={pointsSourceFilter}
+                    onClick={() => setPointsSourceFilter("year")}
+                    label="Year"
+                  />
+                  <FilterButton
+                    value="all"
+                    currentValue={pointsSourceFilter}
+                    onClick={() => setPointsSourceFilter("all")}
+                    label="All"
+                  />
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={350}>
+                <BarChart data={pointsBySource}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.9300 0.0094 245.0000)" />
+                  <XAxis
+                    dataKey="source"
+                    stroke="oklch(0.4386 0 0)"
+                    tick={{ fontSize: 11 }}
+                    angle={-45}
+                    textAnchor="end"
+                    height={100}
+                  />
+                  <YAxis stroke="oklch(0.4386 0 0)" tick={{ fontSize: 12 }} />
+                  <Tooltip content={<CustomTooltip />} />
+                  <Legend />
+                  <Bar dataKey="points" fill={CHART_COLORS.chart4} name="Total Points" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </motion.div>
+
         {/* Charts Section - Row 1 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Activity Hours Chart */}
@@ -747,167 +908,7 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
         </motion.div>
-
-        {/* Points by Source - Bar Chart */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.55 }}
-        >
-          <Card className="border-border">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-xl font-bold">Points Distribution by Source</CardTitle>
-                  <CardDescription>Which activities generate the most points</CardDescription>
-                </div>
-                <div className="flex gap-2">
-                  <FilterButton
-                    value="week"
-                    currentValue={pointsSourceFilter}
-                    onClick={() => setPointsSourceFilter("week")}
-                    label="Week"
-                  />
-                  <FilterButton
-                    value="month"
-                    currentValue={pointsSourceFilter}
-                    onClick={() => setPointsSourceFilter("month")}
-                    label="Month"
-                  />
-                  <FilterButton
-                    value="year"
-                    currentValue={pointsSourceFilter}
-                    onClick={() => setPointsSourceFilter("year")}
-                    label="Year"
-                  />
-                  <FilterButton
-                    value="all"
-                    currentValue={pointsSourceFilter}
-                    onClick={() => setPointsSourceFilter("all")}
-                    label="All"
-                  />
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={350}>
-                <BarChart data={pointsBySource}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.9300 0.0094 245.0000)" />
-                  <XAxis
-                    dataKey="source"
-                    stroke="oklch(0.4386 0 0)"
-                    tick={{ fontSize: 11 }}
-                    angle={-45}
-                    textAnchor="end"
-                    height={100}
-                  />
-                  <YAxis stroke="oklch(0.4386 0 0)" tick={{ fontSize: 12 }} />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend />
-                  <Bar dataKey="points" fill={CHART_COLORS.chart4} name="Total Points" radius={[8, 8, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Top Students Leaderboard */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-        >
-          <Card className="border-border">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-xl font-bold flex items-center gap-2">
-                    🏆 Top Students Leaderboard
-                  </CardTitle>
-                  <CardDescription>Highest performing students based on points</CardDescription>
-                </div>
-                <Select
-                  value={topStudentsLimit.toString()}
-                  onValueChange={(value) => setTopStudentsLimit(Number(value))}
-                >
-                  <SelectTrigger className="w-32">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="5">Top 5</SelectItem>
-                    <SelectItem value="10">Top 10</SelectItem>
-                    <SelectItem value="20">Top 20</SelectItem>
-                    <SelectItem value="50">Top 50</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {isLoadingStudents ? (
-                <div className="space-y-3">
-                  {[...Array(5)].map((_, i) => (
-                    <Skeleton key={i} className="h-16 w-full" />
-                  ))}
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-16">Rank</TableHead>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Department</TableHead>
-                        <TableHead>Year</TableHead>
-                        <TableHead className="text-center">Points</TableHead>
-                        <TableHead className="text-center">Projects</TableHead>
-                        <TableHead className="text-center">Internships</TableHead>
-                        <TableHead className="text-center">Certifications</TableHead>
-                        <TableHead>Designation</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {topStudents.map((student) => (
-                        <TableRow key={student.rank} className="hover:bg-muted/50">
-                          <TableCell className="font-bold text-center">
-                            {student.rank === 1 && <span className="text-2xl">🥇</span>}
-                            {student.rank === 2 && <span className="text-2xl">🥈</span>}
-                            {student.rank === 3 && <span className="text-2xl">🥉</span>}
-                            {student.rank > 3 && <span className="text-lg">{student.rank}</span>}
-                          </TableCell>
-                          <TableCell className="font-semibold">{student.name}</TableCell>
-                          <TableCell>
-                            <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
-                              {student.department}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-muted-foreground">{student.year}</TableCell>
-                          <TableCell className="text-center">
-                            <span className="font-black text-lg text-chart-4">{student.points}</span>
-                          </TableCell>
-                          <TableCell className="text-center">{student.projectsCompleted}</TableCell>
-                          <TableCell className="text-center">{student.internshipsCompleted}</TableCell>
-                          <TableCell className="text-center">{student.certificationsEarned}</TableCell>
-                          <TableCell>
-                            <Badge
-                              className={`${student.designation.includes("Gold")
-                                ? "bg-yellow-500 text-black"
-                                : student.designation.includes("Silver")
-                                  ? "bg-gray-400 text-black"
-                                  : "bg-orange-600 text-white"
-                                }`}
-                            >
-                              {student.designation}
-                            </Badge>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </motion.div>
+        
       </div>
     </div>
   );

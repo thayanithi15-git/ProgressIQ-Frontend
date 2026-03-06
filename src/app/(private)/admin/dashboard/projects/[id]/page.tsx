@@ -39,17 +39,17 @@ export default function ProjectDetail() {
     })();
   }, [id]);
 
-  const getStatusVariant = (status?: string) => {
+  const getStatusClass = (status?: string) => {
     switch (status) {
       case "Completed":
-        return "default";
+        return "text-green-700 bg-green-100";
       case "Ongoing":
       case "In Progress":
-        return "secondary";
+        return "text-blue-700 bg-blue-100";
       case "Pending":
-        return "outline";
+        return "text-orange-700 bg-orange-100";
       default:
-        return "outline";
+        return "text-gray-700 bg-gray-100";
     }
   };
 
@@ -102,9 +102,13 @@ export default function ProjectDetail() {
             <div className="flex justify-between items-center">
               <CardTitle>Overview</CardTitle>
 
-              <Badge variant={getStatusVariant(project.status)}>
+              <div
+                className={`px-2 py-1 rounded-md text-xs font-medium w-fit ${getStatusClass(
+                  project.status
+                )}`}
+              >
                 {project.status || "Unknown"}
-              </Badge>
+              </div>
             </div>
 
             <CardDescription>
@@ -177,26 +181,32 @@ export default function ProjectDetail() {
               <div className="flex gap-3">
                 {project.githubLink ? (
                   <Link href={project.githubLink} target="_blank">
-                    <Button variant="outline" className="gap-2">
+                    <Button className="gap-2 bg-black text-white hover:bg-gray-800 hover:text-white">
                       <Github className="w-4 h-4" />
                       GitHub Repository
                     </Button>
                   </Link>
                 ) : (
-                  <Button variant="outline" disabled>
+                  <Button
+                    disabled
+                    className="bg-gray-200 text-gray-500 cursor-not-allowed"
+                  >
                     No GitHub Link
                   </Button>
                 )}
 
                 {project.websiteLink ? (
                   <Link href={project.websiteLink} target="_blank">
-                    <Button variant="outline" className="gap-2">
+                    <Button className="gap-2 bg-blue-600 text-white hover:bg-blue-700 hover:text-white">
                       <Globe className="w-4 h-4" />
                       Live Website
                     </Button>
                   </Link>
                 ) : (
-                  <Button variant="outline" disabled>
+                  <Button
+                    disabled
+                    className="bg-gray-200 text-gray-500 cursor-not-allowed"
+                  >
                     No Website Link
                   </Button>
                 )}
@@ -208,8 +218,8 @@ export default function ProjectDetail() {
             <div className="text-sm text-muted-foreground">
               {project.completedAt
                 ? `Completed on ${new Date(
-                    project.completedAt
-                  ).toLocaleDateString()}`
+                  project.completedAt
+                ).toLocaleDateString()}`
                 : "Not completed yet"}
             </div>
           </CardFooter>
