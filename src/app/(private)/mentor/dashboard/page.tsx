@@ -38,6 +38,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useMentorDashboardStore } from "@/store/mentor/dashboard";
+import { useThemeStore } from "@/store/layoutStore";
 import GlobalNotification from "@/components/notify/notification";
 
 // ==========================================
@@ -127,7 +128,14 @@ export default function MentorDashboard() {
     fetchAssignedStudents,
   } = useMentorDashboardStore();
 
+  const { initializeTheme } = useThemeStore();
+
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  useEffect(() => {
+    // Initialize theme from localStorage
+    initializeTheme();
+  }, [initializeTheme]);
 
   useEffect(() => {
     fetchStats();

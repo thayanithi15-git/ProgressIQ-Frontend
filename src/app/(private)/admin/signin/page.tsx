@@ -10,12 +10,14 @@ import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
 import { Lock, Mail, Shield, ArrowRight, Eye, EyeOff, Users, TrendingUp, BookOpen, Award, CheckCircle, BarChart3 } from "lucide-react";
 import { useAdminAuthStore } from "@/store/auth/admin";
+import { useThemeStore } from "@/store/layoutStore";
 import GlobalNotification from "@/components/notify/notification";
 import Banner from "@/assets/loginBanner.jpg";
 
 export default function AdminLoginPage() {
   const router = useRouter();
   const { login, isLoading, isAuthenticated, checkAuth } = useAdminAuthStore();
+  const { initializeTheme } = useThemeStore();
 
   const [form, setForm] = useState({
     email: "",
@@ -24,12 +26,17 @@ export default function AdminLoginPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
+    // Initialize theme from localStorage
+    initializeTheme();
+  }, [initializeTheme]);
+
+  useEffect(() => {
     checkAuth();
   }, [checkAuth]);
 
   useEffect(() => {
     if (isAuthenticated) {
-      // router.push("/admin/dashboard");
+      router.push("/admin/dashboard");
     }
   }, [isAuthenticated, router]);
 
@@ -90,7 +97,7 @@ export default function AdminLoginPage() {
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
-            className="w-full flex"
+            className="w-[80%] flex"
           >
             <div className="flex items-center gap-3 mb-3">
               <Image
@@ -101,8 +108,8 @@ export default function AdminLoginPage() {
                 className="w-12 h-12"
               />
               <div>
-                <h1 className="text-3xl text-foreground font-black tracking-tight">Progress IQ</h1>
-                <p className="text-foreground/80 text-sm font-semibold">Administrator Portal</p>
+                <h1 className="text-3xl text-foreground font-black font-poppins tracking-tight">Progress IQ</h1>
+                <p className="text-foreground/80 text-sm font-semibold font-poppins">Administrator Portal</p>
               </div>
             </div>
           </motion.div>
@@ -122,17 +129,17 @@ export default function AdminLoginPage() {
                   height={40}
                   className="w-10 h-10"
                 />
-                <h1 className="text-2xl font-black text-foreground">Progress IQ</h1>
+                <h1 className="text-2xl font-black text-foreground font-poppins">Progress IQ</h1>
               </div>
-              <p className="text-secondary font-semibold">Administrator Portal</p>
+              <p className="text-secondary font-semibold font-poppins">Administrator Portal</p>
             </div>
 
             <Card className="border-2 shadow-none mt-5 border-border p-3">
               <CardHeader className="space-y-3 pb-8">
-                <CardTitle className="text-3xl font-black text-foreground text-center">
+                <CardTitle className="text-3xl font-black text-foreground text-center font-poppins">
                   Admin Access
                 </CardTitle>
-                <CardDescription className="text-center text-base">
+                <CardDescription className="text-center text-base font-poppins">
                   Enter your credentials to access the control panel
                 </CardDescription>
               </CardHeader>
@@ -186,12 +193,12 @@ export default function AdminLoginPage() {
 
                   <Button
                     type="submit"
-                    className="w-full h-12 bg-gradient-to-r from-primary to-primary/70 hover:from-primary/90 hover:to-secondary/90 text-primary-foreground font-bold text-base shadow-lg shadow-primary/30 transition-all hover:shadow-xl hover:shadow-primary/40"
+                    className="w-full h-12 bg-gradient-to-r from-primary to-primary/70 hover:from-primary/90 hover:to-secondary/90 text-white font-bold text-base shadow-lg shadow-primary/30 transition-all hover:shadow-xl hover:shadow-primary/40"
                     disabled={isLoading}
                   >
                     {isLoading ? (
                       <>
-                        <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin mr-2" />
+                        <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground  rounded-full animate-spin mr-2" />
                         Authenticating...
                       </>
                     ) : (
@@ -228,14 +235,14 @@ export default function AdminLoginPage() {
           </div>
 
           {/* Decorative Elements */}
-          <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute inset-0 overflow-hidden  font-poppins">
             <div className="absolute -top-24 -right-24 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
             <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-secondary/40 rounded-full blur-3xl" />
           </div>
 
           {/* Grid Pattern */}
           <div
-            className="absolute inset-0 opacity-[0.02]"
+            className="absolute  font-poppins inset-0 opacity-[0.02]"
             style={{
               backgroundImage: `linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
                        linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px)`,
@@ -263,17 +270,17 @@ export default function AdminLoginPage() {
                   />
                 </div>
                 <div>
-                  <h1 className="text-2xl text-foreground font-black tracking-tight">Progress IQ</h1>
+                  <h1 className="text-2xl text-foreground font-black font-poppins tracking-tight">Progress IQ</h1>
                   <p className="text-muted-foreground text-sm font-medium">Administrator Platform</p>
                 </div>
               </div>
 
               <div className="mt-8 space-y-2">
-                <h2 className="text-xl font-black text-foreground leading-tight">
+                <h2 className="text-xl font-black text-foreground leading-tight font-poppins">
                   Empowering Education
                   Through Intelligence
                 </h2>
-                <p className="text-muted-foreground text-sm max-w-md">
+                <p className="text-muted-foreground text-sm max-w-md font-poppins">
                   Manage students, mentors, and track academic progress with our comprehensive platform
                 </p>
               </div>
@@ -298,8 +305,8 @@ export default function AdminLoginPage() {
                     <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
                       <feature.icon className="w-5 h-5 text-primary" />
                     </div>
-                    <h3 className="font-bold text-foreground text-sm mb-1">{feature.title}</h3>
-                    <p className="text-muted-foreground text-xs leading-relaxed">{feature.description}</p>
+                    <h3 className="font-bold text-foreground text-sm mb-1 font-poppins">{feature.title}</h3>
+                    <p className="text-muted-foreground text-xs leading-relaxed font-poppins">{feature.description}</p>
                   </motion.div>
                 ))}
               </div>

@@ -37,6 +37,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useStudentDashboardStore } from "@/store/student/dashboard";
+import { useThemeStore } from "@/store/layoutStore";
 import GlobalNotification from "@/components/notify/notification";
 import Link from "next/link";
 
@@ -130,7 +131,14 @@ export default function StudentDashboard() {
     fetchNotifications,
   } = useStudentDashboardStore();
 
+  const { initializeTheme } = useThemeStore();
+
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  useEffect(() => {
+    // Initialize theme from localStorage
+    initializeTheme();
+  }, [initializeTheme]);
 
   useEffect(() => {
     fetchDashboard();

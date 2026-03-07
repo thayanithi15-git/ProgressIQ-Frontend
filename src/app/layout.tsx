@@ -1,5 +1,6 @@
 import { SearchProvider } from "@/components/searchProvider";
 import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeInitializer } from "@/components/theme-initializer";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import "./globals.css";
@@ -53,6 +54,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <ThemeInitializer />
           <SearchProvider>{children}</SearchProvider>
           <Toaster />
         </ThemeProvider>

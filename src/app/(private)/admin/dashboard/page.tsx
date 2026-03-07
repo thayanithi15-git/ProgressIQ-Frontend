@@ -53,6 +53,7 @@ import {
   AreaChart,
 } from "recharts";
 import { useAdminDashboardStore } from "@/store/admin/dashboard";
+import { useThemeStore } from "@/store/layoutStore";
 import GlobalNotification from "@/components/notify/notification";
 import Header from "@/components/layout/header";
 
@@ -197,7 +198,14 @@ export default function AdminDashboard() {
     refreshDashboard,
   } = useAdminDashboardStore();
 
+  const { initializeTheme } = useThemeStore();
+
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  useEffect(() => {
+    // Initialize theme from localStorage
+    initializeTheme();
+  }, [initializeTheme]);
 
   useEffect(() => {
     fetchAllData();

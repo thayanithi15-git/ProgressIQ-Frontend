@@ -10,18 +10,25 @@ import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
 import { Lock, Mail, Shield, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { useMentorAuthStore } from "@/store/auth/mentor";
+import { useThemeStore } from "@/store/layoutStore";
 import GlobalNotification from "@/components/notify/notification";
 import Banner from "@/assets/loginBanner.jpg";
 
 export default function MentorLoginPage() {
   const router = useRouter();
   const { login, isLoading, isAuthenticated, checkAuth } = useMentorAuthStore();
+  const { initializeTheme } = useThemeStore();
 
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
+
+  useEffect(() => {
+    // Initialize theme from localStorage
+    initializeTheme();
+  }, [initializeTheme]);
 
   useEffect(() => {
     checkAuth();

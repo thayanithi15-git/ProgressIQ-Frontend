@@ -16,6 +16,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useSidebarStore } from '@/store/layoutStore';
 import { cn } from '@/lib/utils';
+import { useNotificationStore } from '@/utils/notification';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -44,6 +45,7 @@ interface SidebarItem {
 const Sidebar: React.FC = () => {
     const { isOpen } = useSidebarStore();
     const router = useRouter();
+    const { showNotification } = useNotificationStore();
 
     const [sessionData, setSessionData] = useState<any>(null);
     const pathname = usePathname();
@@ -72,9 +74,23 @@ const Sidebar: React.FC = () => {
     }, []);
 
     const handleLogout = () => {
+        // Show logout notification
+        showNotification('You have been successfully logged out', 'success');
+        
+        // Clear all auth and app-related localStorage items
         localStorage.removeItem('credxUser');
+        localStorage.removeItem('role');
+        localStorage.removeItem('theme-preference');
+        localStorage.removeItem('auth-token');
+        localStorage.removeItem('user-data');
+        
+        // Clear session state
         setSessionData(null);
-        router.push('/');
+        
+        // Navigate to landing page after a brief delay
+        setTimeout(() => {
+            router.push('/');
+        }, 500);
     };
 
     const getUserInitials = (name: string) =>
@@ -306,16 +322,16 @@ const Sidebar: React.FC = () => {
                                     <Avatar
                                         className="flex-shrink-0 h-9 w-9"
                                         style={{
-                                            boxShadow: '0 0 0 2px var(--college-gold)',
+                                            boxShadow: '0 0 0 1px white',
                                         }}
                                     >
                                         <AvatarFallback
-                                            className="flex-1 text-gray-300 text-[13px] tracking-wide uppercase font-poppins"
+                                            className="flex-1 text-white text-[13px] tracking-wide uppercase font-poppins font-semibold"
                                             style={{
                                                 background: isRecruiter
                                                     ? 'linear-gradient(135deg,#7c3aed,#db2777)'
                                                     : 'linear-gradient(135deg, var(--college-navy), var(--college-navy-light))',
-                                                color: 'var(--college-gold)',
+                                                color: 'white',
                                             }}
                                         >
                                             {sessionData?.username
@@ -333,13 +349,13 @@ const Sidebar: React.FC = () => {
                                             <p className="text-[10px] text-sidebar-foreground/50 truncate leading-tight mt-0.5">
                                                 {sessionData?.email || ''}
                                             </p>
-                                            <Badge
-                                                variant="outline"
-                                                className={cn('text-[13px] text-white mt-1 px-1.5 py-0 rounded-sm font-semibold', roleBadgeClass)}
-                                                style={roleBadgeStyle}
+                                            <div
+                                                // variant="outline"
+                                                className={cn('text-[13px] text-white mt-1 px-0.5 py-0 rounded-sm font-semibold')}
+                                                // style={roleBadgeStyle}
                                             >
-                                                {isRecruiter ? 'Recruiter' : 'Learner'}
-                                            </Badge>
+                                                {isRecruiter ? 'Recruiter' : 'Monitor Student'}
+                                            </div>
                                         </div>
                                     )}
                                 </div>
@@ -352,7 +368,7 @@ const Sidebar: React.FC = () => {
                             side="right"
                             sideOffset={10}
                             className={cn(
-                                'w-68 p-0 rounded-xl overflow-hidden',
+                                'w-68 p-0 -ml-10 rounded-xl overflow-hidden',
                                 'border border-border bg-background',
                                 'shadow-[0_8px_32px_hsl(220_40%_15%/0.18)]',
                             )}
@@ -368,15 +384,15 @@ const Sidebar: React.FC = () => {
                                 <div className="flex items-center gap-3">
                                     <Avatar
                                         className="h-14 w-14 flex-shrink-0"
-                                        style={{ boxShadow: '0 0 0 2.5px var(--college-gold)' }}
+                                        style={{ boxShadow: '0 0 0 1.5px ' }}
                                     >
                                         <AvatarFallback
-                                            className="flex-1 text-gray-300 text-[13px] tracking-wide uppercase font-poppins"
+                                            className="flex-1 text-foreground text-[18px] tracking-wide uppercase font-poppins font-semibold"
                                             style={{
                                                 background: isRecruiter
                                                     ? 'linear-gradient(135deg,#7c3aed,#db2777)'
                                                     : 'linear-gradient(135deg, var(--college-navy-light), var(--college-navy))',
-                                                color: 'var(--college-gold)',
+                                                // color: 'white',
                                             }}
                                         >
                                             {sessionData?.username
@@ -386,7 +402,7 @@ const Sidebar: React.FC = () => {
                                     </Avatar>
 
                                     <div className="flex-1 min-w-0">
-                                        <p className="flex-1 text-gray-300 text-[11px] tracking-wide uppercase font-poppins">
+                                        <p className="flex-1 text-foreground font-bold text-[11px] tracking-wide uppercase font-poppins">
                                             {sessionData?.username ||
                                                 role.charAt(0).toUpperCase() + role.slice(1)}
                                         </p>
@@ -397,15 +413,15 @@ const Sidebar: React.FC = () => {
                                             {sessionData?.email || ''}
                                         </p>
                                         <Badge
-                                            className="mt-1.5 text-[13px] text-white px-2 py-0.5 rounded-sm font-bold border-0"
+                                            className="mt-1.5 text-[13px] text-foreground -ml-2 py-0.5 rounded-sm font- border-0"
                                             style={{
                                                 background: isRecruiter
                                                     ? 'rgba(168,85,247,0.25)'
                                                     : 'var(--college-gold)',
-                                                color: isRecruiter ? '#e9d5ff' : 'var(--college-navy-dark)',
+                                                // color: 'white',
                                             }}
                                         >
-                                            {isRecruiter ? 'Recruiter Account' : 'Learner Account'}
+                                            {isRecruiter ? 'Recruiter Account' : 'Monitor Student and Faculty'}
                                         </Badge>
                                     </div>
                                 </div>

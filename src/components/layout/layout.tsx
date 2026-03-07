@@ -3,6 +3,7 @@ import Header from './header';
 import Sidebar from './sidebar';
 import { useSidebarStore } from '@/store/layoutStore';
 import { cn } from '@/lib/utils';
+import GlobalNotification from '@/components/notify/notification';
 
 interface LayoutWrapperProps {
   children: React.ReactNode;
@@ -25,6 +26,7 @@ const LayoutWrapper: React.FC<LayoutWrapperProps> = ({
 
   return (
     <div className={cn("min-h-screen w-screen", className)}>
+      <GlobalNotification />
       {/* Sidebar */}
       {showSidebar && <Sidebar />}
       
