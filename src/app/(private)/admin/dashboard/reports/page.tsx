@@ -67,6 +67,7 @@ import {
 import { useAdminReportsStore, ReportCategory, ReportType } from "@/store/admin/report";
 import GlobalNotification from "@/components/notify/notification";
 import Header from "@/components/layout/header";
+// import { Header } from "@/components/layout/header";
 
 // ==========================================
 // REPORT TYPE CARDS
@@ -110,8 +111,8 @@ const ReportTypeCard: React.FC<ReportTypeCardProps> = ({
                         <Icon className="w-6 h-6" style={{ color }} />
                     </div>
                     <div className="flex-1">
-                        <h3 className="font-bold text-foreground mb-1">{title}</h3>
-                        <p className="text-sm text-muted-foreground">{description}</p>
+                        <h3 className="font-bold text-foreground mb-1 font-poppins">{title}</h3>
+                        <p className="text-sm text-muted-foreground font-poppins">{description}</p>
                     </div>
                     {isSelected && (
                         <CheckCircle className="w-5 h-5 text-primary" />
@@ -163,8 +164,8 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
                         <Icon className={`w-7 h-7 ${isSelected ? "text-primary" : "text-muted-foreground"}`} />
                     </div>
                     <div>
-                        <h3 className="font-bold text-foreground text-sm">{title}</h3>
-                        <p className="text-xs text-muted-foreground mt-1">{description}</p>
+                        <h3 className="font-bold text-foreground text-sm font-poppins">{title}</h3>
+                        <p className="text-xs text-muted-foreground mt-1 font-poppins">{description}</p>
                     </div>
                     {count !== undefined && (
                         <Badge variant="secondary" className="text-xs">
@@ -204,6 +205,17 @@ const FilterSection: React.FC = () => {
         fetchMentors();
         fetchPlatforms();
     }, []);
+
+    // Auto-fetch preview when filters change
+    useEffect(() => {
+        const timeoutId = setTimeout(() => {
+            if (validateFilters()) {
+                fetchReportPreview(selectedCategory, filters);
+            }
+        }, 500); // Debounce for 500ms
+
+        return () => clearTimeout(timeoutId);
+    }, [filters, selectedCategory]);
 
     return (
         <Card className="border-border">
@@ -502,6 +514,78 @@ const FilterSection: React.FC = () => {
 };
 
 // ==========================================
+// REPORT STATS
+// ==========================================
+const ReportStats: React.FC = () => {
+    const { reportStats, isLoadingStats } = useAdminReportsStore();
+
+    if (isLoadingStats) {
+        return (
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                {[...Array(4)].map((_, i) => (
+                    <Card key={i} className="border-border">
+                        <CardContent className="p-6">
+                            <Skeleton className="h-8 w-16 mb-2" />
+                            <Skeleton className="h-4 w-24" />
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+        );
+    }
+
+    if (!reportStats) return null;
+
+    return (
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Card className="border-border">
+                <CardContent className="p-6">
+                    <div className="flex items-center gap-2 mb-2">
+                        <FileText className="w-5 h-5 text-primary" />
+                        <span className="text-sm font-medium text-muted-foreground">Total Reports</span>
+                    </div>
+                    <p className="text-2xl font-bold text-foreground">{reportStats.totalReports}</p>
+                </CardContent>
+            </Card>
+
+            <Card className="border-border">
+                <CardContent className="p-6">
+                    <div className="flex items-center gap-2 mb-2">
+                        <CheckCircle className="w-5 h-5 text-green-500" />
+                        <span className="text-sm font-medium text-muted-foreground">Completed</span>
+                    </div>
+                    <p className="text-2xl font-bold text-foreground">{reportStats.completedReports}</p>
+                </CardContent>
+            </Card>
+
+            <Card className="border-border">
+                <CardContent className="p-6">
+                    <div className="flex items-center gap-2 mb-2">
+                        <AlertCircle className="w-5 h-5 text-red-500" />
+                        <span className="text-sm font-medium text-muted-foreground">Failed</span>
+                    </div>
+                    <p className="text-2xl font-bold text-foreground">{reportStats.failedReports}</p>
+                </CardContent>
+            </Card>
+
+            <Card className="border-border">
+                <CardContent className="p-6">
+                    <div className="flex items-center gap-2 mb-2">
+                        <TrendingUp className="w-5 h-5 text-blue-500" />
+                        <span className="text-sm font-medium text-muted-foreground">Success Rate</span>
+                    </div>
+                    <p className="text-2xl font-bold text-foreground">
+                        {reportStats.totalReports > 0 
+                            ? Math.round((reportStats.completedReports / reportStats.totalReports) * 100) 
+                            : 0}%
+                    </p>
+                </CardContent>
+            </Card>
+        </div>
+    );
+};
+
+// ==========================================
 // REPORT PREVIEW
 // ==========================================
 const ReportPreview: React.FC = () => {
@@ -544,6 +628,11 @@ const ReportPreview: React.FC = () => {
                     Report Preview
                 </CardTitle>
                 <CardDescription>Summary of your configured report</CardDescription>
+                {reportPreview.usedDefaultDateRange && (
+                    <CardDescription className="text-xs text-muted-foreground">
+                        No date range selected; showing last 30 days by default
+                    </CardDescription>
+                )}
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="grid grid-cols-2 gap-4 p-4 bg-muted/50 rounded-lg">
@@ -566,11 +655,27 @@ const ReportPreview: React.FC = () => {
 
                 {reportPreview.sampleData && reportPreview.sampleData.length > 0 && (
                     <div>
-                        <Label className="text-sm font-semibold mb-2 block">Sample Data (First 3 Records)</Label>
+                        <Label className="text-sm font-semibold mb-2 block">Sample Data</Label>
                         <ScrollArea className="h-48 rounded-lg border border-border">
-                            <pre className="p-4 text-xs">
-                                {JSON.stringify(reportPreview.sampleData.slice(0, 3), null, 2)}
-                            </pre>
+                            <div className="p-4 text-xs">
+                                {Array.isArray(reportPreview.sampleData) &&
+                                reportPreview.sampleData[0] &&
+                                typeof reportPreview.sampleData[0] === 'object' &&
+                                'section' in reportPreview.sampleData[0] ? (
+                                    // comprehensive format
+                                    reportPreview.sampleData.map((sec: any) => (
+                                        <div key={sec.section} className="mb-3">
+                                            <strong>{sec.section} ({sec.count} records)</strong>
+                                            <pre className="text-xs mt-1">
+                                                {JSON.stringify(sec.sample || [], null, 2)}
+                                            </pre>
+                                        </div>
+                                    ))
+                                ) : (
+                                    // normal format
+                                    <pre>{JSON.stringify(reportPreview.sampleData.slice(0, 3), null, 2)}</pre>
+                                )}
+                            </div>
                         </ScrollArea>
                     </div>
                 )}
@@ -647,16 +752,16 @@ const ReportHistory: React.FC = () => {
                                     </div>
                                     <div className="flex-1">
                                         <div className="flex items-center gap-2 mb-1">
-                                            <h4 className="font-semibold text-foreground capitalize">
+                                            <h4 className="font-semibold font-poppins text-foreground capitalize">
                                                 {report.category} Report
                                             </h4>
                                             {getStatusBadge(report.status)}
                                         </div>
-                                        <p className="text-sm text-muted-foreground">
+                                        <p className="text-sm font-poppins text-muted-foreground">
                                             Generated {new Date(report.generatedAt).toLocaleString()}
                                         </p>
                                         {report.fileSize && (
-                                            <p className="text-xs text-muted-foreground mt-1">
+                                            <p className="text-xs font-poppins text-muted-foreground mt-1">
                                                 Size: {report.fileSize}
                                             </p>
                                         )}
@@ -700,16 +805,20 @@ export default function AdminReports() {
         selectedCategory,
         filters,
         isGenerating,
+        lastGeneratedReport,
         setReportType,
         setReportCategory,
         generateReport,
         fetchReportHistory,
         fetchReportPreview,
+        fetchReportStats,
+        downloadReport,
         validateFilters,
     } = useAdminReportsStore();
 
     useEffect(() => {
         fetchReportHistory();
+        fetchReportStats();
     }, []);
 
     const reportTypes = [
@@ -820,8 +929,10 @@ export default function AdminReports() {
                         </Button>
                     </div>
                 } />
-            <div className="min-h-screen bg-background p-6 space-y-6">
+            <div className="min-h-screen bg-background p-6 font-poppins space-y-6">
 
+                {/* Report Statistics */}
+                <ReportStats />
 
                 <Tabs defaultValue="generate" className="space-y-6">
                     <TabsList className="grid w-full max-w-md grid-cols-2">
@@ -842,7 +953,7 @@ export default function AdminReports() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                         >
-                            <Card className="border-border">
+                            <Card className="border-border font-poppins">
                                 <CardHeader>
                                     <CardTitle className="text-xl font-bold">
                                         Step 1: Choose Report Type
@@ -878,7 +989,7 @@ export default function AdminReports() {
                                     <CardDescription>Choose what data to include</CardDescription>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+                                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
                                         {categories.map((category) => (
                                             <CategoryCard
                                                 key={category.category}
@@ -938,6 +1049,37 @@ export default function AdminReports() {
                                         )}
                                     </Button>
                                 </div>
+
+                                {/* Download Latest Report */}
+                                {lastGeneratedReport && lastGeneratedReport.status === 'completed' && lastGeneratedReport.downloadUrl && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg"
+                                    >
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-3">
+                                                <CheckCircle className="w-5 h-5 text-green-600" />
+                                                <div>
+                                                    <p className="font-medium text-green-800 dark:text-green-200">
+                                                        Report Generated Successfully!
+                                                    </p>
+                                                    <p className="text-sm text-green-600 dark:text-green-400">
+                                                        {lastGeneratedReport.category} • {lastGeneratedReport.type.toUpperCase()} • {lastGeneratedReport.fileSize}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <Button
+                                                onClick={() => downloadReport(lastGeneratedReport.id)}
+                                                size="sm"
+                                                className="gap-2"
+                                            >
+                                                <Download className="w-4 h-4" />
+                                                Download
+                                            </Button>
+                                        </div>
+                                    </motion.div>
+                                )}
                             </motion.div>
                         </div>
                     </TabsContent>

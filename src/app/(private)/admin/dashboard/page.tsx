@@ -3,213 +3,595 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import {
-  Users,
-  UserCheck,
-  GraduationCap,
-  Briefcase,
-  Award,
-  TrendingUp,
-  Star,
-  RefreshCw,
-  Download,
-  Filter,
-  ChevronDown,
+  Users, UserCheck, GraduationCap, Briefcase,
+  Award, TrendingUp, Star, RefreshCw, Download,
+  BarChart2, Zap, Trophy,
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-  Area,
-  AreaChart,
+  LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend,
+  ResponsiveContainer, Area, AreaChart, Sector,
 } from "recharts";
 import { useAdminDashboardStore } from "@/store/admin/dashboard";
 import { useThemeStore } from "@/store/layoutStore";
-import GlobalNotification from "@/components/notify/notification";
 import Header from "@/components/layout/header";
 
-// ==========================================
-// CHART COLORS (Using theme colors)
-// ==========================================
-const CHART_COLORS = {
-  primary: "oklch(0.5393 0.2713 250.0000)",
-  secondary: "oklch(0.7459 0.1483 156.4499)",
-  accent: "oklch(0.7336 0.1758 50.5517)",
-  muted: "oklch(0.5828 0.1809 240.0000)",
-  chart1: "#8B5CF6",
-  chart2: "#3B82F6",
-  chart3: "#10B981",
-  chart4: "#F59E0B",
-  chart5: "#EF4444",
+// ─────────────────────────────────────────────────────────────────────────────
+// DESIGN TOKENS
+// ─────────────────────────────────────────────────────────────────────────────
+const C = {
+  blue:    "#3B6FD4",
+  violet:  "#7C3AED",
+  emerald: "#059669",
+  amber:   "#D97706",
+  rose:    "#E11D48",
+  cyan:    "#0891B2",
 };
+const PIE_COLORS = [C.blue, C.violet, C.emerald, C.amber, C.rose, C.cyan];
 
-const PIE_COLORS = ["#8B5CF6", "#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#EC4899"];
+// Each stat card has its own gradient background (like the image)
+const STAT_META = [
+  {
+    key:"totalStudents",       label:"Total Students",    icon:Users,
+    desc:"Enrolled in system",
+    grad:["#FF6B35","#FF4500"],   // orange
+    stars:"#FF8C5A",
+  },
+  {
+    key:"activeStudents",      label:"Active Students",   icon:UserCheck,
+    desc:"Currently active",
+    grad:["#7C3AED","#5B21B6"],   // violet
+    stars:"#9D5FFF",
+  },
+  {
+    key:"totalMentors",        label:"Total Mentors",     icon:GraduationCap,
+    desc:"Available mentors",
+    grad:["#0891B2","#0E7490"],   // cyan
+    stars:"#22D3EE",
+  },
+  {
+    key:"totalProjects",       label:"Projects",          icon:Briefcase,
+    desc:"Total projects",
+    grad:["#D97706","#B45309"],   // amber
+    stars:"#FCD34D",
+  },
+  {
+    key:"totalInternships",    label:"Internships",       icon:Award,
+    desc:"Total internships",
+    grad:["#E11D48","#BE123C"],   // rose
+    stars:"#FB7185",
+  },
+  {
+    key:"totalCertifications", label:"Certifications",    icon:Star,
+    desc:"Earned certificates",
+    grad:["#059669","#047857"],   // emerald
+    stars:"#34D399",
+  },
+  {
+    key:"aboveAvgCount",       label:"Above Average",     icon:TrendingUp,
+    desc:"Students above avg pts",
+    grad:["#6366F1","#4F46E5"],   // indigo
+    stars:"#818CF8",
+  },
+  {
+    key:"avgPoints",           label:"Avg Points",        icon:Zap,
+    desc:"System-wide average",
+    grad:["#EC4899","#DB2777"],   // pink
+    stars:"#F9A8D4",
+  },
+];
 
-// ==========================================
-// STAT CARD COMPONENT
-// ==========================================
-interface StatCardProps {
-  title: string;
-  value: number | string;
-  icon: React.ElementType;
-  description?: string;
-  trend?: number;
-  color: string;
-}
+// ─────────────────────────────────────────────────────────────────────────────
+// GLOBAL CSS — shimmer, dark mode tokens, responsive
+// ─────────────────────────────────────────────────────────────────────────────
+const GLOBAL_CSS = `
+  @keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+  @keyframes float-star {
+    0%,100% { transform: translateY(0px) rotate(0deg); opacity: 0.18; }
+    50%      { transform: translateY(-6px) rotate(15deg); opacity: 0.32; }
+  }
 
-const StatCard: React.FC<StatCardProps> = ({ title, value, icon: Icon, description, trend, color }) => (
+  /* Light mode card surface */
+  :root {
+    --card-bg:       #ffffff;
+    --card-border:   #E8EDF4;
+    --card-shadow:   0 2px 12px rgba(0,0,0,0.06);
+    --body-bg:       #F7F9FC;
+    --text-primary:  #1E293B;
+    --text-secondary:#64748B;
+    --text-muted:    #94A3B8;
+    --grid-line:     #F1F5F9;
+    --pill-inactive-bg:   #F1F5F9;
+    --pill-inactive-text: #64748B;
+    --sk-from: #EEF2F7;
+    --sk-via:  #E2E8F0;
+    --tooltip-bg: rgba(255,255,255,0.97);
+    --tooltip-border: #E2E8F0;
+    --tooltip-text:   #1E293B;
+    --tooltip-label:  #64748B;
+    --table-hover:    #F8FAFC;
+    --table-border:   #F1F5F9;
+  }
+  .dark {
+    --card-bg:       #1E2432;
+    --card-border:   #2A3349;
+    --card-shadow:   0 2px 12px rgba(0,0,0,0.30);
+    --body-bg:       #141921;
+    --text-primary:  #E8EDF8;
+    --text-secondary:#94A3B8;
+    --text-muted:    #64748B;
+    --grid-line:     #1E2432;
+    --pill-inactive-bg:   #1E2432;
+    --pill-inactive-text: #94A3B8;
+    --sk-from: #1E2432;
+    --sk-via:  #252E42;
+    --tooltip-bg: rgba(20,25,33,0.97);
+    --tooltip-border: #2A3349;
+    --tooltip-text:   #E8EDF8;
+    --tooltip-label:  #64748B;
+    --table-hover:    #1A2030;
+    --table-border:   #1E2432;
+  }
+
+  .sk {
+    background: linear-gradient(90deg, var(--sk-from) 25%, var(--sk-via) 50%, var(--sk-from) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.6s infinite linear;
+    border-radius: 10px;
+  }
+
+  /* Star shapes on stat cards */
+  .star-shape {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: float-star 3s ease-in-out infinite;
+  }
+
+  @media (max-width: 1024px) {
+    .stat-grid { grid-template-columns: repeat(4,1fr) !important; }
+  }
+  @media (max-width: 768px) {
+    .stat-grid { grid-template-columns: repeat(2,1fr) !important; }
+    .pie-grid  { grid-template-columns: repeat(2,1fr) !important; }
+    .area-grid { grid-template-columns: 1fr !important; }
+  }
+  @media (max-width: 480px) {
+    .stat-grid { grid-template-columns: 1fr !important; }
+    .pie-grid  { grid-template-columns: 1fr !important; }
+  }
+`;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SKELETON BOX
+// ─────────────────────────────────────────────────────────────────────────────
+const Sk = ({ w = "100%", h = 16, style = {} }) => (
+  <div className="sk" style={{ width: w, height: h, ...style }} />
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// EMPTY STATE
+// ─────────────────────────────────────────────────────────────────────────────
+const EmptyState = ({ label = "No data available" }) => (
   <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.5 }}
+    initial={{ opacity: 0, scale: 0.92 }}
+    animate={{ opacity: 1, scale: 1 }}
+    transition={{ duration: 0.35 }}
+    style={{
+      display: "flex", flexDirection: "column", alignItems: "center",
+      justifyContent: "center", gap: 12, height: 220,
+    }}
   >
-    <Card className="border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between">
-          <div className="space-y-2">
-            <p className="text-sm font-medium text-muted-foreground">{title}</p>
-            <h3 className="text-3xl font-black text-foreground">{value}</h3>
-            {description && (
-              <p className="text-xs text-muted-foreground">{description}</p>
-            )}
-          </div>
-          <div
-            className="w-14 h-14 rounded-xl flex items-center justify-center"
-            style={{ backgroundColor: `${color}15` }}
-          >
-            <Icon className="w-7 h-7" style={{ color }} />
-          </div>
-        </div>
-        {/* {trend !== undefined && (
-          <div className="mt-4 flex items-center gap-1">
-            <TrendingUp className="w-4 h-4 text-chart-1" />
-            <span className="text-sm font-semibold text-chart-1">+{trend}%</span>
-            <span className="text-xs text-muted-foreground ml-1">vs last month</span>
-          </div>
-        )} */}
-      </CardContent>
-    </Card>
+    <motion.div
+      animate={{ y: [0, -8, 0] }}
+      transition={{ repeat: Infinity, duration: 2.6, ease: "easeInOut" }}
+      style={{
+        width: 54, height: 54, borderRadius: "50%",
+        background: "linear-gradient(135deg,#EEF2FF 0%,#ECFDF5 100%)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        boxShadow: "0 4px 18px rgba(59,111,212,0.10)",
+      }}
+    >
+      <BarChart2 size={22} color="#94A3B8" />
+    </motion.div>
+    <p style={{ fontSize: 13, fontWeight: 600, color: "var(--text-muted)", letterSpacing: "0.03em" }}>
+      {label}
+    </p>
   </motion.div>
 );
 
-// ==========================================
-// FILTER BUTTON COMPONENT
-// ==========================================
-interface FilterButtonProps {
-  value: string;
-  currentValue: string;
-  onClick: () => void;
-  label: string;
-}
-
-const FilterButton: React.FC<FilterButtonProps> = ({ value, currentValue, onClick, label }) => (
-  <Button
-    variant={currentValue === value ? "default" : "outline"}
-    size="sm"
-    onClick={onClick}
-    className={`${currentValue === value
-      ? "bg-primary text-primary-foreground"
-      : "bg-background hover:bg-muted"
-      } transition-all`}
-  >
-    {label}
-  </Button>
-);
-
-// ==========================================
-// CUSTOM TOOLTIP COMPONENT
-// ==========================================
-const CustomTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="bg-card border border-border rounded-lg p-3 shadow-lg">
-        <p className="font-semibold text-foreground mb-1">{label}</p>
-        {payload.map((entry: any, index: number) => (
-          <p key={index} className="text-sm" style={{ color: entry.color }}>
-            {entry.name}: <span className="font-bold">{entry.value}</span>
-          </p>
-        ))}
-      </div>
-    );
-  }
-  return null;
+// ─────────────────────────────────────────────────────────────────────────────
+// CHART TOOLTIP
+// ─────────────────────────────────────────────────────────────────────────────
+const ChartTooltip = ({ active, payload, label }) => {
+  if (!active || !payload?.length) return null;
+  return (
+    <div style={{
+      background: "var(--tooltip-bg)",
+      border: "1px solid var(--tooltip-border)",
+      borderRadius: 10, padding: "10px 14px",
+      boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
+      fontFamily: "inherit",
+    }}>
+      <p style={{
+        fontSize: 11, fontWeight: 700, color: "var(--tooltip-label)",
+        marginBottom: 6, letterSpacing: "0.06em", textTransform: "uppercase",
+      }}>
+        {label}
+      </p>
+      {payload.map((e, i) => (
+        <div key={i} style={{ display: "flex", alignItems: "center", gap: 7, marginBottom: 3 }}>
+          <span style={{ width: 8, height: 8, borderRadius: "50%", background: e.color, display: "inline-block", flexShrink: 0 }} />
+          <span style={{ fontSize: 12, color: "var(--text-secondary)" }}>{e.name}:</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: "var(--tooltip-text)" }}>
+            {typeof e.value === "number" ? e.value.toLocaleString() : e.value}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
 };
 
-// ==========================================
-// MAIN DASHBOARD COMPONENT
-// ==========================================
+// ─────────────────────────────────────────────────────────────────────────────
+// FILTER PILL
+// ─────────────────────────────────────────────────────────────────────────────
+const Pill = ({ label, active, onClick }) => (
+  <button
+    onClick={onClick}
+    style={{
+      padding: "4px 13px", borderRadius: 20, border: "none",
+      cursor: "pointer", fontSize: 12, fontWeight: 600, letterSpacing: "0.02em",
+      transition: "all 0.18s ease",
+      background: active ? C.blue : "var(--pill-inactive-bg)",
+      color: active ? "#fff" : "var(--pill-inactive-text)",
+      boxShadow: active ? `0 2px 10px ${C.blue}55` : "none",
+    }}
+  >
+    {label}
+  </button>
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DECORATIVE STARS — SVG star polygon scattered on card
+// ─────────────────────────────────────────────────────────────────────────────
+const StarDeco = ({ color, size, style }) => (
+  <svg
+    width={size} height={size} viewBox="0 0 24 24"
+    fill={color} style={{ position: "absolute", pointerEvents: "none", ...style }}
+  >
+    <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
+  </svg>
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// STAT CARD — gradient bg, floating icon, star decorations
+// ─────────────────────────────────────────────────────────────────────────────
+const StatCard = ({ meta, value, loading, index }) => {
+  const Icon = meta.icon;
+  const [g1, g2] = meta.grad;
+
+  // Skeleton state (dark-mode-aware shimmer)
+  if (loading) return (
+    <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }}>
+      <div style={{
+        borderRadius: 18, padding: "20px 22px", height: 130,
+        background: "var(--card-bg)", border: "1px solid var(--card-border)",
+      }}>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 9, flex: 1 }}>
+            <Sk w="55%" h={11} />
+            <Sk w="38%" h={28} />
+            <Sk w="70%" h={10} />
+          </div>
+          <Sk w={46} h={46} style={{ borderRadius: 12, flexShrink: 0 }} />
+        </div>
+      </div>
+    </motion.div>
+  );
+
+  const isNull = value === null || value === undefined;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.055, duration: 0.38 }}
+      whileHover={{ y: -4, transition: { duration: 0.18 } }}
+    >
+      <div style={{
+        borderRadius: 18,
+        background: `linear-gradient(135deg, ${g1} 0%, ${g2} 100%)`,
+        padding: "20px 20px 18px",
+        position: "relative",
+        overflow: "hidden",
+        boxShadow: `0 8px 28px ${g1}55`,
+        minHeight: 130,
+        cursor: "default",
+      }}>
+        {/* Decorative stars */}
+        <StarDeco color={meta.stars} size={18} style={{ top: 10, right: 80, opacity: 0.22, animation: "float-star 2.8s ease-in-out infinite" }} />
+        <StarDeco color={meta.stars} size={11} style={{ top: 30, right: 110, opacity: 0.18, animation: "float-star 3.4s ease-in-out infinite 0.5s" }} />
+        <StarDeco color={meta.stars} size={14} style={{ bottom: 18, left: 16, opacity: 0.15, animation: "float-star 3.1s ease-in-out infinite 1s" }} />
+        <StarDeco color={meta.stars} size={8}  style={{ bottom: 30, left: 50, opacity: 0.12, animation: "float-star 2.6s ease-in-out infinite 1.5s" }} />
+        <StarDeco color={meta.stars} size={10} style={{ top: 14, left: "45%", opacity: 0.14, animation: "float-star 3.6s ease-in-out infinite 0.8s" }} />
+
+        {/* Large translucent circle bg shape */}
+        <div style={{
+          position: "absolute", right: -20, top: -20,
+          width: 100, height: 100, borderRadius: "50%",
+          background: "rgba(255,255,255,0.10)",
+          pointerEvents: "none",
+        }} />
+        <div style={{
+          position: "absolute", right: 10, bottom: -30,
+          width: 80, height: 80, borderRadius: "50%",
+          background: "rgba(255,255,255,0.07)",
+          pointerEvents: "none",
+        }} />
+
+        {/* Top row: label + icon */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+          <p style={{
+            fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.80)",
+            letterSpacing: "0.05em", textTransform: "uppercase",
+          }}>
+            {meta.label}
+          </p>
+          {/* Icon box */}
+          <div style={{
+            width: 40, height: 40, borderRadius: 10, flexShrink: 0,
+            background: "rgba(255,255,255,0.18)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            backdropFilter: "blur(6px)",
+          }}>
+            <Icon size={19} color="rgba(255,255,255,0.95)" strokeWidth={2.2} />
+          </div>
+        </div>
+
+        {/* Value */}
+        <h3 className="font-poppins" style={{
+          fontSize: 34, fontWeight: 700, lineHeight: 1,
+          color: isNull ? "rgba(255,255,255,0.35)" : "#fff",
+          margin: "10px 0 4px",
+          textShadow: "0 2px 8px rgba(0,0,0,0.15)",
+        }}>
+          {isNull ? "—" : Number(value).toLocaleString()}
+        </h3>
+
+        {/* Desc */}
+        <p style={{ fontSize: 11, color: "rgba(255,255,255,0.70)", fontWeight: 500 }}>
+          {meta.desc}
+        </p>
+      </div>
+    </motion.div>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CHART CARD WRAPPER — dark mode aware
+// ─────────────────────────────────────────────────────────────────────────────
+const ChartCard = ({ title, desc, children, actions, loading, minH = 330 }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 18 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.42 }}
+    style={{ height: "100%" }}
+  >
+    <div style={{
+      background: "var(--card-bg)",
+      borderRadius: 18,
+      border: "1px solid var(--card-border)",
+      boxShadow: "var(--card-shadow)",
+      overflow: "hidden", height: "100%",
+      display: "flex", flexDirection: "column",
+    }}>
+      <div style={{
+        padding: "18px 22px 0",
+        display: "flex", alignItems: "flex-start",
+        justifyContent: "space-between", gap: 10, flexWrap: "wrap",
+      }}>
+        <div>
+          <p style={{ fontSize: 14, fontWeight: 700, color: "var(--text-primary)", marginBottom: 2 }}>{title}</p>
+          {desc && <p style={{ fontSize: 12, color: "var(--text-muted)", fontWeight: 500 }}>{desc}</p>}
+        </div>
+        {actions && (
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>{actions}</div>
+        )}
+      </div>
+      <div style={{ padding: "14px 18px 20px", flex: 1 }}>
+        {loading
+          ? <Sk h={minH - 10} style={{ width: "100%", borderRadius: 12 }} />
+          : children
+        }
+      </div>
+    </div>
+  </motion.div>
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ACTIVE PIE SHAPE
+// ─────────────────────────────────────────────────────────────────────────────
+const ActiveShape = (props) => {
+  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, value, percent } = props;
+  return (
+    <g>
+      <text x={cx} y={cy - 7} textAnchor="middle" fill="var(--text-primary)" style={{ fontSize: 14, fontWeight: 700 }}>
+        {typeof value === "number" ? value.toLocaleString() : value}
+      </text>
+      <text x={cx} y={cy + 11} textAnchor="middle" fill="var(--text-muted)" style={{ fontSize: 11 }}>
+        {(percent * 100).toFixed(1)}%
+      </text>
+      <Sector cx={cx} cy={cy} innerRadius={innerRadius} outerRadius={outerRadius + 7}
+        startAngle={startAngle} endAngle={endAngle} fill={fill} />
+      <Sector cx={cx} cy={cy} innerRadius={outerRadius + 11} outerRadius={outerRadius + 15}
+        startAngle={startAngle} endAngle={endAngle} fill={fill} />
+    </g>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PIE LABEL — renders % in white directly on each slice
+// ─────────────────────────────────────────────────────────────────────────────
+const renderPieLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+  if (percent < 0.06) return null; // skip tiny slices
+  const RAD = Math.PI / 180;
+  const r = innerRadius + (outerRadius - innerRadius) * 0.58;
+  const x = cx + r * Math.cos(-midAngle * RAD);
+  const y = cy + r * Math.sin(-midAngle * RAD);
+  return (
+    <text
+      x={x} y={y}
+      textAnchor="middle" dominantBaseline="central"
+      fill="#fff"
+      style={{ fontSize: 11, fontWeight: 700, pointerEvents: "none" }}
+    >
+      {`${(percent * 100).toFixed(0)}%`}
+    </text>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DONUT PANEL
+// ─────────────────────────────────────────────────────────────────────────────
+const DonutPanel = ({ data, dataKey, nameKey, loading }) => {
+  const [activeIdx, setActiveIdx] = useState(0);
+  if (loading) return <Sk h={280} style={{ width: "100%", borderRadius: 12 }} />;
+  if (!data?.length) return <EmptyState />;
+
+  return (
+    <div>
+      <ResponsiveContainer width="100%" height={250}>
+        <PieChart>
+          <Pie
+            data={data} dataKey={dataKey} nameKey={nameKey}
+            cx="50%" cy="50%" innerRadius={42} outerRadius={98}
+            activeIndex={activeIdx}
+            activeShape={ActiveShape}
+            onMouseEnter={(_, i) => setActiveIdx(i)}
+            strokeWidth={0} paddingAngle={2}
+            labelLine={false}
+            label={renderPieLabel}
+          >
+            {data.map((_, i) => (
+              <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+            ))}
+          </Pie>
+        </PieChart>
+      </ResponsiveContainer>
+
+      {/* Legend */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 6 }}>
+        {data.map((item, i) => (
+          <div
+            key={i}
+            onMouseEnter={() => setActiveIdx(i)}
+            style={{
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+              padding: "5px 8px", borderRadius: 8,
+              background: activeIdx === i ? `${PIE_COLORS[i % PIE_COLORS.length]}12` : "transparent",
+              transition: "background 0.18s", cursor: "default",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{
+                width: 8, height: 8, borderRadius: "50%", flexShrink: 0,
+                background: PIE_COLORS[i % PIE_COLORS.length],
+              }} />
+              <span style={{ fontSize: 12, color: "var(--text-secondary)", fontWeight: 500 }}>
+                {item[nameKey]}
+              </span>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+              <span style={{ fontSize: 12, fontWeight: 700, color: "var(--text-primary)" }}>
+                {typeof item[dataKey] === "number" ? item[dataKey].toLocaleString() : item[dataKey]}
+              </span>
+              {item.percentage !== undefined && (
+                <span style={{
+                  fontSize: 10, fontWeight: 700, padding: "1px 6px", borderRadius: 10,
+                  color: PIE_COLORS[i % PIE_COLORS.length],
+                  background: `${PIE_COLORS[i % PIE_COLORS.length]}18`,
+                }}>
+                  {item.percentage}%
+                </span>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// RANK & DESIGNATION
+// ─────────────────────────────────────────────────────────────────────────────
+const RankBadge = ({ rank }) => {
+  if (rank === 1) return <span style={{ fontSize: 18 }}>🥇</span>;
+  if (rank === 2) return <span style={{ fontSize: 18 }}>🥈</span>;
+  if (rank === 3) return <span style={{ fontSize: 18 }}>🥉</span>;
+  return (
+    <span style={{
+      fontSize: 12, fontWeight: 700, color: "var(--text-secondary)",
+      background: "var(--pill-inactive-bg)", borderRadius: 6, padding: "2px 7px",
+    }}>{rank}</span>
+  );
+};
+
+const DesignBadge = ({ d }) => {
+  const map = {
+    Gold:   { bg: "#FFFBEB", color: "#92400E", border: "#FCD34D" },
+    Silver: { bg: "#F8FAFC", color: "#475569", border: "#CBD5E1" },
+    Bronze: { bg: "#FFF7ED", color: "#C2410C", border: "#FDBA74" },
+  };
+  const s = map[d] ?? map.Bronze;
+  return (
+    <span style={{
+      fontSize: 11, fontWeight: 700, padding: "3px 9px", borderRadius: 20,
+      background: s.bg, color: s.color, border: `1px solid ${s.border}`,
+      whiteSpace: "nowrap",
+    }}>{d}</span>
+  );
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// DATE FORMATTER
+// ─────────────────────────────────────────────────────────────────────────────
+const fmtDate = (v, mode = "day") => {
+  try {
+    const d = new Date(v);
+    if (mode === "month") return d.toLocaleDateString("en-US", { month: "short", year: "2-digit" });
+    return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  } catch { return v; }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MAIN DASHBOARD
+// ─────────────────────────────────────────────────────────────────────────────
 export default function AdminDashboard() {
   const {
-    stats,
-    topStudents,
-    activityData,
-    pointsTrendData,
-    departmentDistribution,
-    yearDistribution,
-    projectStatus,
-    internshipTypes,
-    monthlySubmissions,
-    pointsBySource,
-    activityFilter,
-    pointsFilter,
-    projectStatusFilter,
-    submissionFilter,
-    pointsSourceFilter,
-    topStudentsLimit,
-    isLoadingStats,
-    isLoadingStudents,
-    isLoadingCharts,
-    fetchAllData,
-    setActivityFilter,
-    setPointsFilter,
-    setProjectStatusFilter,
-    setSubmissionFilter,
-    setPointsSourceFilter,
-    setTopStudentsLimit,
-    refreshDashboard,
+    stats, topStudents, activityData, pointsTrendData,
+    departmentDistribution, yearDistribution, projectStatus,
+    internshipTypes, monthlySubmissions, pointsBySource,
+    activityFilter, pointsFilter, projectStatusFilter,
+    submissionFilter, pointsSourceFilter, topStudentsLimit,
+    isLoadingStats, isLoadingStudents, isLoadingCharts,
+    fetchAllData, setActivityFilter, setPointsFilter,
+    setProjectStatusFilter, setSubmissionFilter,
+    setPointsSourceFilter, setTopStudentsLimit, refreshDashboard,
   } = useAdminDashboardStore();
 
   const { initializeTheme } = useThemeStore();
-
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  useEffect(() => {
-    // Initialize theme from localStorage
-    initializeTheme();
-  }, [initializeTheme]);
-
-  useEffect(() => {
-    fetchAllData();
-  }, []);
+  useEffect(() => { initializeTheme(); }, [initializeTheme]);
+  useEffect(() => { fetchAllData(); }, []);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -217,707 +599,376 @@ export default function AdminDashboard() {
     setIsRefreshing(false);
   };
 
-  // ==========================================
-  // RENDER LOADING STATE
-  // ==========================================
-  if (isLoadingStats && !stats) {
-    return (
-      <div className="min-h-screen p-6 space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {[...Array(8)].map((_, i) => (
-            <Skeleton key={i} className="h-32 rounded-xl" />
-          ))}
-        </div>
-      </div>
-    );
-  }
+  const statsLoading = isLoadingStats && !stats;
 
   return (
-    <div className="w-full">
-      {/* <GlobalNotification /> */}
-      <Header
-        subtitle="Welcome back! Here's what's happening today."
-        HeaderComp={
-          <div className="flex gap-3">
-            <Button
-              variant="outline"
-              onClick={handleRefresh}
-              disabled={isRefreshing}
-              className="gap-2"
-            >
-              <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} />
-              Refresh
-            </Button>
-            <Button className="gap-2 bg-primary hover:bg-primary/90">
-              <Download className="w-4 h-4" />
-              Export Report
-            </Button>
+    <>
+      <style>{GLOBAL_CSS}</style>
+
+      <div style={{ width: "100%", minHeight: "100vh", background: "var(--body-bg)" }}>
+
+        {/* ── HEADER ─────────────────────────────────────────────── */}
+        <Header
+          subtitle="Welcome back! Here's what's happening today."
+          HeaderComp={
+            <div style={{ display: "flex", gap: 10 }}>
+              <Button
+                variant="outline"
+                onClick={handleRefresh}
+                disabled={isRefreshing}
+                style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}
+              >
+                <RefreshCw
+                  size={14}
+                  style={{ animation: isRefreshing ? "spin 1s linear infinite" : "none" }}
+                />
+                Refresh
+              </Button>
+              <Button style={{
+                display: "flex", alignItems: "center", gap: 6, fontSize: 13,
+                background: "var(--primary)", color: "var(--primary-foreground)",
+              }}>
+                <Download size={14} />
+                Export
+              </Button>
+            </div>
+          }
+        />
+
+        {/* ── PAGE BODY ───────────────────────────────────────────── */}
+        <div style={{ padding: "24px 24px 48px", display: "flex", flexDirection: "column", gap: 24 }}>
+
+          {/* ── 1. STAT CARDS ─────────────────────────────────────── */}
+          <div
+            className="stat-grid"
+            style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16 }}
+          >
+            {STAT_META.map((meta, i) => (
+              <StatCard
+                key={meta.key} meta={meta} index={i}
+                value={stats?.[meta.key]}
+                loading={statsLoading}
+              />
+            ))}
           </div>
-        } />
 
-      <div className="min-h-screen  bg-background p-6 space-y-6">
-
-        {/* Stats Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatCard
-            title="Total Students"
-            value={stats?.totalStudents || 0}
-            icon={Users}
-            description="Enrolled in system"
-            trend={12}
-            color={CHART_COLORS.chart1}
-          />
-          <StatCard
-            title="Active Students"
-            value={stats?.activeStudents || 0}
-            icon={UserCheck}
-            description="Currently active"
-            trend={8}
-            color={CHART_COLORS.chart3}
-          />
-          <StatCard
-            title="Total Mentors"
-            value={stats?.totalMentors || 0}
-            icon={GraduationCap}
-            description="Available mentors"
-            color={CHART_COLORS.chart2}
-          />
-          <StatCard
-            title="Projects"
-            value={stats?.totalProjects || 0}
-            icon={Briefcase}
-            description="Total projects"
-            trend={15}
-            color={CHART_COLORS.chart4}
-          />
-          <StatCard
-            title="Internships"
-            value={stats?.totalInternships || 0}
-            icon={Award}
-            description="Total internships"
-            color={CHART_COLORS.chart5}
-          />
-          <StatCard
-            title="Certifications"
-            value={stats?.totalCertifications || 0}
-            icon={Star}
-            description="Earned certificates"
-            color={CHART_COLORS.chart3}
-          />
-          <StatCard
-            title="Above Average"
-            value={stats?.aboveAvgCount || 0}
-            icon={TrendingUp}
-            description="Students above avg points"
-            color={CHART_COLORS.chart1}
-          />
-          <StatCard
-            title="Average Points"
-            value={stats?.avgPoints || 0}
-            icon={Star}
-            description="System-wide average"
-            color={CHART_COLORS.chart4}
-          />
-        </div>
-
-        {/* Top Students Leaderboard */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-        >
-          <Card className="border-border">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-xl font-bold flex items-center gap-2">
-                    🏆 Top Students Leaderboard
-                  </CardTitle>
-                  <CardDescription>Highest performing students based on points</CardDescription>
+          {/* ── 2. LEADERBOARD ────────────────────────────────────── */}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}>
+            <div className="pb-4" style={{
+              background: "var(--card-bg)", borderRadius: 18,
+              border: "1px solid var(--card-border)",
+              boxShadow: "var(--card-shadow)", overflow: "hidden",
+            }}>
+              {/* card header */}
+              <div style={{
+                padding: "18px 22px",
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+                borderBottom: "1px solid var(--card-border)", flexWrap: "wrap", gap: 12,
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <div style={{
+                    width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+                    background: "linear-gradient(135deg,#FFF7ED,#FFFBEB)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}>
+                    <Trophy size={17} color="#D97706" />
+                  </div>
+                  <div>
+                    <p style={{ fontSize: 14, fontWeight: 700, color: "var(--text-primary)", marginBottom: 1 }}>
+                      Top Students Leaderboard
+                    </p>
+                    <p style={{ fontSize: 12, color: "var(--text-muted)" }}>
+                      Highest performing students by points
+                    </p>
+                  </div>
                 </div>
                 <Select
-                  value={topStudentsLimit.toString()}
-                  onValueChange={(value) => setTopStudentsLimit(Number(value))}
+                  value={topStudentsLimit?.toString()}
+                  onValueChange={(v) => setTopStudentsLimit(Number(v))}
                 >
-                  <SelectTrigger className="w-32">
+                  <SelectTrigger style={{ width: 100, height: 32, fontSize: 12 }}>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="5">Top 5</SelectItem>
-                    <SelectItem value="10">Top 10</SelectItem>
-                    <SelectItem value="20">Top 20</SelectItem>
-                    <SelectItem value="50">Top 50</SelectItem>
+                    {[5, 10, 20, 50].map(n => (
+                      <SelectItem key={n} value={String(n)}>Top {n}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
-            </CardHeader>
-            <CardContent>
+
+              {/* table */}
               {isLoadingStudents ? (
-                <div className="space-y-3">
-                  {[...Array(5)].map((_, i) => (
-                    <Skeleton key={i} className="h-16 w-full" />
-                  ))}
+                <div style={{ padding: "20px 22px", display: "flex", flexDirection: "column", gap: 10 }}>
+                  {[...Array(5)].map((_, i) => <Sk key={i} h={44} style={{ width: "100%", borderRadius: 10 }} />)}
                 </div>
+              ) : !topStudents?.length ? (
+                <EmptyState label="No student records found" />
               ) : (
-                <div className="overflow-x-auto">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="w-16">Rank</TableHead>
-                        <TableHead>Name</TableHead>
-                        <TableHead>Department</TableHead>
-                        <TableHead>Year</TableHead>
-                        <TableHead className="text-center">Points</TableHead>
-                        <TableHead className="text-center">Projects</TableHead>
-                        <TableHead className="text-center">Internships</TableHead>
-                        <TableHead className="text-center">Certifications</TableHead>
-                        <TableHead>Designation</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {topStudents.map((student) => (
-                        <TableRow key={student.rank} className="hover:bg-muted/50">
-                          <TableCell className="font-bold text-center">
-                            {student.rank === 1 && <span className="text-2xl">🥇</span>}
-                            {student.rank === 2 && <span className="text-2xl">🥈</span>}
-                            {student.rank === 3 && <span className="text-2xl">🥉</span>}
-                            {student.rank > 3 && <span className="text-lg">{student.rank}</span>}
-                          </TableCell>
-                          <TableCell className="font-semibold">{student.name}</TableCell>
-                          <TableCell>
-                            <Badge variant="outline" className="bg-primary/10 text-primary border-primary/20">
-                              {student.department}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-muted-foreground">{student.year}</TableCell>
-                          <TableCell className="text-center">
-                            <span className="font-black text-lg text-chart-4">{student.points}</span>
-                          </TableCell>
-                          <TableCell className="text-center">{student.projectsCompleted}</TableCell>
-                          <TableCell className="text-center">{student.internshipsCompleted}</TableCell>
-                          <TableCell className="text-center">{student.certificationsEarned}</TableCell>
-                          <TableCell>
-                            <Badge
-                              className={`${student.designation.includes("Gold")
-                                ? "bg-yellow-500 text-black"
-                                : student.designation.includes("Silver")
-                                  ? "bg-gray-400 text-black"
-                                  : "bg-orange-600 text-white"
-                                }`}
-                            >
-                              {student.designation}
-                            </Badge>
-                          </TableCell>
-                        </TableRow>
+                <div style={{ overflowX: "auto" }}>
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+                    <thead>
+                      <tr style={{ borderBottom: "1px solid var(--table-border)" }}>
+                        {["Rank","Student","Department","Year","Points","Projects","Internships","Certs","Designation"].map(h => (
+                          <th key={h} style={{
+                            padding: "11px 16px",
+                            textAlign: ["Points","Projects","Internships","Certs"].includes(h) ? "center" : "left",
+                            fontSize: 11, fontWeight: 700, color: "var(--text-muted)",
+                            letterSpacing: "0.06em", textTransform: "uppercase", whiteSpace: "nowrap",
+                          }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {topStudents.map((s, i) => (
+                        <motion.tr
+                          key={s.rank}
+                          initial={{ opacity: 0, x: -8 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.035 }}
+                          onMouseEnter={e => e.currentTarget.style.background = "var(--table-hover)"}
+                          onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                          style={{
+                            borderBottom: i < topStudents.length - 1 ? "1px solid var(--table-border)" : "none",
+                            transition: "background 0.14s",
+                          }}
+                        >
+                          <td style={{ padding: "12px 16px", textAlign: "center" }}>
+                            <RankBadge rank={s.rank} />
+                          </td>
+                          <td style={{ padding: "12px 16px" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
+                              <div style={{
+                                width: 30, height: 30, borderRadius: "50%", flexShrink: 0,
+                                background: `${PIE_COLORS[i % 6]}22`,
+                                display: "flex", alignItems: "center", justifyContent: "center",
+                                fontSize: 12, fontWeight: 700, color: PIE_COLORS[i % 6],
+                              }}>
+                                {s.name?.charAt(0) ?? "?"}
+                              </div>
+                              <span style={{ fontWeight: 600, color: "var(--text-primary)", whiteSpace: "nowrap" }}>
+                                {s.name}
+                              </span>
+                            </div>
+                          </td>
+                          <td style={{ padding: "12px 16px" }}>
+                            <span style={{
+                              fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 20,
+                              background: `${C.blue}14`, color: C.blue,
+                            }}>{s.department}</span>
+                          </td>
+                          <td style={{ padding: "12px 16px", color: "var(--text-secondary)", fontWeight: 500 }}>
+                            {s.year}
+                          </td>
+                          <td style={{ padding: "12px 16px", textAlign: "center" }}>
+                            <span style={{
+                              fontSize: 16, fontWeight: 800,
+                              background: `linear-gradient(135deg,${C.amber},${C.rose})`,
+                              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+                            }}>
+                              {s.points?.toLocaleString() ?? "—"}
+                            </span>
+                          </td>
+                          <td style={{ padding: "12px 16px", textAlign: "center", color: "var(--text-secondary)", fontWeight: 600 }}>
+                            {s.projectsCompleted ?? 0}
+                          </td>
+                          <td style={{ padding: "12px 16px", textAlign: "center", color: "var(--text-secondary)", fontWeight: 600 }}>
+                            {s.internshipsCompleted ?? 0}
+                          </td>
+                          <td style={{ padding: "12px 16px", textAlign: "center", color: "var(--text-secondary)", fontWeight: 600 }}>
+                            {s.certificationsEarned ?? 0}
+                          </td>
+                          <td style={{ padding: "12px 16px" }}>
+                            <DesignBadge d={s.designation} />
+                          </td>
+                        </motion.tr>
                       ))}
-                    </TableBody>
-                  </Table>
+                    </tbody>
+                  </table>
                 </div>
               )}
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Points by Source - Bar Chart */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.55 }}
-        >
-          <Card className="border-border">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-xl font-bold">Points Distribution by Source</CardTitle>
-                  <CardDescription>Which activities generate the most points</CardDescription>
-                </div>
-                <div className="flex gap-2">
-                  <FilterButton
-                    value="week"
-                    currentValue={pointsSourceFilter}
-                    onClick={() => setPointsSourceFilter("week")}
-                    label="Week"
-                  />
-                  <FilterButton
-                    value="month"
-                    currentValue={pointsSourceFilter}
-                    onClick={() => setPointsSourceFilter("month")}
-                    label="Month"
-                  />
-                  <FilterButton
-                    value="year"
-                    currentValue={pointsSourceFilter}
-                    onClick={() => setPointsSourceFilter("year")}
-                    label="Year"
-                  />
-                  <FilterButton
-                    value="all"
-                    currentValue={pointsSourceFilter}
-                    onClick={() => setPointsSourceFilter("all")}
-                    label="All"
-                  />
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={350}>
-                <BarChart data={pointsBySource}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.9300 0.0094 245.0000)" />
-                  <XAxis
-                    dataKey="source"
-                    stroke="oklch(0.4386 0 0)"
-                    tick={{ fontSize: 11 }}
-                    angle={-45}
-                    textAnchor="end"
-                    height={100}
-                  />
-                  <YAxis stroke="oklch(0.4386 0 0)" tick={{ fontSize: 12 }} />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Legend />
-                  <Bar dataKey="points" fill={CHART_COLORS.chart4} name="Total Points" radius={[8, 8, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Charts Section - Row 1 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Activity Hours Chart */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <Card className="border-border">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-xl font-bold">Daily Activity Hours</CardTitle>
-                    <CardDescription>Student activity tracking over time</CardDescription>
-                  </div>
-                  <div className="flex gap-2">
-                    <FilterButton
-                      value="week"
-                      currentValue={activityFilter}
-                      onClick={() => setActivityFilter("week")}
-                      label="Week"
-                    />
-                    <FilterButton
-                      value="month"
-                      currentValue={activityFilter}
-                      onClick={() => setActivityFilter("month")}
-                      label="Month"
-                    />
-                    <FilterButton
-                      value="year"
-                      currentValue={activityFilter}
-                      onClick={() => setActivityFilter("year")}
-                      label="Year"
-                    />
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {isLoadingCharts ? (
-                  <Skeleton className="h-80 w-full" />
-                ) : (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <AreaChart data={activityData}>
-                      <defs>
-                        <linearGradient id="colorHours" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor={CHART_COLORS.chart1} stopOpacity={0.8} />
-                          <stop offset="95%" stopColor={CHART_COLORS.chart1} stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.9300 0.0094 245.0000)" />
-                      <XAxis
-                        dataKey="date"
-                        stroke="oklch(0.4386 0 0)"
-                        tick={{ fontSize: 12 }}
-                        tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                      />
-                      <YAxis stroke="oklch(0.4386 0 0)" tick={{ fontSize: 12 }} />
-                      <Tooltip content={<CustomTooltip />} />
-                      <Legend />
-                      <Area
-                        type="monotone"
-                        dataKey="hours"
-                        stroke={CHART_COLORS.chart1}
-                        fillOpacity={1}
-                        fill="url(#colorHours)"
-                        name="Hours Spent"
-                      />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                )}
-              </CardContent>
-            </Card>
+            </div>
           </motion.div>
 
-          {/* Points Trend Chart */}
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <Card className="border-border">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-xl font-bold">Points Trend</CardTitle>
-                    <CardDescription>Points awarded over time</CardDescription>
-                  </div>
-                  <div className="flex gap-2">
-                    <FilterButton
-                      value="week"
-                      currentValue={pointsFilter}
-                      onClick={() => setPointsFilter("week")}
-                      label="Week"
-                    />
-                    <FilterButton
-                      value="month"
-                      currentValue={pointsFilter}
-                      onClick={() => setPointsFilter("month")}
-                      label="Month"
-                    />
-                    <FilterButton
-                      value="year"
-                      currentValue={pointsFilter}
-                      onClick={() => setPointsFilter("year")}
-                      label="Year"
-                    />
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                {isLoadingCharts ? (
-                  <Skeleton className="h-80 w-full" />
-                ) : (
-                  <ResponsiveContainer width="100%" height={300}>
-                    <LineChart data={pointsTrendData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.9300 0.0094 245.0000)" />
-                      <XAxis
-                        dataKey="date"
-                        stroke="oklch(0.4386 0 0)"
-                        tick={{ fontSize: 12 }}
-                        tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                      />
-                      <YAxis stroke="oklch(0.4386 0 0)" tick={{ fontSize: 12 }} />
-                      <Tooltip content={<CustomTooltip />} />
-                      <Legend />
-                      <Line
-                        type="monotone"
-                        dataKey="points"
-                        stroke={CHART_COLORS.chart3}
-                        strokeWidth={3}
-                        dot={{ fill: CHART_COLORS.chart3, r: 4 }}
-                        name="Total Points"
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                )}
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-
-        {/* Charts Section - Row 2 (Pie Charts) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Department Distribution */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3 }}
-          >
-            <Card className="border-border">
-              <CardHeader>
-                <CardTitle className="text-lg font-bold">Departments</CardTitle>
-                <CardDescription>Student distribution</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={250}>
-                  <PieChart>
-                    <Pie
-                      data={departmentDistribution}
-                      dataKey="students"
-                      nameKey="department"
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={80}
-                      label={(entry) => `${entry.percentage}%`}
-                    >
-                      {departmentDistribution.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip content={<CustomTooltip />} />
-                  </PieChart>
+          {/* ── 3. ACTIVITY + POINTS TREND ────────────────────────── */}
+          <div className="area-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+            <ChartCard
+              title="Daily Activity Hours" desc="Student activity tracked over time"
+              loading={isLoadingCharts} minH={310}
+              actions={["week","month","year"].map(v => (
+                <Pill key={v} label={v.charAt(0).toUpperCase()+v.slice(1)}
+                  active={activityFilter===v} onClick={() => setActivityFilter(v)} />
+              ))}
+            >
+              {!activityData?.length ? <EmptyState /> : (
+                <ResponsiveContainer width="100%" height={285}>
+                  <AreaChart data={activityData} margin={{ top: 4, right: 6, left: -16, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="actGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%"  stopColor={C.blue} stopOpacity={0.22} />
+                        <stop offset="95%" stopColor={C.blue} stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-line)" vertical={false} />
+                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: "var(--text-muted)" }}
+                      axisLine={false} tickLine={false} tickFormatter={v => fmtDate(v)} />
+                    <YAxis tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTooltip />} />
+                    <Area type="monotone" dataKey="hours" name="Hours Spent"
+                      stroke={C.blue} strokeWidth={2.5} fill="url(#actGrad)"
+                      dot={false} activeDot={{ r: 5, fill: C.blue, strokeWidth: 0 }} />
+                  </AreaChart>
                 </ResponsiveContainer>
-                <div className="mt-4 space-y-2">
-                  {departmentDistribution.map((dept, index) => (
-                    <div key={index} className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-2">
-                        <div
-                          className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }}
-                        />
-                        <span className="text-muted-foreground">{dept.department}</span>
-                      </div>
-                      <span className="font-semibold text-foreground">{dept.students}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+              )}
+            </ChartCard>
 
-          {/* Year Distribution */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.35 }}
-          >
-            <Card className="border-border">
-              <CardHeader>
-                <CardTitle className="text-lg font-bold">Academic Years</CardTitle>
-                <CardDescription>Year-wise breakdown</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={250}>
-                  <PieChart>
-                    <Pie
-                      data={yearDistribution}
-                      dataKey="students"
-                      nameKey="year"
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={80}
-                      label={(entry) => `${entry.percentage}%`}
-                    >
-                      {yearDistribution.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip content={<CustomTooltip />} />
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="mt-4 space-y-2">
-                  {yearDistribution.map((year, index) => (
-                    <div key={index} className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-2">
-                        <div
-                          className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }}
-                        />
-                        <span className="text-muted-foreground">{year.year}</span>
-                      </div>
-                      <span className="font-semibold text-foreground">{year.students}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Project Status */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.4 }}
-          >
-            <Card className="border-border">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-lg font-bold">Projects</CardTitle>
-                    <CardDescription>Status overview</CardDescription>
-                  </div>
-                  <Select value={projectStatusFilter} onValueChange={(value: any) => setProjectStatusFilter(value)}>
-                    <SelectTrigger className="w-24 h-8">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="week">Week</SelectItem>
-                      <SelectItem value="month">Month</SelectItem>
-                      <SelectItem value="year">Year</SelectItem>
-                      <SelectItem value="all">All</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={250}>
-                  <PieChart>
-                    <Pie
-                      data={projectStatus}
-                      dataKey="count"
-                      nameKey="status"
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={80}
-                      label={(entry) => `${entry.percentage}%`}
-                    >
-                      {projectStatus.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip content={<CustomTooltip />} />
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="mt-4 space-y-2">
-                  {projectStatus.map((status, index) => (
-                    <div key={index} className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-2">
-                        <div
-                          className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }}
-                        />
-                        <span className="text-muted-foreground">{status.status}</span>
-                      </div>
-                      <span className="font-semibold text-foreground">{status.count}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Internship Types */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.45 }}
-          >
-            <Card className="border-border">
-              <CardHeader>
-                <CardTitle className="text-lg font-bold">Internships</CardTitle>
-                <CardDescription>Type distribution</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={250}>
-                  <PieChart>
-                    <Pie
-                      data={internshipTypes}
-                      dataKey="count"
-                      nameKey="type"
-                      cx="50%"
-                      cy="50%"
-                      outerRadius={80}
-                      label={(entry) => `${entry.percentage}%`}
-                    >
-                      {internshipTypes.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip content={<CustomTooltip />} />
-                  </PieChart>
-                </ResponsiveContainer>
-                <div className="mt-4 space-y-2">
-                  {internshipTypes.map((type, index) => (
-                    <div key={index} className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-2">
-                        <div
-                          className="w-3 h-3 rounded-full"
-                          style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }}
-                        />
-                        <span className="text-muted-foreground">{type.type}</span>
-                      </div>
-                      <span className="font-semibold text-foreground">{type.count}</span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-
-        {/* Monthly Submissions - Multi-Line Chart */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          <Card className="border-border">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-xl font-bold">Monthly Submission Trends</CardTitle>
-                  <CardDescription>Compare projects, internships, and certifications</CardDescription>
-                </div>
-                <div className="flex gap-2">
-                  <FilterButton
-                    value="6months"
-                    currentValue={submissionFilter}
-                    onClick={() => setSubmissionFilter("6months")}
-                    label="6 Months"
-                  />
-                  <FilterButton
-                    value="year"
-                    currentValue={submissionFilter}
-                    onClick={() => setSubmissionFilter("year")}
-                    label="Year"
-                  />
-                  <FilterButton
-                    value="all"
-                    currentValue={submissionFilter}
-                    onClick={() => setSubmissionFilter("all")}
-                    label="All Time"
-                  />
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              {isLoadingCharts ? (
-                <Skeleton className="h-96 w-full" />
-              ) : (
-                <ResponsiveContainer width="100%" height={350}>
-                  <LineChart data={monthlySubmissions}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="oklch(0.9300 0.0094 245.0000)" />
-                    <XAxis
-                      dataKey="month"
-                      stroke="oklch(0.4386 0 0)"
-                      tick={{ fontSize: 12 }}
-                      tickFormatter={(value) => {
-                        const date = new Date(value + '-01');
-                        return date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
-                      }}
-                    />
-                    <YAxis stroke="oklch(0.4386 0 0)" tick={{ fontSize: 12 }} />
-                    <Tooltip content={<CustomTooltip />} />
-                    <Legend />
-                    <Line
-                      type="monotone"
-                      dataKey="projects"
-                      stroke={CHART_COLORS.chart1}
-                      strokeWidth={3}
-                      dot={{ fill: CHART_COLORS.chart1, r: 4 }}
-                      name="Projects"
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="internships"
-                      stroke={CHART_COLORS.chart2}
-                      strokeWidth={3}
-                      dot={{ fill: CHART_COLORS.chart2, r: 4 }}
-                      name="Internships"
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="certifications"
-                      stroke={CHART_COLORS.chart3}
-                      strokeWidth={3}
-                      dot={{ fill: CHART_COLORS.chart3, r: 4 }}
-                      name="Certifications"
-                    />
+            <ChartCard
+              title="Points Trend" desc="Points awarded over time"
+              loading={isLoadingCharts} minH={310}
+              actions={["week","month","year"].map(v => (
+                <Pill key={v} label={v.charAt(0).toUpperCase()+v.slice(1)}
+                  active={pointsFilter===v} onClick={() => setPointsFilter(v)} />
+              ))}
+            >
+              {!pointsTrendData?.length ? <EmptyState /> : (
+                <ResponsiveContainer width="100%" height={285}>
+                  <LineChart data={pointsTrendData} margin={{ top: 4, right: 6, left: -16, bottom: 0 }}>
+                    <defs>
+                      <linearGradient id="ptGrad" x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%"   stopColor={C.emerald} />
+                        <stop offset="100%" stopColor={C.cyan} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-line)" vertical={false} />
+                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: "var(--text-muted)" }}
+                      axisLine={false} tickLine={false} tickFormatter={v => fmtDate(v)} />
+                    <YAxis tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} />
+                    <Tooltip content={<ChartTooltip />} />
+                    <Line type="monotone" dataKey="points" name="Total Points"
+                      stroke="url(#ptGrad)" strokeWidth={3}
+                      dot={false} activeDot={{ r: 5, fill: C.emerald, strokeWidth: 0 }} />
                   </LineChart>
                 </ResponsiveContainer>
               )}
-            </CardContent>
-          </Card>
-        </motion.div>
-        
+            </ChartCard>
+          </div>
+
+          {/* ── 4. POINTS BY SOURCE ───────────────────────────────── */}
+          <ChartCard
+            title="Points Distribution by Source"
+            desc="Which activities generate the most points"
+            loading={isLoadingCharts} minH={340}
+            actions={[["week","Week"],["month","Month"],["year","Year"],["all","All Time"]].map(([v,l]) => (
+              <Pill key={v} label={l} active={pointsSourceFilter===v} onClick={() => setPointsSourceFilter(v)} />
+            ))}
+          >
+            {!pointsBySource?.length ? <EmptyState /> : (
+              <ResponsiveContainer width="100%" height={315}>
+                <BarChart data={pointsBySource} margin={{ top: 4, right: 8, left: -16, bottom: 34 }}>
+                  <defs>
+                    {PIE_COLORS.map((col, i) => (
+                      <linearGradient key={i} id={`bgrad${i}`} x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%"   stopColor={col} stopOpacity={1} />
+                        <stop offset="100%" stopColor={col} stopOpacity={0.55} />
+                      </linearGradient>
+                    ))}
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-line)" vertical={false} />
+                  <XAxis dataKey="source"
+                    tick={{ fontSize: 12, fill: "var(--text-secondary)", fontWeight: 500 }}
+                    axisLine={false} tickLine={false}
+                    angle={-30} textAnchor="end" height={58} />
+                  <YAxis tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} />
+                  <Tooltip content={<ChartTooltip />} cursor={{ fill: "rgba(59,111,212,0.05)" }} />
+                  <Bar dataKey="points" name="Total Points" radius={[8,8,0,0]} maxBarSize={64}>
+                    {(pointsBySource ?? []).map((_, i) => (
+                      <Cell key={i} fill={`url(#bgrad${i % PIE_COLORS.length})`} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </ChartCard>
+
+          {/* ── 5. FOUR DONUT CHARTS ──────────────────────────────── */}
+          <div className="pie-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 18 }}>
+            <ChartCard title="Departments" desc="Student distribution" minH={0} loading={isLoadingCharts}>
+              <DonutPanel data={departmentDistribution} dataKey="students" nameKey="department" loading={isLoadingCharts} />
+            </ChartCard>
+
+            <ChartCard title="Academic Years" desc="Year-wise breakdown" minH={0} loading={isLoadingCharts}>
+              <DonutPanel data={yearDistribution} dataKey="students" nameKey="year" loading={isLoadingCharts} />
+            </ChartCard>
+
+            <ChartCard
+              title="Project Status" desc="Status overview" minH={0} loading={isLoadingCharts}
+              actions={
+                <Select value={projectStatusFilter} onValueChange={v => setProjectStatusFilter(v)}>
+                  <SelectTrigger style={{ width: 84, height: 26, fontSize: 11 }}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {["week","month","year","all"].map(v => (
+                      <SelectItem key={v} value={v}>{v.charAt(0).toUpperCase()+v.slice(1)}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              }
+            >
+              <DonutPanel data={projectStatus} dataKey="count" nameKey="status" loading={isLoadingCharts} />
+            </ChartCard>
+
+            <ChartCard title="Internship Types" desc="Type distribution" minH={0} loading={isLoadingCharts}>
+              <DonutPanel data={internshipTypes} dataKey="count" nameKey="type" loading={isLoadingCharts} />
+            </ChartCard>
+          </div>
+
+          {/* ── 6. MONTHLY SUBMISSION TRENDS ─────────────────────── */}
+          <ChartCard
+            title="Monthly Submission Trends"
+            desc="Compare projects, internships, and certifications over time"
+            loading={isLoadingCharts} minH={370}
+            actions={[["6months","6 Months"],["year","Year"],["all","All Time"]].map(([v,l]) => (
+              <Pill key={v} label={l} active={submissionFilter===v} onClick={() => setSubmissionFilter(v)} />
+            ))}
+          >
+            {!monthlySubmissions?.length ? <EmptyState /> : (
+              <ResponsiveContainer width="100%" height={345}>
+                <LineChart data={monthlySubmissions} margin={{ top: 4, right: 16, left: -16, bottom: 0 }}>
+                  <defs>
+                    {[[C.blue,"lg1"],[C.violet,"lg2"],[C.emerald,"lg3"]].map(([c,id]) => (
+                      <linearGradient key={id} id={id} x1="0" y1="0" x2="1" y2="0">
+                        <stop offset="0%"   stopColor={c} stopOpacity={0.95} />
+                        <stop offset="100%" stopColor={c} stopOpacity={0.65} />
+                      </linearGradient>
+                    ))}
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-line)" vertical={false} />
+                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: "var(--text-muted)" }}
+                    axisLine={false} tickLine={false}
+                    tickFormatter={v => fmtDate(v + "-01","month")} />
+                  <YAxis tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} />
+                  <Tooltip content={<ChartTooltip />} />
+                  <Legend
+                    wrapperStyle={{ fontSize: 12, paddingTop: 10, color: "var(--text-secondary)" }}
+                    iconType="circle" iconSize={8}
+                  />
+                  <Line type="monotone" dataKey="projects" name="Projects"
+                    stroke="url(#lg1)" strokeWidth={2.5} dot={false}
+                    activeDot={{ r: 5, fill: C.blue, strokeWidth: 0 }} />
+                  <Line type="monotone" dataKey="internships" name="Internships"
+                    stroke="url(#lg2)" strokeWidth={2.5} dot={false}
+                    activeDot={{ r: 5, fill: C.violet, strokeWidth: 0 }} />
+                  <Line type="monotone" dataKey="certifications" name="Certifications"
+                    stroke="url(#lg3)" strokeWidth={2.5} dot={false}
+                    activeDot={{ r: 5, fill: C.emerald, strokeWidth: 0 }} />
+                </LineChart>
+              </ResponsiveContainer>
+            )}
+          </ChartCard>
+
+        </div>
       </div>
-    </div>
+    </>
   );
 }

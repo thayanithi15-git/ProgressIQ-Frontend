@@ -7,7 +7,7 @@ import { useNotificationStore } from '@/utils/notification';
 // ==========================================
 
 export type ReportType = 'pdf' | 'excel' | 'csv';
-export type ReportCategory = 'students' | 'mentors' | 'projects' | 'internships' | 'certifications' | 'performance' | 'attendance' | 'comprehensive';
+export type ReportCategory = 'students' | 'mentors' | 'projects' | 'internships' | 'certifications' | 'performance' | 'comprehensive';
 
 export interface ReportFilter {
   // Date Filters
@@ -80,13 +80,31 @@ export interface ReportPreview {
   sampleData: any[];
   appliedFilters: ReportFilter;
   estimatedFileSize: string;
+  usedDefaultDateRange?: boolean;
+}
+
+export interface ReportStats {
+  totalReports: number;
+  completedReports: number;
+  failedReports: number;
+  reportsByType: Record<string, number>;
+  reportsByCategory: Record<string, number>;
+  recentReports: Array<{
+    reportType: ReportType;
+    category: ReportCategory;
+    status: string;
+    generatedAt: string;
+    fileSize?: string;
+  }>;
 }
 
 interface AdminReportsState {
   // Data States
   currentRequest: ReportRequest | null;
+  lastGeneratedReport: GeneratedReport | null;
   reportHistory: GeneratedReport[];
   reportPreview: ReportPreview | null;
+  reportStats: ReportStats | null;
   
   // Available Options
   departments: string[];
@@ -104,11 +122,13 @@ interface AdminReportsState {
   isLoadingHistory: boolean;
   isLoadingPreview: boolean;
   isLoadingOptions: boolean;
+  isLoadingStats: boolean;
   
   // Actions
   generateReport: (request: ReportRequest) => Promise<void>;
   fetchReportHistory: () => Promise<void>;
   fetchReportPreview: (category: ReportCategory, filters: ReportFilter) => Promise<void>;
+  fetchReportStats: () => Promise<void>;
   downloadReport: (reportId: string) => Promise<void>;
   deleteReport: (reportId: string) => Promise<void>;
   
@@ -144,8 +164,10 @@ const initialFilters: ReportFilter = {
 export const useAdminReportsStore = create<AdminReportsState>((set, get) => ({
   // Initial States
   currentRequest: null,
+  lastGeneratedReport: null,
   reportHistory: [],
   reportPreview: null,
+  reportStats: null,
   departments: [],
   years: [],
   mentors: [],
@@ -161,6 +183,7 @@ export const useAdminReportsStore = create<AdminReportsState>((set, get) => ({
   isLoadingHistory: false,
   isLoadingPreview: false,
   isLoadingOptions: false,
+  isLoadingStats: false,
 
   generateReport: async (request: ReportRequest) => {
     const { showNotification } = useNotificationStore.getState();
@@ -182,23 +205,22 @@ export const useAdminReportsStore = create<AdminReportsState>((set, get) => ({
           type: request.type,
           category: request.category,
           filter: request.filter,
-          status: 'queued',
+          status: 'completed',
+          downloadUrl: response.data.downloadUrl,
           generatedAt: new Date().toISOString(),
+          fileSize: response.data.fileSize ? `${Math.ceil(response.data.fileSize / 1024)} KB` : undefined,
         };
 
         set((state) => ({
           reportHistory: [newReport, ...state.reportHistory],
           currentRequest: request,
+          lastGeneratedReport: newReport,
         }));
 
         showNotification(
-          response.data.message || 'Report generation queued successfully!',
+          response.data.message || 'Report generated successfully!',
           'success'
         );
-
-        setTimeout(() => {
-          get().fetchReportHistory();
-        }, 1000);
       }
     } catch (error: any) {
       const message = error.response?.data?.message || 'Failed to generate report';
@@ -218,7 +240,19 @@ export const useAdminReportsStore = create<AdminReportsState>((set, get) => ({
       const response = await api.get('/api/admin/reports/history');
       
       if (response.data.success) {
-        set({ reportHistory: response.data.data });
+        const mappedReports = response.data.data.map((report: any) => ({
+          id: report._id,
+          type: report.reportType,
+          category: report.category,
+          filter: report.filters,
+          status: report.status,
+          downloadUrl: report.fileUrl,
+          generatedAt: report.generatedAt,
+          expiresAt: report.expiresAt,
+          fileSize: report.fileSize ? `${Math.ceil(report.fileSize / 1024)} KB` : undefined,
+          error: report.error,
+        }));
+        set({ reportHistory: mappedReports });
       }
     } catch (error: any) {
       const message = error.response?.data?.message || 'Failed to fetch report history';
@@ -241,7 +275,8 @@ export const useAdminReportsStore = create<AdminReportsState>((set, get) => ({
       });
       
       if (response.data.success) {
-        set({ reportPreview: response.data.data });
+        const data = response.data.data;
+        set({ reportPreview: data });
       }
     } catch (error: any) {
       const message = error.response?.data?.message || 'Failed to fetch preview';
@@ -250,6 +285,26 @@ export const useAdminReportsStore = create<AdminReportsState>((set, get) => ({
       set({ reportPreview: null });
     } finally {
       set({ isLoadingPreview: false });
+    }
+  },
+
+  fetchReportStats: async () => {
+    const { showNotification } = useNotificationStore.getState();
+    
+    try {
+      set({ isLoadingStats: true });
+      
+      const response = await api.get('/api/admin/reports/stats');
+      
+      if (response.data.success) {
+        set({ reportStats: response.data.data });
+      }
+    } catch (error: any) {
+      const message = error.response?.data?.message || 'Failed to fetch report stats';
+      showNotification(message, 'error');
+      console.error('Error fetching report stats:', error);
+    } finally {
+      set({ isLoadingStats: false });
     }
   },
 
@@ -267,9 +322,14 @@ export const useAdminReportsStore = create<AdminReportsState>((set, get) => ({
       const link = document.createElement('a');
       link.href = url;
       const contentDisposition = response.headers['content-disposition'];
-      const filename = contentDisposition
-        ? contentDisposition.split('filename=')[1].replace(/"/g, '')
-        : `report_${reportId}.pdf`;
+      let filename: string;
+      if (contentDisposition) {
+        filename = contentDisposition.split('filename=')[1].replace(/"/g, '');
+      } else {
+        const report = get().reportHistory.find((r) => r.id === reportId);
+        const ext = report?.type || 'pdf';
+        filename = `report_${reportId}.${ext}`;
+      }
       
       link.setAttribute('download', filename);
       document.body.appendChild(link);

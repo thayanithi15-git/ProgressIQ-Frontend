@@ -154,11 +154,11 @@ export const useAdminDashboardStore = create<AdminDashboardState>((set, get) => 
   pointsBySource: [],
 
   // Initial Filters
-  activityFilter: 'month',
-  pointsFilter: 'month',
+  activityFilter: 'year',
+  pointsFilter: 'year',
   projectStatusFilter: 'all',
-  submissionFilter: '6months',
-  pointsSourceFilter: 'month',
+  submissionFilter: 'all',
+  pointsSourceFilter: 'all',
   topStudentsLimit: 10,
 
   // Initial Loading States
