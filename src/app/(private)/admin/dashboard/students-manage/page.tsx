@@ -93,6 +93,7 @@ export default function StudentListPage() {
 
   const [createFormData, setCreateFormData] = useState<Partial<CreateStudentPayload>>({
     email: "",
+    password: "",
     firstName: "",
     lastName: "",
     phone: "",
@@ -177,6 +178,7 @@ export default function StudentListPage() {
     try {
       const payload: CreateStudentPayload = {
         email: createFormData.email || "",
+        password: createFormData.password || "",
         firstName: createFormData.firstName || "",
         lastName: createFormData.lastName || "",
         phone: createFormData.phone || "",
@@ -285,6 +287,7 @@ export default function StudentListPage() {
 
           <div className="space-y-4">
             {/* Email */}
+
             <div>
               <Label className="text-sm font-semibold text-foreground">Email *</Label>
               <Input
@@ -293,6 +296,19 @@ export default function StudentListPage() {
                 value={createFormData.email || ""}
                 onChange={(e) =>
                   setCreateFormData({ ...createFormData, email: e.target.value })
+                }
+              />
+            </div>
+
+            <div>
+              <Label className="text-sm font-semibold text-foreground">Password *</Label>
+              <Input
+                placeholder="********"
+                className="mt-2 border-border"
+                value={createFormData.password || ""}
+                // type='password'
+                onChange={(e) =>
+                  setCreateFormData({ ...createFormData, password: e.target.value })
                 }
               />
             </div>

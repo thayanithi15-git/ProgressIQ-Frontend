@@ -78,11 +78,13 @@ const Sidebar: React.FC = () => {
         showNotification('You have been successfully logged out', 'success');
         
         // Clear all auth and app-related localStorage items
-        localStorage.removeItem('credxUser');
-        localStorage.removeItem('role');
-        localStorage.removeItem('theme-preference');
-        localStorage.removeItem('auth-token');
-        localStorage.removeItem('user-data');
+        // localStorage.removeItem('credxUser');
+        // localStorage.removeItem('role');
+        // localStorage.removeItem('theme-preference');
+        // localStorage.removeItem('auth-token');
+        // localStorage.removeItem('user-data');
+
+        localStorage.clear();
         
         // Clear session state
         setSessionData(null);

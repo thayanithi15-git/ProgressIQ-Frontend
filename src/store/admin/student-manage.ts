@@ -25,6 +25,7 @@ export interface Student {
 
 export interface CreateStudentPayload {
   email: string;
+  password: string;
   firstName: string;
   lastName: string;
   gender: string;

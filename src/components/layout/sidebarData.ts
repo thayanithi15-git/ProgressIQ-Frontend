@@ -12,6 +12,10 @@ import {
   Star,
   Settings,
   ShieldCheck,
+  Trophy,
+Briefcase,
+User,
+ClipboardCheck,
 } from "lucide-react";
 
 export interface SidebarItem {
@@ -116,7 +120,7 @@ export const mentorSections = (base: string): SidebarSection[] => [
       {
         icon: LayoutDashboard,
         label: "Dashboard",
-        href: `${base}/dashboard`,
+        href: `${base}`,
         description: "Mentor dashboard",
       },
       {
@@ -152,29 +156,35 @@ export const mentorSections = (base: string): SidebarSection[] => [
 
 export const studentSections = (base: string): SidebarSection[] => [
 
-  /* ----- 2 ITEMS ----- */
+  /* ----- DASHBOARD ----- */
   {
-    title: "Student Hub",
+    title: "Overview",
     items: [
       {
         icon: LayoutDashboard,
         label: "Dashboard",
-        href: `${base}/dashboard`,
-        description: "My overview",
+        href: `${base}`,
+        description: "Student overview",
       },
       {
-        icon: FileText,
-        label: "Projects",
-        href: `${base}/projects`,
-        description: "My projects",
+        icon: Trophy,
+        label: "Rankings",
+        href: `${base}/rankings`,
+        description: "My position",
       },
     ],
   },
 
-  /* ----- 3 ITEMS ----- */
+  /* ----- WORK ----- */
   {
-    title: "Activity Zone",
+    title: "Work & Progress",
     items: [
+      {
+        icon: FileText,
+        label: "Projects",
+        href: `${base}/projects`,
+        description: "Manage projects",
+      },
       {
         icon: ClipboardList,
         label: "Tasks",
@@ -182,16 +192,35 @@ export const studentSections = (base: string): SidebarSection[] => [
         description: "Assigned tasks",
       },
       {
-        icon: Activity,
-        label: "Activity & Surveys",
-        href: `${base}/activity`,
-        description: "Logs & surveys",
+        icon: Briefcase,
+        label: "Internships",
+        href: `${base}/internships`,
+        description: "Internship records",
       },
       {
-        icon: Star,
-        label: "Profile & Rankings",
+        icon: Award,
+        label: "Certifications",
+        href: `${base}/certifications`,
+        description: "My certificates",
+      },
+    ],
+  },
+
+  /* ----- PERSONAL ----- */
+  {
+    title: "Personal",
+    items: [
+      {
+        icon: User,
+        label: "Profile",
         href: `${base}/profile`,
-        description: "Rank & profile",
+        description: "Student profile",
+      },
+      {
+        icon: ClipboardCheck,
+        label: "Surveys",
+        href: `${base}/surveys`,
+        description: "Answer surveys",
       },
     ],
   },

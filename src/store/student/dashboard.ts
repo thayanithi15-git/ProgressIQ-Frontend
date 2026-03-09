@@ -6,318 +6,342 @@ import { useNotificationStore } from '@/utils/notification';
 // TYPES & INTERFACES
 // ==========================================
 
-export interface StudentDashboardData {
+export interface StudentProfile {
+  id: string;
   name: string;
   email: string;
+  department: string;
+  year: string;
+  phone: string;
+  place: string;
+  status: string;
+  academicYear: string;
+  avatarInitials?: string;
+}
+
+export interface MentorInfo {
+  id: string;
+  name: string;
+  email: string;
+  department: string;
+  expertise: string[];
+}
+
+export interface StudentStats {
   totalPoints: number;
-  rank: number;
-  departmentRank: number;
-  projectsCompleted: number;
-  internshipsCompleted: number;
-  certificationsEarned: number;
-  currentRank: string;
-  nextRankPoints: number;
+  totalHoursSpent: number;
+  projects: {
+    total: number;
+    completed: number;
+    pending: number;
+    rejected: number;
+  };
+  tasks: {
+    total: number;
+    completed: number;
+    pending: number;
+    overdue: number;
+  };
+  certifications: {
+    total: number;
+    completed: number;
+    pending: number;
+    rejected: number;
+  };
+  internships: {
+    total: number;
+    completed: number;
+    pending: number;
+    rejected: number;
+  };
+  ranking: {
+    overallRank: number;
+    departmentRank: number;
+  } | null;
 }
 
-export interface StudentProject {
-  id: string;
-  title: string;
-  description: string;
-  status: 'Draft' | 'Submitted' | 'Approved' | 'Rejected';
-  mentorFeedback?: string;
+export interface MonthlyActivity {
+  month: string;
+  hours: number;
+}
+
+export interface PointsBySource {
+  source: string;
   points: number;
-  createdDate: string;
-  submittedDate?: string;
 }
 
-export interface StudentTask {
-  id: string;
-  title: string;
-  description: string;
-  projectTitle?: string;
-  status: 'To Do' | 'In Progress' | 'Completed' | 'Pending Approval';
-  dueDate: string;
-  priority: 'Low' | 'Medium' | 'High';
-  points?: number;
+export interface HeatmapEntry {
+  date: string;
+  value: number;
+  intensity: number;
 }
 
-export interface SurveyItem {
+export interface RecentFeedback {
   id: string;
-  title: string;
-  description?: string;
-  type: 'FEEDBACK' | 'ASSESSMENT' | 'GENERAL';
-  createdBy: string;
-  status: 'Not Responded' | 'Completed';
-  dueDate?: string;
-}
-
-export interface Notification {
-  id: string;
+  mentor: string;
   message: string;
-  type: 'APPROVAL' | 'FEEDBACK' | 'ASSIGNMENT' | 'GENERAL';
-  isRead: boolean;
-  createdAt: string;
+  date: string;
 }
 
-export interface StudentRanking {
-  rank: number;
-  name?: string;
+export interface RecentActivity {
+  date: string;
+  activity: string;
+  hoursSpent: number;
+}
+
+export interface PointsTrendEntry {
+  date: string;
   points: number;
-  departmentRank?: number;
-  percentileRank?: number;
+  awards: number;
 }
 
+export interface TaskCompletionEntry {
+  month: string;
+  completed: number;
+  pending: number;
+  overdue: number;
+}
+
+export type HeatmapYear = number;
+
 // ==========================================
-// STORE
+// ZUSTAND STORE
 // ==========================================
 
-interface StudentDashboardStore {
-  // Dashboard
-  dashboard: StudentDashboardData | null;
-  dashboardLoading: boolean;
-  dashboardError: string | null;
+interface StudentDashboardState {
+  // Profile
+  student: StudentProfile | null;
+  mentor: MentorInfo | null;
+
+  // Stats
+  stats: StudentStats | null;
+
+  // Charts
+  monthlyActivity: MonthlyActivity[];
+  pointsBySource: PointsBySource[];
+  pointsTrend: PointsTrendEntry[];
+  taskCompletion: TaskCompletionEntry[];
+
+  // Heatmap
+  heatmapData: HeatmapEntry[];
+  heatmapYear: HeatmapYear;
+
+  // Feeds
+  recentFeedback: RecentFeedback[];
+  recentActivities: RecentActivity[];
+
+  // Filters
+  pointsTrendFilter: 'week' | 'month' | 'year';
+  activityFilter: 'week' | 'month' | 'year';
+
+  // Loading States
+  isLoadingProfile: boolean;
+  isLoadingStats: boolean;
+  isLoadingCharts: boolean;
+  isLoadingHeatmap: boolean;
+
+  // Actions
   fetchDashboard: () => Promise<void>;
+  fetchHeatmap: (year?: number) => Promise<void>;
+  fetchPointsTrend: (filter?: 'week' | 'month' | 'year') => Promise<void>;
+  fetchActivityChart: (filter?: 'week' | 'month' | 'year') => Promise<void>;
+  fetchTaskCompletion: () => Promise<void>;
 
-  // Projects
-  projects: StudentProject[];
-  projectsLoading: boolean;
-  projectsError: string | null;
-  fetchProjects: () => Promise<void>;
-  createProject: (title: string, description: string) => Promise<void>;
+  // Filter Setters
+  setHeatmapYear: (year: number) => void;
+  setPointsTrendFilter: (filter: 'week' | 'month' | 'year') => void;
+  setActivityFilter: (filter: 'week' | 'month' | 'year') => void;
 
-  // Tasks
-  tasks: StudentTask[];
-  tasksLoading: boolean;
-  tasksError: string | null;
-  fetchTasks: () => Promise<void>;
-  updateTaskStatus: (taskId: string, status: string) => Promise<void>;
-
-  // Surveys
-  surveys: SurveyItem[];
-  surveysLoading: boolean;
-  surveysError: string | null;
-  fetchSurveys: () => Promise<void>;
-  respondToSurvey: (surveyId: string, answers: string[]) => Promise<void>;
-
-  // Notifications
-  notifications: Notification[];
-  notificationsLoading: boolean;
-  notificationsError: string | null;
-  fetchNotifications: () => Promise<void>;
-  markNotificationRead: (notificationId: string) => Promise<void>;
-
-  // Profile & Rankings
-  profile: StudentDashboardData | null;
-  profileLoading: boolean;
-  profileError: string | null;
-  fetchProfile: () => Promise<void>;
-
-  rankings: StudentRanking[];
-  rankingsLoading: boolean;
-  rankingsError: string | null;
-  fetchRankings: () => Promise<void>;
+  // Utility
+  refreshDashboard: () => Promise<void>;
 }
 
-export const useStudentDashboardStore = create<StudentDashboardStore>((set) => ({
-  dashboard: null,
-  dashboardLoading: false,
-  dashboardError: null,
+export const useStudentDashboardStore = create<StudentDashboardState>((set, get) => ({
+  // Initial States
+  student: null,
+  mentor: null,
+  stats: null,
+  monthlyActivity: [],
+  pointsBySource: [],
+  pointsTrend: [],
+  taskCompletion: [],
+  heatmapData: [],
+  heatmapYear: new Date().getFullYear(),
+  recentFeedback: [],
+  recentActivities: [],
+  pointsTrendFilter: 'year',
+  activityFilter: 'year',
+  isLoadingProfile: false,
+  isLoadingStats: false,
+  isLoadingCharts: false,
+  isLoadingHeatmap: false,
+
+  // ==========================================
+  // FETCH DASHBOARD (main)
+  // ==========================================
   fetchDashboard: async () => {
-    set({ dashboardLoading: true, dashboardError: null });
+    const { showNotification } = useNotificationStore.getState();
+
     try {
-      const response = await api.get('/api/students/dashboard');
-      set({
-        dashboard: response.data.data,
-        dashboardLoading: false,
-      });
+      set({ isLoadingProfile: true, isLoadingStats: true, isLoadingCharts: true });
+
+      const response = await api.get('/api/student/dashboard');
+
+      if (response.data.success) {
+        const { student, mentor, stats, charts, heatmap, recentFeedback, recentActivities } =
+          response.data.data;
+
+        set({
+          student,
+          mentor,
+          stats,
+          monthlyActivity: charts?.monthlyActivity ?? [],
+          pointsBySource: charts?.pointsBySource ?? [],
+          heatmapData: heatmap ?? [],
+          recentFeedback: recentFeedback ?? [],
+          recentActivities: recentActivities ?? [],
+        });
+      }
     } catch (error: any) {
       const message = error.response?.data?.message || 'Failed to fetch dashboard';
-      set({ dashboardError: message, dashboardLoading: false });
-      useNotificationStore.setState({
-        notification: { message, type: 'error' },
-      });
+      showNotification(message, 'error');
+      console.error('Error fetching student dashboard:', error);
+    } finally {
+      set({ isLoadingProfile: false, isLoadingStats: false, isLoadingCharts: false });
     }
   },
 
-  projects: [],
-  projectsLoading: false,
-  projectsError: null,
-  fetchProjects: async () => {
-    set({ projectsLoading: true, projectsError: null });
+  // ==========================================
+  // FETCH HEATMAP
+  // ==========================================
+  fetchHeatmap: async (year?: number) => {
+    const { showNotification } = useNotificationStore.getState();
+    const currentYear = year ?? get().heatmapYear;
+
     try {
-      const response = await api.get('/api/students/projects');
-      set({
-        projects: response.data.data,
-        projectsLoading: false,
-      });
+      set({ isLoadingHeatmap: true });
+
+      const response = await api.get(`/api/student/heatmap?year=${currentYear}`);
+
+      if (response.data.success) {
+        set({ heatmapData: response.data.data });
+      }
     } catch (error: any) {
-      const message = error.response?.data?.message || 'Failed to fetch projects';
-      set({ projectsError: message, projectsLoading: false });
-      useNotificationStore.setState({
-        notification: { message, type: 'error' },
-      });
+      const message = error.response?.data?.message || 'Failed to fetch heatmap data';
+      showNotification(message, 'error');
+      console.error('Error fetching heatmap:', error);
+    } finally {
+      set({ isLoadingHeatmap: false });
     }
   },
 
-  createProject: async (title: string, description: string) => {
+  // ==========================================
+  // FETCH POINTS TREND
+  // ==========================================
+  fetchPointsTrend: async (filter?: 'week' | 'month' | 'year') => {
+    const { showNotification } = useNotificationStore.getState();
+    const currentFilter = filter ?? get().pointsTrendFilter;
+
     try {
-      const response = await api.post('/api/students/projects', {
-        title,
-        description,
-      });
-      useNotificationStore.setState({
-        notification: { message: 'Project created successfully', type: 'success' },
-      });
-      // Refetch projects
-      const projectsResponse = await api.get('/api/students/projects');
-      set({ projects: projectsResponse.data.data });
+      set({ isLoadingCharts: true });
+
+      const response = await api.get(`/api/student/charts/points-trend?filter=${currentFilter}`);
+
+      if (response.data.success) {
+        set({ pointsTrend: response.data.data });
+      }
     } catch (error: any) {
-      const message = error.response?.data?.message || 'Failed to create project';
-      useNotificationStore.setState({
-        notification: { message, type: 'error' },
-      });
+      const message = error.response?.data?.message || 'Failed to fetch points trend';
+      showNotification(message, 'error');
+      console.error('Error fetching points trend:', error);
+    } finally {
+      set({ isLoadingCharts: false });
     }
   },
 
-  tasks: [],
-  tasksLoading: false,
-  tasksError: null,
-  fetchTasks: async () => {
-    set({ tasksLoading: true, tasksError: null });
+  // ==========================================
+  // FETCH ACTIVITY CHART
+  // ==========================================
+  fetchActivityChart: async (filter?: 'week' | 'month' | 'year') => {
+    const { showNotification } = useNotificationStore.getState();
+    const currentFilter = filter ?? get().activityFilter;
+
     try {
-      const response = await api.get('/api/students/tasks');
-      set({
-        tasks: response.data.data,
-        tasksLoading: false,
-      });
+      set({ isLoadingCharts: true });
+
+      const response = await api.get(
+        `/api/student/charts/monthly-activity?filter=${currentFilter}`
+      );
+
+      if (response.data.success) {
+        set({ monthlyActivity: response.data.data });
+      }
     } catch (error: any) {
-      const message = error.response?.data?.message || 'Failed to fetch tasks';
-      set({ tasksError: message, tasksLoading: false });
-      useNotificationStore.setState({
-        notification: { message, type: 'error' },
-      });
+      const message = error.response?.data?.message || 'Failed to fetch activity chart';
+      showNotification(message, 'error');
+      console.error('Error fetching activity chart:', error);
+    } finally {
+      set({ isLoadingCharts: false });
     }
   },
 
-  updateTaskStatus: async (taskId: string, status: string) => {
+  // ==========================================
+  // FETCH TASK COMPLETION
+  // ==========================================
+  fetchTaskCompletion: async () => {
+    const { showNotification } = useNotificationStore.getState();
+
     try {
-      await api.put(`/api/students/tasks/${taskId}`, { status });
-      useNotificationStore.setState({
-        notification: { message: 'Task updated successfully', type: 'success' },
-      });
-      // Refetch tasks
-      const tasksResponse = await api.get('/api/students/tasks');
-      set({ tasks: tasksResponse.data.data });
+      const response = await api.get('/api/student/charts/task-completion');
+
+      if (response.data.success) {
+        set({ taskCompletion: response.data.data });
+      }
     } catch (error: any) {
-      const message = error.response?.data?.message || 'Failed to update task';
-      useNotificationStore.setState({
-        notification: { message, type: 'error' },
-      });
+      const message = error.response?.data?.message || 'Failed to fetch task completion';
+      showNotification(message, 'error');
+      console.error('Error fetching task completion:', error);
     }
   },
 
-  surveys: [],
-  surveysLoading: false,
-  surveysError: null,
-  fetchSurveys: async () => {
-    set({ surveysLoading: true, surveysError: null });
-    try {
-      const response = await api.get('/api/students/surveys');
-      set({
-        surveys: response.data.data,
-        surveysLoading: false,
-      });
-    } catch (error: any) {
-      const message = error.response?.data?.message || 'Failed to fetch surveys';
-      set({ surveysError: message, surveysLoading: false });
-      useNotificationStore.setState({
-        notification: { message, type: 'error' },
-      });
-    }
+  // ==========================================
+  // FILTER SETTERS
+  // ==========================================
+  setHeatmapYear: (year: number) => {
+    set({ heatmapYear: year });
+    get().fetchHeatmap(year);
   },
 
-  respondToSurvey: async (surveyId: string, answers: string[]) => {
-    try {
-      await api.post(`/api/students/surveys/${surveyId}/respond`, { answers });
-      useNotificationStore.setState({
-        notification: { message: 'Survey response submitted successfully', type: 'success' },
-      });
-      // Refetch surveys
-      const surveysResponse = await api.get('/api/students/surveys');
-      set({ surveys: surveysResponse.data.data });
-    } catch (error: any) {
-      const message = error.response?.data?.message || 'Failed to submit survey response';
-      useNotificationStore.setState({
-        notification: { message, type: 'error' },
-      });
-    }
+  setPointsTrendFilter: (filter: 'week' | 'month' | 'year') => {
+    set({ pointsTrendFilter: filter });
+    get().fetchPointsTrend(filter);
   },
 
-  notifications: [],
-  notificationsLoading: false,
-  notificationsError: null,
-  fetchNotifications: async () => {
-    set({ notificationsLoading: true, notificationsError: null });
-    try {
-      const response = await api.get('/api/notifications');
-      set({
-        notifications: response.data.data,
-        notificationsLoading: false,
-      });
-    } catch (error: any) {
-      const message = error.response?.data?.message || 'Failed to fetch notifications';
-      set({ notificationsError: message, notificationsLoading: false });
-    }
+  setActivityFilter: (filter: 'week' | 'month' | 'year') => {
+    set({ activityFilter: filter });
+    get().fetchActivityChart(filter);
   },
 
-  markNotificationRead: async (notificationId: string) => {
-    try {
-      await api.post(`/api/notifications/${notificationId}/read`);
-    } catch (error: any) {
-      const message = error.response?.data?.message || 'Failed to mark notification as read';
-      useNotificationStore.setState({
-        notification: { message, type: 'error' },
-      });
-    }
-  },
+  // ==========================================
+  // REFRESH DASHBOARD
+  // ==========================================
+  refreshDashboard: async () => {
+    const { showNotification } = useNotificationStore.getState();
 
-  profile: null,
-  profileLoading: false,
-  profileError: null,
-  fetchProfile: async () => {
-    set({ profileLoading: true, profileError: null });
     try {
-      const response = await api.get('/api/students/profile');
-      set({
-        profile: response.data.data,
-        profileLoading: false,
-      });
-    } catch (error: any) {
-      const message = error.response?.data?.message || 'Failed to fetch profile';
-      set({ profileError: message, profileLoading: false });
-      useNotificationStore.setState({
-        notification: { message, type: 'error' },
-      });
-    }
-  },
+      showNotification('Refreshing dashboard...', 'pending');
 
-  rankings: [],
-  rankingsLoading: false,
-  rankingsError: null,
-  fetchRankings: async () => {
-    set({ rankingsLoading: true, rankingsError: null });
-    try {
-      const response = await api.get('/api/students/ranking');
-      set({
-        rankings: response.data.data,
-        rankingsLoading: false,
-      });
-    } catch (error: any) {
-      const message = error.response?.data?.message || 'Failed to fetch rankings';
-      set({ rankingsError: message, rankingsLoading: false });
-      useNotificationStore.setState({
-        notification: { message, type: 'error' },
-      });
+      await Promise.all([
+        get().fetchDashboard(),
+        get().fetchHeatmap(),
+        get().fetchPointsTrend(),
+        get().fetchTaskCompletion(),
+      ]);
+
+      showNotification('Dashboard refreshed successfully', 'success');
+    } catch (error) {
+      showNotification('Failed to refresh dashboard', 'error');
+      console.error('Error refreshing student dashboard:', error);
     }
   },
 }));
