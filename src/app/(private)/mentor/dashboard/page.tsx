@@ -11,6 +11,7 @@ import {
   Clock,
   AlertCircle,
   RefreshCw,
+  Download,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -40,6 +41,7 @@ import {
 import { useMentorDashboardStore } from "@/store/mentor/dashboard";
 import { useThemeStore } from "@/store/layoutStore";
 import GlobalNotification from "@/components/notify/notification";
+import Header from "@/components/layout/header";
 
 // ==========================================
 // CHART COLORS
@@ -120,12 +122,14 @@ export default function MentorDashboard() {
     stats,
     statsLoading,
     fetchStats,
+    activityData,
     pendingApprovals,
     approvalsLoading,
     fetchPendingApprovals,
     assignedStudents,
     studentsLoading,
     fetchAssignedStudents,
+    refreshAll,
   } = useMentorDashboardStore();
 
   const { initializeTheme } = useThemeStore();
@@ -145,44 +149,46 @@ export default function MentorDashboard() {
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    await Promise.all([
-      fetchStats(),
-      fetchPendingApprovals(),
-      fetchAssignedStudents(1, 5),
-    ]);
+    await refreshAll();
+    await fetchAssignedStudents(1, 5);
     setIsRefreshing(false);
   };
 
-  const activityData = [
-    { date: "Mon", approvals: 4, feedback: 2 },
-    { date: "Tue", approvals: 6, feedback: 3 },
-    { date: "Wed", approvals: 3, feedback: 4 },
-    { date: "Thu", approvals: 8, feedback: 5 },
-    { date: "Fri", approvals: 5, feedback: 3 },
-    { date: "Sat", approvals: 2, feedback: 2 },
-    { date: "Sun", approvals: 1, feedback: 1 },
-  ];
-
   return (
-    <>
+    <div className="space-y-8">
       <GlobalNotification />
-      <div className="space-y-8">
+
+      <Header
+          title='Mentor Dashboard'
+          subtitle="Welcome back! Here's what's happening today."
+          HeaderComp={
+            <div style={{ display: "flex", gap: 10 }}>
+              <Button
+                variant="outline"
+                onClick={handleRefresh}
+                disabled={isRefreshing}
+                style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}
+              >
+                <RefreshCw
+                  size={14}
+                  style={{ animation: isRefreshing ? "spin 1s linear infinite" : "none" }}
+                />
+                Refresh
+              </Button>
+              <Button style={{
+                display: "flex", alignItems: "center", gap: 6, fontSize: 13,
+                background: "var(--primary)", color: "var(--primary-foreground)",
+              }}>
+                <Download size={14} />
+                Export
+              </Button>
+            </div>
+          }
+        />
+
+      <div className="space-y-8 px-5 py-3">
         {/* Header Section */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Mentor Dashboard</h1>
-            <p className="text-muted-foreground mt-2">Welcome back! Monitor your students and approvals.</p>
-          </div>
-          <Button
-            onClick={handleRefresh}
-            disabled={isRefreshing}
-            className="gap-2"
-            size="lg"
-          >
-            <RefreshCw className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`} />
-            {isRefreshing ? "Refreshing..." : "Refresh"}
-          </Button>
-        </div>
+        
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -285,12 +291,11 @@ export default function MentorDashboard() {
                     <div
                       className="bg-amber-500 h-2 rounded-full"
                       style={{
-                        width: `${
-                          ((pendingApprovals.filter((a) => a.status === "Pending").length ||
+                        width: `${((pendingApprovals.filter((a) => a.status === "Pending").length ||
                             0) /
                             (pendingApprovals.length || 1)) *
                           100
-                        }%`,
+                          }%`,
                       }}
                     />
                   </div>
@@ -307,12 +312,11 @@ export default function MentorDashboard() {
                     <div
                       className="bg-green-500 h-2 rounded-full"
                       style={{
-                        width: `${
-                          ((pendingApprovals.filter((a) => a.status === "Approved").length ||
+                        width: `${((pendingApprovals.filter((a) => a.status === "Approved").length ||
                             0) /
                             (pendingApprovals.length || 1)) *
                           100
-                        }%`,
+                          }%`,
                       }}
                     />
                   </div>
@@ -329,12 +333,11 @@ export default function MentorDashboard() {
                     <div
                       className="bg-red-500 h-2 rounded-full"
                       style={{
-                        width: `${
-                          ((pendingApprovals.filter((a) => a.status === "Rejected").length ||
+                        width: `${((pendingApprovals.filter((a) => a.status === "Rejected").length ||
                             0) /
                             (pendingApprovals.length || 1)) *
                           100
-                        }%`,
+                          }%`,
                       }}
                     />
                   </div>
@@ -460,6 +463,6 @@ export default function MentorDashboard() {
           </Card>
         </div>
       </div>
-    </>
+    </div>
   );
 }

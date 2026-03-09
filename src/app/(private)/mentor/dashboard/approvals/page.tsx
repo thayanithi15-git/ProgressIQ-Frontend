@@ -24,9 +24,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { CheckCircle, XCircle, Clock, FileText, MessageSquare, Plus } from "lucide-react";
+import { CheckCircle, XCircle, Clock, FileText, MessageSquare, Plus, Download } from "lucide-react";
 import { useMentorDashboardStore } from "@/store/mentor/dashboard";
 import GlobalNotification from "@/components/notify/notification";
+import Header from "@/components/layout/header";
 
 export default function ApprovalsPage() {
   const {
@@ -76,9 +77,26 @@ export default function ApprovalsPage() {
   };
 
   return (
-    <>
+    <div className="space-y-8">
       <GlobalNotification />
-      <div className="space-y-6">
+
+      <Header
+        title='Mentor Dashboard'
+        subtitle="Welcome back! Here's what's happening today."
+        HeaderComp={
+          <div style={{ display: "flex", gap: 10 }}>
+            <Button style={{
+              display: "flex", alignItems: "center", gap: 6, fontSize: 13,
+              background: "var(--primary)", color: "var(--primary-foreground)",
+            }}>
+              <Download size={14} />
+              Export
+            </Button>
+          </div>
+        }
+      />
+
+      <div className="space-y-8 px-5 py-3">
         {/* Header */}
         <div>
           <h1 className="text-3xl font-bold text-foreground">Approvals & Feedback</h1>
@@ -284,6 +302,6 @@ export default function ApprovalsPage() {
           </CardContent>
         </Card>
       </div>
-    </>
+    </div>
   );
 }

@@ -23,74 +23,42 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Clipboard, Plus, Send } from "lucide-react";
+import { Clipboard, Download, Plus, Send } from "lucide-react";
 import GlobalNotification from "@/components/notify/notification";
-import api from "@/utils/api";
-import { useNotificationStore } from "@/utils/notification";
-
-interface Survey {
-  id: string;
-  title: string;
-  description?: string;
-  questions: string[];
-  createdDate: string;
-  respondents: number;
-  status: "Active" | "Closed";
-}
+import { useMentorDashboardStore } from "@/store/mentor/dashboard";
+import Header from "@/components/layout/header";
 
 export default function SurveysPage() {
-  const [surveys, setSurveys] = useState<Survey[]>([]);
-  const [loading, setLoading] = useState(false);
+  const {
+    surveys,
+    surveysLoading,
+    surveyResponses,
+    fetchSurveys,
+    createSurvey,
+    fetchSurveyResponses,
+  } = useMentorDashboardStore();
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedSurveyId, setSelectedSurveyId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     questions: [""],
   });
 
-  const fetchSurveys = async () => {
-    setLoading(true);
-    try {
-      const response = await api.get("/api/mentors/surveys");
-      setSurveys(response.data.data || []);
-    } catch (error: any) {
-      useNotificationStore.setState({
-        notification: {
-          message: error.response?.data?.message || "Failed to fetch surveys",
-          type: "error",
-        },
-      });
-    }
-    setLoading(false);
-  };
-
   useEffect(() => {
     fetchSurveys();
   }, []);
 
   const handleCreateSurvey = async () => {
-    try {
-      await api.post("/api/mentors/surveys", {
-        title: formData.title,
-        description: formData.description,
-        questions: formData.questions.filter((q) => q.trim()),
-      });
-      useNotificationStore.setState({
-        notification: {
-          message: "Survey created successfully",
-          type: "success",
-        },
-      });
+    const ok = await createSurvey({
+      title: formData.title,
+      description: formData.description,
+      questions: formData.questions.filter((q) => q.trim()),
+    });
+    if (ok) {
       setIsDialogOpen(false);
       setFormData({ title: "", description: "", questions: [""] });
-      await fetchSurveys();
-    } catch (error: any) {
-      useNotificationStore.setState({
-        notification: {
-          message: error.response?.data?.message || "Failed to create survey",
-          type: "error",
-        },
-      });
     }
   };
 
@@ -115,9 +83,26 @@ export default function SurveysPage() {
   };
 
   return (
-    <>
-      <GlobalNotification />
-      <div className="space-y-6">
+    <div className="space-y-8">
+         <GlobalNotification />
+   
+         <Header
+             title='Mentor Dashboard'
+             subtitle="Welcome back! Here's what's happening today."
+             HeaderComp={
+               <div style={{ display: "flex", gap: 10 }}>
+                 <Button style={{
+                   display: "flex", alignItems: "center", gap: 6, fontSize: 13,
+                   background: "var(--primary)", color: "var(--primary-foreground)",
+                 }}>
+                   <Download size={14} />
+                   Export
+                 </Button>
+               </div>
+             }
+           />
+
+      <div className="space-y-8 px-5 py-3">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -233,7 +218,7 @@ export default function SurveysPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {loading ? (
+            {surveysLoading ? (
               <div className="space-y-3">
                 <Skeleton className="h-12 w-full" />
                 <Skeleton className="h-12 w-full" />
@@ -286,8 +271,15 @@ export default function SurveysPage() {
                           {new Date(survey.createdDate).toLocaleDateString()}
                         </TableCell>
                         <TableCell>
-                          <Button variant="ghost" size="sm">
-                            View
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={async () => {
+                              setSelectedSurveyId(survey.id);
+                              await fetchSurveyResponses(survey.id);
+                            }}
+                          >
+                            View Answers
                           </Button>
                         </TableCell>
                       </TableRow>
@@ -303,7 +295,40 @@ export default function SurveysPage() {
             )}
           </CardContent>
         </Card>
+
+        {selectedSurveyId && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Survey Responses</CardTitle>
+              <CardDescription>Student answers for selected survey</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {surveyResponses.length === 0 ? (
+                <p className="text-sm text-muted-foreground">No responses yet.</p>
+              ) : (
+                <div className="space-y-4">
+                  {surveyResponses.map((response) => (
+                    <div key={response.responseId} className="rounded-md border p-4 space-y-2">
+                      <p className="font-medium">{response.student.name} ({response.student.email})</p>
+                      <p className="text-xs text-muted-foreground">
+                        Submitted: {new Date(response.submittedAt).toLocaleString()}
+                      </p>
+                      <div className="space-y-2">
+                        {response.answers.map((a, i) => (
+                          <div key={i} className="text-sm">
+                            <p className="font-medium">{a.question}</p>
+                            <p className="text-muted-foreground">{a.answer || "-"}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
       </div>
-    </>
+    </div>
   );
 }

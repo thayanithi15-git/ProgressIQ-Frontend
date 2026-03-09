@@ -14,9 +14,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { CheckSquare, Filter, Plus, Calendar } from "lucide-react";
+import { CheckSquare, Filter, Plus, Calendar, Download } from "lucide-react";
 import { useMentorDashboardStore } from "@/store/mentor/dashboard";
 import GlobalNotification from "@/components/notify/notification";
+import Header from "@/components/layout/header";
 
 const priorityColors = {
   High: "text-red-600 bg-red-50",
@@ -48,9 +49,26 @@ export default function TasksPage() {
   });
 
   return (
-    <>
-      <GlobalNotification />
-      <div className="space-y-6">
+    <div className="space-y-8">
+         <GlobalNotification />
+   
+         <Header
+             title='Mentor Dashboard'
+             subtitle="Welcome back! Here's what's happening today."
+             HeaderComp={
+               <div style={{ display: "flex", gap: 10 }}>
+                 <Button style={{
+                   display: "flex", alignItems: "center", gap: 6, fontSize: 13,
+                   background: "var(--primary)", color: "var(--primary-foreground)",
+                 }}>
+                   <Download size={14} />
+                   Export
+                 </Button>
+               </div>
+             }
+           />
+
+      <div className="space-y-8 px-5 py-3">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
@@ -168,6 +186,6 @@ export default function TasksPage() {
           </CardContent>
         </Card>
       </div>
-    </>
+    </ div>
   );
 }

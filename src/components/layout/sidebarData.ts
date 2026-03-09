@@ -126,8 +126,32 @@ export const mentorSections = (base: string): SidebarSection[] => [
       {
         icon: Users,
         label: "Management",
-        href: `${base}/management`,
+        href: `${base}/assigned-students`,
         description: "My students",
+      },
+      {
+        icon: FolderKanban,
+        label: "Projects",
+        href: `${base}/projects`,
+        description: "Student projects",
+      },
+      {
+        icon: ClipboardList,
+        label: "Tasks",
+        href: `${base}/tasks`,
+        description: "Student tasks",
+      },
+      {
+        icon: Award,
+        label: "Certifications",
+        href: `${base}/certifications`,
+        description: "Student certifications",
+      },
+      {
+        icon: Briefcase,
+        label: "Internships",
+        href: `${base}/internships`,
+        description: "Student internships",
       },
     ],
   },
