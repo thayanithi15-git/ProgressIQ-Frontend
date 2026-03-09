@@ -20,6 +20,7 @@ const poppins = Poppins({
     weight: ["400", "500", "600", "700"],
 });
 
+
 export default function PrivateLayout({ children }: Props) {
     const router = useRouter();
 

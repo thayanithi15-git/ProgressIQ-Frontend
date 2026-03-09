@@ -42,9 +42,17 @@ const jetbrainsMono = JetBrains_Mono({
 export default function PrivateLayout({ children }: Props) {
   const router = useRouter();
 
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   return (
-    <div className={cn(poppins.className,  `${playfair.variable} ${sourceSerif.variable} ${jetbrainsMono.variable} antialiased min-h-screen bg-background`)}>
-          {/* <html className={`${playfair.variable} ${sourceSerif.variable} ${jetbrainsMono.variable}`}> */}
+    <div className={cn(poppins.className, `${playfair.variable} ${sourceSerif.variable} ${jetbrainsMono.variable} antialiased min-h-screen bg-background`)}>
+      {/* <html className={`${playfair.variable} ${sourceSerif.variable} ${jetbrainsMono.variable}`}> */}
 
       {/* <SidebarProvider defaultOpen>
         <AppSidebar /> */}

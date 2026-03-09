@@ -1,192 +1,467 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Input } from "@/components/ui/input";
+import React, { useEffect, useState } from 'react';
+import { Search, Filter, ChevronLeft, ChevronRight, Eye, ArrowUpDown, X, Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Search, Mail, BookOpen, TrendingUp, Filter, Download } from "lucide-react";
-import { useMentorDashboardStore } from "@/store/mentor/dashboard";
-import GlobalNotification from "@/components/notify/notification";
-import Header from "@/components/layout/header";
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from '@/';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useAssignedStudentsStore } from '@/store/mentor/assignedStudents';
+// import { MentorHeader } from '@/components/mentor/header';
+import { motion } from 'framer-motion';
+import Header from '@/components/layout/header';
+import { Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue, } from '@/components/ui/select';
 
-export default function AssignedStudentsPage() {
-  const { assignedStudents, studentsLoading, fetchAssignedStudents } =
-    useMentorDashboardStore();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState("All");
+const StudentProfileModal = ({ student, onClose }: any) => {
+  if (!student) return null;
 
-  useEffect(() => {
-    fetchAssignedStudents(1, 50);
-  }, []);
-
-  const filteredStudents = assignedStudents.filter((student) => {
-    const matchesSearch =
-      student.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      student.email.toLowerCase().includes(searchTerm.toLowerCase());
-
-    const matchesStatus =
-      filterStatus === "All" || student.status === filterStatus;
-
-    return matchesSearch && matchesStatus;
-  });
+  const { profile, stats, recent } = student;
 
   return (
-   <div className="space-y-8">
-         <GlobalNotification />
-   
-         <Header
-             title='Mentor Dashboard'
-             subtitle="Welcome back! Here's what's happening today."
-             HeaderComp={
-               <div style={{ display: "flex", gap: 10 }}>
-                 <Button style={{
-                   display: "flex", alignItems: "center", gap: 6, fontSize: 13,
-                   background: "var(--primary)", color: "var(--primary-foreground)",
-                 }}>
-                   <Download size={14} />
-                   Export
-                 </Button>
-               </div>
-             }
-           />
+    <Dialog open={!!student} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="font-poppins">Student Profile</DialogTitle>
+          <DialogDescription className="font-poppins">Complete student information and statistics</DialogDescription>
+        </DialogHeader>
 
-      <div className="space-y-8 px-5 py-3">
-
-        {/* Filters */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1 relative">
-                <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search by name or email..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <div className="flex gap-2">
-                {["All", "Active", "Inactive"].map((status) => (
-                  <Button
-                    key={status}
-                    onClick={() => setFilterStatus(status)}
-                    variant={filterStatus === status ? "default" : "outline"}
-                    size="sm"
-                  >
-                    {status}
-                  </Button>
-                ))}
+        {/* Profile Header */}
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950 dark:to-indigo-950 rounded-lg p-6 mb-6">
+          <div className="flex items-start justify-between">
+            <div>
+              <h3 className="text-2xl font-bold font-poppins mb-2">
+                {profile.firstName} {profile.lastName}
+              </h3>
+              <p className="text-muted-foreground font-poppins mb-3">{profile.email}</p>
+              <div className="flex gap-4 text-sm font-poppins">
+                <span className="font-medium">{profile.department}</span>
+                <span className="text-muted-foreground">Year {profile.year}</span>
+                <Badge variant={profile.status === 'Active' ? 'default' : 'secondary'}>
+                  {profile.status}
+                </Badge>
               </div>
             </div>
-          </CardContent>
-        </Card>
+            <div className="text-right">
+              <p className="text-3xl font-bold text-blue-600 font-poppins">{stats.totalPoints}</p>
+              <p className="text-sm text-muted-foreground font-poppins">Total Points</p>
+            </div>
+          </div>
+        </div>
 
-        {/* Students Table */}
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-sm text-muted-foreground mb-2 font-poppins">Projects</p>
+              <p className="text-2xl font-bold font-poppins">{stats.projects.approved}</p>
+              <p className="text-xs text-muted-foreground mt-1 font-poppins">
+                {stats.projects.pending} pending
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-sm text-muted-foreground mb-2 font-poppins">Tasks</p>
+              <p className="text-2xl font-bold font-poppins">{stats.tasks.approved}</p>
+              <p className="text-xs text-muted-foreground mt-1 font-poppins">
+                {stats.tasks.pending} pending
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-sm text-muted-foreground mb-2 font-poppins">Internships</p>
+              <p className="text-2xl font-bold font-poppins">{stats.internships.approved}</p>
+              <p className="text-xs text-muted-foreground mt-1 font-poppins">
+                {stats.internships.pending} pending
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <p className="text-sm text-muted-foreground mb-2 font-poppins">Certifications</p>
+              <p className="text-2xl font-bold font-poppins">{stats.certifications.approved}</p>
+              <p className="text-xs text-muted-foreground mt-1 font-poppins">
+                {stats.certifications.pending} pending
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Contact Details */}
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <CardTitle className="text-base font-poppins">Contact Information</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <CardTitle>Student List</CardTitle>
-                <CardDescription>
-                  Showing {filteredStudents.length} of {assignedStudents.length} students
-                </CardDescription>
+                <p className="text-sm text-muted-foreground mb-1 font-poppins">Phone</p>
+                <p className="font-medium font-poppins">{profile.phone || 'Not provided'}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground mb-1 font-poppins">Location</p>
+                <p className="font-medium font-poppins">{profile.place || 'Not provided'}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground mb-1 font-poppins">Academic Year</p>
+                <p className="font-medium font-poppins">{profile.academicYear || 'Not provided'}</p>
               </div>
             </div>
-          </CardHeader>
-          <CardContent>
-            {studentsLoading ? (
-              <div className="space-y-3">
-                <Skeleton className="h-12 w-full" />
-                <Skeleton className="h-12 w-full" />
-                <Skeleton className="h-12 w-full" />
-              </div>
-            ) : filteredStudents.length > 0 ? (
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Email</TableHead>
-                      <TableHead>Department</TableHead>
-                      <TableHead>Year</TableHead>
-                      <TableHead>Points</TableHead>
-                      <TableHead>Projects</TableHead>
-                      <TableHead>Last Active</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Action</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredStudents.map((student) => (
-                      <TableRow key={student.id} className="hover:bg-muted/50">
-                        <TableCell className="font-medium">
-                          {student.firstName} {student.lastName}
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          <div className="flex items-center gap-2">
-                            <Mail className="w-4 h-4 text-muted-foreground" />
-                            {student.email}
-                          </div>
-                        </TableCell>
-                        <TableCell>{student.department}</TableCell>
-                        <TableCell className="text-center">{student.year}</TableCell>
-                        <TableCell>
-                          <Badge variant="secondary" className="gap-1">
-                            <TrendingUp className="w-3 h-3" />
-                            {student.points}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">
-                            <BookOpen className="w-3 h-3 mr-1" />
-                            {student.projectsCompleted}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-sm text-muted-foreground">
-                          {new Date(student.lastActive).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant={student.status === "Active" ? "default" : "outline"}
-                            className={
-                              student.status === "Active"
-                                ? "bg-green-500 hover:bg-green-600"
-                                : ""
-                            }
-                          >
-                            {student.status}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <Button variant="ghost" size="sm">
-                            View Profile
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            ) : (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground">No students found matching your criteria</p>
-              </div>
-            )}
           </CardContent>
         </Card>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default function AssignedStudentsPage() {
+  const {
+    students,
+    selectedStudent,
+    searchQuery,
+    department,
+    year,
+    status,
+    minPoints,
+    maxPoints,
+    sortBy,
+    sortOrder,
+    page,
+    limit,
+    total,
+    totalPages,
+    isLoading,
+    isLoadingProfile,
+    fetchStudents,
+    fetchStudentProfile,
+    setSearchQuery,
+    setDepartment,
+    setYear,
+    setStatus,
+    setMinPoints,
+    setMaxPoints,
+    setSortBy,
+    setSortOrder,
+    setPage,
+    resetFilters,
+    closeProfileModal,
+  } = useAssignedStudentsStore();
+
+  const [tempSearch, setTempSearch] = useState(searchQuery);
+
+  useEffect(() => {
+  fetchStudents();
+}, [searchQuery, department, year, status, minPoints, maxPoints, page, sortBy, sortOrder]);
+
+  const hasActiveFilters =
+    searchQuery || department || year || status || minPoints !== null || maxPoints !== null;
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTempSearch(e.target.value);
+  };
+
+  const handleSearchSubmit = () => {
+    setSearchQuery(tempSearch);
+  };
+
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <Header
+          // subtitle={student ? `Welcome back, ${student.name.split(" ")[0]}! Keep up the great work.` : "Welcome back!"}
+          HeaderComp={
+            <div style={{ display: "flex", gap: 10 }}>
+              <Button style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, background: "var(--primary)", color: "var(--primary-foreground)" }}>
+                <Download size={14} />
+                Export
+              </Button>
+            </div>
+          }
+        />
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Search and Filters */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6"
+        >
+          <Card>
+            <CardContent className="p-6">
+              {/* Search Bar */}
+              <div className="flex gap-2 mb-4">
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search by name or email..."
+                    value={tempSearch}
+                    onChange={handleSearch}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit()}
+                    className="pl-10 font-poppins"
+                  />
+                </div>
+                <Button onClick={handleSearchSubmit} className="gap-2 font-poppins">
+                  <Search className="w-4 h-4" />
+                  Search
+                </Button>
+              </div>
+
+              {/* Filters Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                <Select value={department} onValueChange={setDepartment}>
+                  <SelectTrigger className="font-poppins">
+                    <SelectValue placeholder="Department" />
+                  </SelectTrigger>
+                  <SelectContent className="font-poppins">
+                    <SelectItem value="all">All Departments</SelectItem>
+                    <SelectItem value="CSE">Computer Science</SelectItem>
+                    <SelectItem value="ECE">Electronics</SelectItem>
+                    <SelectItem value="ME">Mechanical</SelectItem>
+                    <SelectItem value="CE">Civil</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select value={year} onValueChange={setYear}>
+                  <SelectTrigger className="font-poppins">
+                    <SelectValue placeholder="Year" />
+                  </SelectTrigger>
+                  <SelectContent className="font-poppins">
+                    <SelectItem value="all">All Years</SelectItem>
+                    <SelectItem value="1st">1st Year</SelectItem>
+                    <SelectItem value="2nd">2nd Year</SelectItem>
+                    <SelectItem value="3rd">3rd Year</SelectItem>
+                    <SelectItem value="4th">4th Year</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Select value={status} onValueChange={setStatus}>
+                  <SelectTrigger className="font-poppins">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent className="font-poppins">
+                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="Active">Active</SelectItem>
+                    <SelectItem value="Inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                <Input
+                  type="number"
+                  placeholder="Min Points"
+                  value={minPoints ?? ''}
+                  onChange={(e) => setMinPoints(e.target.value ? Number(e.target.value) : null)}
+                  className="font-poppins"
+                />
+
+                <Input
+                  type="number"
+                  placeholder="Max Points"
+                  value={maxPoints ?? ''}
+                  onChange={(e) => setMaxPoints(e.target.value ? Number(e.target.value) : null)}
+                  className="font-poppins"
+                />
+
+                {hasActiveFilters && (
+                  <Button variant="outline" onClick={resetFilters} className="gap-2 font-poppins">
+                    <X className="w-4 h-4" />
+                    Reset
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Sort Options */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="flex items-center justify-between mb-4"
+        >
+          <p className="text-sm text-muted-foreground font-poppins">
+            Showing {students.length} of {total} students
+          </p>
+          <div className="flex gap-2">
+            <Select value={sortBy} onValueChange={(val: any) => setSortBy(val)}>
+              <SelectTrigger className="w-40 font-poppins">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="font-poppins">
+                <SelectItem value="name">Sort by Name</SelectItem>
+                <SelectItem value="points">Sort by Points</SelectItem>
+                <SelectItem value="department">Sort by Department</SelectItem>
+                <SelectItem value="year">Sort by Year</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+              className="gap-2 font-poppins"
+            >
+              <ArrowUpDown className="w-4 h-4" />
+              {sortOrder === 'asc' ? 'Asc' : 'Desc'}
+            </Button>
+          </div>
+        </motion.div>
+
+        {/* Students Table */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <Card>
+            <CardContent className="p-0">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-muted/50 border-b">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-sm font-semibold font-poppins">Name</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold font-poppins">Email</th>
+                      <th className="px-6 py-3 text-left text-sm font-semibold font-poppins">Department</th>
+                      <th className="px-6 py-3 text-center text-sm font-semibold font-poppins">Year</th>
+                      <th className="px-6 py-3 text-right text-sm font-semibold font-poppins">Points</th>
+                      <th className="px-6 py-3 text-center text-sm font-semibold font-poppins">Status</th>
+                      <th className="px-6 py-3 text-center text-sm font-semibold font-poppins">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {isLoading ? (
+                      [...Array(5)].map((_, i) => (
+                        <tr key={i} className="border-b">
+                          {[...Array(7)].map((_, j) => (
+                            <td key={j} className="px-6 py-4">
+                              <Skeleton className="h-4 w-20" />
+                            </td>
+                          ))}
+                        </tr>
+                      ))
+                    ) : students.length === 0 ? (
+                      <tr>
+                        <td colSpan={7} className="px-6 py-8 text-center text-muted-foreground font-poppins">
+                          No students found
+                        </td>
+                      </tr>
+                    ) : (
+                      students.map((student, idx) => (
+                        <motion.tr
+                          key={student.id}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: idx * 0.02 }}
+                          className="border-b hover:bg-muted/50 transition-colors"
+                        >
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-sm font-bold font-poppins">
+                                {student.firstName.charAt(0)}{student.lastName.charAt(0)}
+                              </div>
+                              <div>
+                                <p className="font-medium font-poppins">
+                                  {student.firstName} {student.lastName}
+                                </p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-muted-foreground font-poppins">
+                            {student.email}
+                          </td>
+                          <td className="px-6 py-4 text-sm font-poppins">{student.department}</td>
+                          <td className="px-6 py-4 text-center text-sm font-poppins">{student.year}</td>
+                          <td className="px-6 py-4 text-right font-semibold text-blue-600 font-poppins">
+                            {student.points.toLocaleString()}
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            <Badge
+                              variant={student.status === 'Active' ? 'default' : 'secondary'}
+                            >
+                              {student.status}
+                            </Badge>
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => fetchStudentProfile(student.id)}
+                              disabled={isLoadingProfile}
+                              className="gap-2 font-poppins"
+                            >
+                              <Eye className="w-4 h-4" />
+                              View
+                            </Button>
+                          </td>
+                        </motion.tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="flex items-center justify-between mt-6"
+          >
+            <p className="text-sm text-muted-foreground font-poppins">
+              Page {page} of {totalPages}
+            </p>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage(Math.max(1, page - 1))}
+                disabled={page === 1}
+                className="gap-2 font-poppins"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage(Math.min(totalPages, page + 1))}
+                disabled={page === totalPages}
+                className="gap-2 font-poppins"
+              >
+                Next
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            </div>
+          </motion.div>
+        )}
       </div>
+
+      {/* Student Profile Modal */}
+      <StudentProfileModal student={selectedStudent} onClose={closeProfileModal} />
     </div>
   );
 }
