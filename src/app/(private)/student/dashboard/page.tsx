@@ -27,56 +27,56 @@ import Header from "@/components/layout/header";
 // DESIGN TOKENS
 // ─────────────────────────────────────────────────────────────────────────────
 const C = {
-  blue:    "#3B6FD4",
-  violet:  "#7C3AED",
+  blue: "#3B6FD4",
+  violet: "#7C3AED",
   emerald: "#059669",
-  amber:   "#D97706",
-  rose:    "#E11D48",
-  cyan:    "#0891B2",
-  indigo:  "#6366F1",
-  pink:    "#EC4899",
-  teal:    "#0D9488",
-  orange:  "#EA580C",
+  amber: "#D97706",
+  rose: "#E11D48",
+  cyan: "#0891B2",
+  indigo: "#6366F1",
+  pink: "#EC4899",
+  teal: "#0D9488",
+  orange: "#EA580C",
 };
 
 const PIE_COLORS = [C.blue, C.violet, C.emerald, C.amber, C.rose, C.cyan];
 
 // Heatmap intensity → color
-const HEAT_COLORS = ["#E8F0FE","#A8C4F8","#5C96F5","#2563EB","#1D4ED8"];
-const HEAT_COLORS_DARK = ["#1A2540","#1E3A6E","#2563EB","#1D4ED8","#1E40AF"];
+const HEAT_COLORS = ["#E8F0FE", "#A8C4F8", "#5C96F5", "#2563EB", "#1D4ED8"];
+const HEAT_COLORS_DARK = ["#1A2540", "#1E3A6E", "#2563EB", "#1D4ED8", "#1E40AF"];
 
 const STAT_META = [
   {
-    key: "totalPoints",     label: "Total Points",     icon: Zap,
-    grad: ["#F59E0B","#D97706"], stars: "#FCD34D",
+    key: "totalPoints", label: "Total Points", icon: Zap,
+    grad: ["#F59E0B", "#D97706"], stars: "#FCD34D",
     sub: (s: any) => `Rank #${s?.ranking?.overallRank ?? "—"} overall`,
   },
   {
-    key: "totalHoursSpent", label: "Hours Logged",     icon: Clock,
-    grad: ["#3B6FD4","#1D4ED8"], stars: "#93C5FD",
+    key: "totalHoursSpent", label: "Hours Logged", icon: Clock,
+    grad: ["#3B6FD4", "#1D4ED8"], stars: "#93C5FD",
     sub: () => "Total activity hours",
   },
   {
-    key: "projects",        label: "Projects",          icon: Briefcase,
-    grad: ["#7C3AED","#5B21B6"], stars: "#C4B5FD",
+    key: "projects", label: "Projects", icon: Briefcase,
+    grad: ["#7C3AED", "#5B21B6"], stars: "#C4B5FD",
     sub: (s: any) => `${s?.projects?.completed ?? 0} completed`,
     val: (s: any) => s?.projects?.total,
   },
   {
-    key: "tasks",           label: "Tasks",             icon: CheckSquare,
-    grad: ["#059669","#047857"], stars: "#6EE7B7",
+    key: "tasks", label: "Tasks", icon: CheckSquare,
+    grad: ["#059669", "#047857"], stars: "#6EE7B7",
     sub: (s: any) => `${s?.tasks?.overdue ?? 0} overdue`,
     val: (s: any) => s?.tasks?.total,
   },
   {
-    key: "certifications",  label: "Certifications",   icon: Award,
-    grad: ["#EC4899","#DB2777"], stars: "#F9A8D4",
+    key: "certifications", label: "Certifications", icon: Award,
+    grad: ["#EC4899", "#DB2777"], stars: "#F9A8D4",
     sub: (s: any) => `${s?.certifications?.completed ?? 0} earned`,
     val: (s: any) => s?.certifications?.total,
   },
   {
-    key: "internships",     label: "Internships",       icon: GraduationCap,
-    grad: ["#0891B2","#0E7490"], stars: "#67E8F9",
+    key: "internships", label: "Internships", icon: GraduationCap,
+    grad: ["#0891B2", "#0E7490"], stars: "#67E8F9",
     sub: (s: any) => `${s?.internships?.completed ?? 0} completed`,
     val: (s: any) => s?.internships?.total,
   },
@@ -167,9 +167,8 @@ const GLOBAL_CSS = `
   }
   .heat-cell:hover { transform: scale(1.35); opacity: 0.85; }
 
-  .student-shell { display: grid; grid-template-columns: minmax(0,1fr) 360px; gap: 22px; align-items: start; }
+  .student-shell { disgap: 22px; align-items: start; }
   .student-main { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
-  .student-side { display: flex; flex-direction: column; gap: 18px; }
 
   @media (max-width: 1280px) {
     .stat-grid-student { grid-template-columns: repeat(3,1fr) !important; }
@@ -360,8 +359,8 @@ const ProgressRing = ({ value, max, color, size = 80, stroke = 7, label, sub }: 
 // HEATMAP COMPONENT
 // Uses a full-year calendar grid of squares (GitHub-style)
 // ─────────────────────────────────────────────────────────────────────────────
-const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-const DAYS   = ["","Mon","","Wed","","Fri",""];
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 interface HeatCell { date: string; value: number; intensity: number; }
 
@@ -430,7 +429,7 @@ const Heatmap = ({ data, year, loading }: { data: HeatCell[]; year: number; load
   };
 
   const CELL = 13;
-  const GAP  = 3;
+  const GAP = 3;
   const totalW = weeks.length * (CELL + GAP);
 
   if (loading) return <Sk h={130} style={{ width: "100%", borderRadius: 10 }} />;
@@ -486,7 +485,7 @@ const Heatmap = ({ data, year, loading }: { data: HeatCell[]; year: number; load
       {/* Legend */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 10, justifyContent: "flex-end" }}>
         <span style={{ fontSize: 10, color: "var(--text-muted)", fontWeight: 600 }}>Less</span>
-        {["var(--heat-empty)","var(--heat-1)","var(--heat-2)","var(--heat-3)","var(--heat-4)"].map((c,i) => (
+        {["var(--heat-empty)", "var(--heat-1)", "var(--heat-2)", "var(--heat-3)", "var(--heat-4)"].map((c, i) => (
           <div key={i} style={{ width: 12, height: 12, borderRadius: 3, background: c }} />
         ))}
         <span style={{ fontSize: 10, color: "var(--text-muted)", fontWeight: 600 }}>More</span>
@@ -631,26 +630,26 @@ export default function StudentDashboard() {
   // Build completion donut data
   const projectDonut = stats?.projects
     ? [
-        { label: "Completed", count: stats.projects.completed },
-        { label: "Pending",   count: stats.projects.pending },
-        { label: "Rejected",  count: stats.projects.rejected },
-      ].filter(d => d.count > 0)
+      { label: "Completed", count: stats.projects.completed },
+      { label: "Pending", count: stats.projects.pending },
+      { label: "Rejected", count: stats.projects.rejected },
+    ].filter(d => d.count > 0)
     : [];
 
   const taskDonut = stats?.tasks
     ? [
-        { label: "Completed", count: stats.tasks.completed },
-        { label: "Pending",   count: stats.tasks.pending },
-        { label: "Overdue",   count: stats.tasks.overdue },
-      ].filter(d => d.count > 0)
+      { label: "Completed", count: stats.tasks.completed },
+      { label: "Pending", count: stats.tasks.pending },
+      { label: "Overdue", count: stats.tasks.overdue },
+    ].filter(d => d.count > 0)
     : [];
 
   const certDonut = stats?.certifications
     ? [
-        { label: "Earned",   count: stats.certifications.completed },
-        { label: "Pending",  count: stats.certifications.pending },
-        { label: "Rejected", count: stats.certifications.rejected },
-      ].filter(d => d.count > 0)
+      { label: "Earned", count: stats.certifications.completed },
+      { label: "Pending", count: stats.certifications.pending },
+      { label: "Rejected", count: stats.certifications.rejected },
+    ].filter(d => d.count > 0)
     : [];
 
   // Available years for heatmap selector
@@ -682,18 +681,20 @@ export default function StudentDashboard() {
         />
 
         <div style={{ padding: "24px 24px 48px" }}>
-          <div className="student-shell">
-            <div className="student-main">
-
-          {/* ── 2. STAT CARDS ─────────────────────────────────────── */}
-          <div className="stat-grid-student" style={{ display: "grid", gridTemplateColumns: "repeat(6,1fr)", gap: 14 }}>
+          {/* ── 1. STAT CARDS (TOP ROW) ───────────────────────────── */}
+          <div className="stat-grid-student" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 14, marginBottom: 20 }}>
             {STAT_META.map((meta, i) => (
               <StatCard key={meta.key} meta={meta} stats={stats} index={i} loading={statsLoading} />
             ))}
           </div>
 
-          {/* ── 3. HEATMAP ────────────────────────────────────────── */}
-          <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+          {/* ── 2. HEATMAP ────────────────────────────────────────── */}
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            style={{ marginBottom: 20 }}
+          >
             <div style={{ background: "var(--card-bg)", borderRadius: 18, border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)", padding: "20px 24px 22px" }}>
               <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18, flexWrap: "wrap", gap: 12 }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -721,10 +722,10 @@ export default function StudentDashboard() {
               {!isLoadingHeatmap && heatmapData.length > 0 && (
                 <div style={{ display: "flex", gap: 10, marginTop: 14, flexWrap: "wrap" }}>
                   {[
-                    { label: "Active Days",   val: heatmapData.filter(d => d.value > 0).length, color: C.emerald },
-                    { label: "Total Points",   val: heatmapData.reduce((s, d) => s + d.value, 0).toFixed(0), color: C.blue },
-                    { label: "Avg pts/day",    val: heatmapData.length > 0 ? (heatmapData.reduce((s, d) => s + d.value, 0) / heatmapData.filter(d => d.value > 0).length || 0).toFixed(1) : "0", color: C.violet },
-                    { label: "Best Day",       val: `${Math.max(...heatmapData.map(d => d.value))} pts`, color: C.amber },
+                    { label: "Active Days", val: heatmapData.filter(d => d.value > 0).length, color: C.emerald },
+                    { label: "Total Points", val: heatmapData.reduce((s, d) => s + d.value, 0).toFixed(0), color: C.blue },
+                    { label: "Avg pts/day", val: heatmapData.length > 0 ? (heatmapData.reduce((s, d) => s + d.value, 0) / heatmapData.filter(d => d.value > 0).length || 0).toFixed(1) : "0", color: C.violet },
+                    { label: "Best Day", val: `${Math.max(...heatmapData.map(d => d.value))} pts`, color: C.amber },
                   ].map(({ label, val, color }) => (
                     <div key={label} style={{ padding: "6px 14px", borderRadius: 20, background: `${color}14`, border: `1px solid ${color}30` }}>
                       <span style={{ fontSize: 11, fontWeight: 600, color: "var(--text-muted)" }}>{label}: </span>
@@ -736,313 +737,419 @@ export default function StudentDashboard() {
             </div>
           </motion.div>
 
-          {/* ── 4. POINTS TREND + ACTIVITY CHART ─────────────────── */}
-          <div className="two-col-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-            <ChartCard
-              title="Points Trend" desc="Points earned over time" loading={isLoadingCharts} minH={290}
-              actions={["week","month","year"].map(v => (
-                <Pill key={v} label={v.charAt(0).toUpperCase()+v.slice(1)} active={pointsTrendFilter===v} onClick={() => setPointsTrendFilter(v as any)} />
-              ))}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full mb-6">
+
+            {/* ── STUDENT PROFILE ─────────────────────────── */}
+            <motion.div
+              className="w-full"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
             >
-              {!pointsTrend?.length ? <EmptyState /> : (
-                <ResponsiveContainer width="100%" height={268}>
-                  <AreaChart data={pointsTrend} margin={{ top: 4, right: 6, left: -16, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="ptGradS" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%"  stopColor={C.violet} stopOpacity={0.25} />
-                        <stop offset="95%" stopColor={C.violet} stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-line)" vertical={false} />
-                    <XAxis dataKey="date" tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} tickFormatter={v => fmtDate(v)} />
-                    <YAxis tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} />
-                    <Tooltip content={<ChartTooltip />} />
-                    <Area type="monotone" dataKey="points" name="Points" stroke={C.violet} strokeWidth={2.5} fill="url(#ptGradS)" dot={false} activeDot={{ r: 5, fill: C.violet, strokeWidth: 0 }} />
-                  </AreaChart>
-                </ResponsiveContainer>
-              )}
-            </ChartCard>
+              <div
+                style={{
+                  borderRadius: 20,
+                  width: "100%",
+                  background: "var(--profile-card)",
+                  padding: "26px 26px 22px",
+                  position: "relative",
+                  overflow: "hidden",
+                  boxShadow: "0 12px 40px rgba(0,0,0,0.25)",
+                  height: "100%"
+                }}
+              >
 
-            <ChartCard
-              title="Activity Hours" desc="Daily hours logged over time" loading={isLoadingCharts} minH={290}
-              actions={["week","month","year"].map(v => (
-                <Pill key={v} label={v.charAt(0).toUpperCase()+v.slice(1)} active={activityFilter===v} onClick={() => setActivityFilter(v as any)} />
-              ))}
+                <div style={{ position: "absolute", right: -40, top: -40, width: 180, height: 180, borderRadius: "50%", background: "rgba(255,255,255,0.05)" }} />
+                <div style={{ position: "absolute", right: 40, bottom: -60, width: 140, height: 140, borderRadius: "50%", background: "rgba(255,255,255,0.04)" }} />
+
+                <StarDeco color="rgba(255,255,255,0.14)" size={22} style={{ top: 18, right: 120 }} />
+                <StarDeco color="rgba(255,255,255,0.10)" size={14} style={{ top: 50, right: 180 }} />
+
+                {isLoadingProfile ? (
+                  <div className="flex flex-col gap-3">
+                    <Sk h={20} w="70%" />
+                    <Sk h={12} w="50%" />
+                    <Sk h={12} w="60%" />
+                    <Sk h={12} w="65%" />
+                  </div>
+                ) : (
+                  <>
+                    {/* Header */}
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
+                        <User size={20} color="#fff" />
+                      </div>
+
+                      <div className="min-w-0">
+                        <p className="text-[16px] font-extrabold text-white truncate">
+                          {student?.name || "Student"}
+                        </p>
+
+                        <p className="text-[11px] text-white/70">
+                          {student?.department || "—"} • {student?.year || "—"}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Details */}
+                    <div className="flex flex-col gap-2 text-[12px] text-white/80">
+                      <div className="flex items-center gap-2">
+                        <Mail size={13} /> {student?.email || "—"}
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <MapPin size={13} /> {student?.place || "—"}
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Phone size={13} /> {student?.phone || "—"}
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <Calendar size={13} /> {student?.academicYear || "—"}
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </motion.div>
+
+            {/* ── MENTOR CARD ─────────────────────────── */}
+            <motion.div
+              className="w-full hidden"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45 }}
             >
-              {!monthlyActivity?.length ? <EmptyState /> : (
-                <ResponsiveContainer width="100%" height={268}>
-                  <AreaChart data={monthlyActivity} margin={{ top: 4, right: 6, left: -16, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="actGradS" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%"  stopColor={C.cyan} stopOpacity={0.22} />
-                        <stop offset="95%" stopColor={C.cyan} stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-line)" vertical={false} />
-                    <XAxis dataKey="month" tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} tickFormatter={v => fmtDate(v + "-01", "month")} />
-                    <YAxis tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} />
-                    <Tooltip content={<ChartTooltip />} />
-                    <Area type="monotone" dataKey="hours" name="Hours" stroke={C.cyan} strokeWidth={2.5} fill="url(#actGradS)" dot={false} activeDot={{ r: 5, fill: C.cyan, strokeWidth: 0 }} />
-                  </AreaChart>
-                </ResponsiveContainer>
-              )}
-            </ChartCard>
-          </div>
+              <div
+                style={{
+                  borderRadius: 18,
+                  background: "var(--card-bg)",
+                  border: "1px solid var(--card-border)",
+                  boxShadow: "var(--card-shadow)",
+                  padding: "18px"
+                }}
+              >
 
-          {/* ── 5. COMPLETION RINGS + POINTS BY SOURCE ────────────── */}
-          <div className="two-col-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+                <div className="flex items-center gap-3 mb-3">
+                  <div
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 10,
+                      background: `${C.cyan}18`,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center"
+                    }}
+                  >
+                    <GraduationCap size={16} color={C.cyan} />
+                  </div>
 
-            {/* Completion status */}
-            <ChartCard title="Completion Overview" desc="Status breakdown for all activities" loading={isLoadingStats} minH={0}>
+                  <div>
+                    <p className="text-[13px] font-bold text-[var(--text-primary)]">
+                      Mentor
+                    </p>
+                    <p className="text-[11px] text-[var(--text-muted)]">
+                      Assigned mentor info
+                    </p>
+                  </div>
+                </div>
+
+                {mentor ? (
+                  <div className="flex flex-col gap-1 text-[12px]">
+                    <div className="font-bold text-[var(--text-primary)]">
+                      {mentor.name}
+                    </div>
+                    <div className="text-[var(--text-secondary)]">
+                      {mentor.department || "—"}
+                    </div>
+                    <div className="text-[var(--text-muted)]">
+                      {mentor.email || "—"}
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-[12px] text-[var(--text-muted)]">
+                    No mentor assigned
+                  </p>
+                )}
+              </div>
+            </motion.div>
+
+            {/* ── RANK CARD ─────────────────────────── */}
+            <div
+              className="w-full"
+              style={{
+                borderRadius: 20,
+                background: "var(--card-bg)",
+                border: "1px solid var(--card-border)",
+                boxShadow: "var(--card-shadow)",
+                padding: "22px"
+              }}
+            >
+
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-gradient-to-br from-orange-50 to-yellow-50">
+                  <Trophy size={17} color={C.amber} />
+                </div>
+
+                <div>
+                  <p className="text-[13px] font-bold text-[var(--text-primary)]">
+                    Rankings
+                  </p>
+                  <p className="text-[11px] text-[var(--text-muted)]">
+                    Your current standing
+                  </p>
+                </div>
+              </div>
+
               {statsLoading ? (
-                <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-                  <Sk h={120} /><Sk h={120} /><Sk h={120} />
+                <div className="flex flex-col gap-3">
+                  <Sk h={60} />
+                  <Sk h={60} />
                 </div>
               ) : (
-                <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-                  {[
-                    { label: "Projects",       data: projectDonut,  completed: stats?.projects?.completed ?? 0,      total: stats?.projects?.total ?? 0,        color: C.blue },
-                    { label: "Tasks",          data: taskDonut,     completed: stats?.tasks?.completed ?? 0,          total: stats?.tasks?.total ?? 0,            color: C.emerald },
-                    { label: "Certifications", data: certDonut,     completed: stats?.certifications?.completed ?? 0, total: stats?.certifications?.total ?? 0,   color: C.amber },
-                  ].map(({ label, data, completed, total, color }) => (
-                    <div key={label} style={{ padding: "16px", borderRadius: 14, background: "var(--body-bg)", border: "1px solid var(--card-border)" }}>
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-                        <p style={{ fontSize: 12, fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>{label}</p>
-                        <span style={{ fontSize: 12, fontWeight: 800, color, background: `${color}14`, padding: "3px 10px", borderRadius: 20 }}>{completed}/{total}</span>
+                <div className="flex flex-col gap-3">
+
+                  {/* {[
+                    { label: "Overall Rank", val: stats?.ranking?.overallRank, color: C.amber, icon: "🏆" },
+                    { label: "Department Rank", val: stats?.ranking?.departmentRank, color: C.blue, icon: "🎯" }
+                  ].map(({ label, val, color, icon }) => (
+                    <div
+                      key={label}
+                      className="flex items-center justify-between p-4 rounded-xl"
+                      style={{
+                        background: `${color}0F`,
+                        border: `1px solid ${color}25`
+                      }}
+                    >
+                      <div>
+                        <p className="text-[10px] font-bold uppercase text-[var(--text-muted)]">
+                          {label}
+                        </p>
+
+                        <p className="text-[26px] font-extrabold" style={{ color }}>
+                          {val != null ? `#${val}` : "—"}
+                        </p>
                       </div>
-                      {data.length > 0
-                        ? <MiniDonut data={data} dataKey="count" nameKey="label" />
-                        : <EmptyState label="No data yet" />
-                      }
+
+                      <span className="text-[28px]">{icon}</span>
                     </div>
-                  ))}
+                  ))} */}
+
+                  <div
+                    className="flex items-center justify-between p-4 rounded-xl"
+                    style={{
+                      background: `${C.violet}0F`,
+                      border: `1px solid ${C.violet}25`
+                    }}
+                  >
+                    <div>
+                      <p className="text-[10px] font-bold uppercase text-[var(--text-muted)]">
+                        Total Points
+                      </p>
+
+                      <p className="text-[26px] font-extrabold" style={{ color: C.violet }}>
+                        {stats?.totalPoints?.toLocaleString() ?? "—"}
+                      </p>
+                    </div>
+
+                    <Zap size={28} color={C.violet} />
+                  </div>
+
                 </div>
               )}
-            </ChartCard>
+            </div>
 
-            {/* Points by source */}
-            <ChartCard title="Points by Source" desc="Where your points come from" loading={isLoadingCharts} minH={0}>
-              {!pointsBySource?.length ? <EmptyState /> : (
-                <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-                  <ResponsiveContainer width="100%" height={230}>
-                    <BarChart data={pointsBySource} layout="vertical" margin={{ top: 4, right: 20, left: 8, bottom: 0 }}>
+          </div>
+
+          <div className="student-shell">
+            <div className="student-main">
+              {/* ── 3. POINTS TREND + ACTIVITY CHART ─────────────────── */}
+              <div className="one-col-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+                <ChartCard
+                  title="Points Trend" desc="Points earned over time" loading={isLoadingCharts} minH={290}
+                  actions={["week", "month", "year"].map(v => (
+                    <Pill key={v} label={v.charAt(0).toUpperCase() + v.slice(1)} active={pointsTrendFilter === v} onClick={() => setPointsTrendFilter(v as any)} />
+                  ))}
+                >
+                  {!pointsTrend?.length ? <EmptyState /> : (
+                    <ResponsiveContainer width="100%" height={268}>
+                      <AreaChart data={pointsTrend} margin={{ top: 4, right: 6, left: -16, bottom: 0 }}>
+                        <defs>
+                          <linearGradient id="ptGradS" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor={C.violet} stopOpacity={0.25} />
+                            <stop offset="95%" stopColor={C.violet} stopOpacity={0} />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-line)" vertical={false} />
+                        <XAxis dataKey="date" tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} tickFormatter={v => fmtDate(v)} />
+                        <YAxis tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} />
+                        <Tooltip content={<ChartTooltip />} />
+                        <Area type="monotone" dataKey="points" name="Points" stroke={C.violet} strokeWidth={2.5} fill="url(#ptGradS)" dot={false} activeDot={{ r: 5, fill: C.violet, strokeWidth: 0 }} />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  )}
+                </ChartCard>
+
+                <ChartCard
+                  title="Activity Hours" desc="Daily hours logged over time" loading={isLoadingCharts} minH={290}
+                  actions={["week", "month", "year"].map(v => (
+                    <Pill key={v} label={v.charAt(0).toUpperCase() + v.slice(1)} active={activityFilter === v} onClick={() => setActivityFilter(v as any)} />
+                  ))}
+                >
+                  {!monthlyActivity?.length ? <EmptyState /> : (
+                    <ResponsiveContainer width="100%" height={268}>
+                      <AreaChart data={monthlyActivity} margin={{ top: 4, right: 6, left: -16, bottom: 0 }}>
+                        <defs>
+                          <linearGradient id="actGradS" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="5%" stopColor={C.cyan} stopOpacity={0.22} />
+                            <stop offset="95%" stopColor={C.cyan} stopOpacity={0} />
+                          </linearGradient>
+                        </defs>
+                        <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-line)" vertical={false} />
+                        <XAxis dataKey="month" tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} tickFormatter={v => fmtDate(v + "-01", "month")} />
+                        <YAxis tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} />
+                        <Tooltip content={<ChartTooltip />} />
+                        <Area type="monotone" dataKey="hours" name="Hours" stroke={C.cyan} strokeWidth={2.5} fill="url(#actGradS)" dot={false} activeDot={{ r: 5, fill: C.cyan, strokeWidth: 0 }} />
+                      </AreaChart>
+                    </ResponsiveContainer>
+                  )}
+                </ChartCard>
+              </div>
+
+              {/* ── 4. COMPLETION RINGS + POINTS BY SOURCE ────────────── */}
+              <div className="two-col-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+
+                {/* Completion status */}
+                <ChartCard title="Completion Overview" desc="Status breakdown for all activities" loading={isLoadingStats} minH={0}>
+                  {statsLoading ? (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+                      <Sk h={120} /><Sk h={120} /><Sk h={120} />
+                    </div>
+                  ) : (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                      {[
+                        { label: "Projects", data: projectDonut, completed: stats?.projects?.completed ?? 0, total: stats?.projects?.total ?? 0, color: C.blue },
+                        { label: "Tasks", data: taskDonut, completed: stats?.tasks?.completed ?? 0, total: stats?.tasks?.total ?? 0, color: C.emerald },
+                        { label: "Certifications", data: certDonut, completed: stats?.certifications?.completed ?? 0, total: stats?.certifications?.total ?? 0, color: C.amber },
+                      ].map(({ label, data, completed, total, color }) => (
+                        <div key={label} style={{ padding: "16px", borderRadius: 14, background: "var(--body-bg)", border: "1px solid var(--card-border)" }}>
+                          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+                            <p style={{ fontSize: 12, fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>{label}</p>
+                            <span style={{ fontSize: 12, fontWeight: 800, color, background: `${color}14`, padding: "3px 10px", borderRadius: 20 }}>{completed}/{total}</span>
+                          </div>
+                          {data.length > 0
+                            ? <MiniDonut data={data} dataKey="count" nameKey="label" />
+                            : <EmptyState label="No data yet" />
+                          }
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </ChartCard>
+
+                {/* Points by source */}
+                <ChartCard title="Points by Source" desc="Where your points come from" loading={isLoadingCharts} minH={0}>
+                  {!pointsBySource?.length ? <EmptyState /> : (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
+                      <ResponsiveContainer width="100%" height={230}>
+                        <BarChart data={pointsBySource} layout="vertical" margin={{ top: 4, right: 20, left: 8, bottom: 0 }}>
+                          <defs>
+                            {PIE_COLORS.map((col, i) => (
+                              <linearGradient key={i} id={`hgrad${i}`} x1="0" y1="0" x2="1" y2="0">
+                                <stop offset="0%" stopColor={col} stopOpacity={0.8} />
+                                <stop offset="100%" stopColor={col} stopOpacity={1} />
+                              </linearGradient>
+                            ))}
+                          </defs>
+                          <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-line)" horizontal={false} />
+                          <XAxis type="number" tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} />
+                          <YAxis type="category" dataKey="source" tick={{ fontSize: 11, fill: "var(--text-secondary)", fontWeight: 600 }} axisLine={false} tickLine={false} width={90} />
+                          <Tooltip content={<ChartTooltip />} cursor={{ fill: "rgba(59,111,212,0.05)" }} />
+                          <Bar dataKey="points" name="Points" radius={[0, 8, 8, 0]} maxBarSize={22}>
+                            {pointsBySource.map((_: any, i: number) => (
+                              <Cell key={i} fill={`url(#hgrad${i % 6})`} />
+                            ))}
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+
+                      {/* Source legend */}
+                      <div style={{ display: "flex", flexDirection: "column", gap: 5, marginTop: 8 }}>
+                        {pointsBySource.map((item: any, i: number) => {
+                          const total = pointsBySource.reduce((s: number, d: any) => s + d.points, 0);
+                          const pct = total > 0 ? ((item.points / total) * 100).toFixed(1) : "0";
+                          return (
+                            <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "3px 8px" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                <span style={{ width: 7, height: 7, borderRadius: "50%", background: PIE_COLORS[i % 6], flexShrink: 0 }} />
+                                <span style={{ fontSize: 11, color: "var(--text-secondary)", fontWeight: 500 }}>{item.source}</span>
+                              </div>
+                              <span style={{ fontSize: 11, fontWeight: 700, color: PIE_COLORS[i % 6] }}>{pct}%</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </ChartCard>
+              </div>
+
+              {/* ── 5. TASK COMPLETION TREND ──────────────────────────── */}
+              {taskCompletion?.length > 0 && (
+                <ChartCard title="Task Completion Trend" desc="Monthly breakdown of task statuses" loading={isLoadingCharts} minH={310}>
+                  <ResponsiveContainer width="100%" height={290}>
+                    <BarChart data={taskCompletion} margin={{ top: 4, right: 16, left: -16, bottom: 0 }}>
                       <defs>
-                        {PIE_COLORS.map((col, i) => (
-                          <linearGradient key={i} id={`hgrad${i}`} x1="0" y1="0" x2="1" y2="0">
-                            <stop offset="0%"   stopColor={col} stopOpacity={0.8} />
-                            <stop offset="100%" stopColor={col} stopOpacity={1} />
+                        {[[C.emerald, "tg1"], [C.amber, "tg2"], [C.rose, "tg3"]].map(([c, id]) => (
+                          <linearGradient key={id as string} id={id as string} x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor={c as string} stopOpacity={1} />
+                            <stop offset="100%" stopColor={c as string} stopOpacity={0.55} />
                           </linearGradient>
                         ))}
                       </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-line)" horizontal={false} />
-                      <XAxis type="number" tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} />
-                      <YAxis type="category" dataKey="source" tick={{ fontSize: 11, fill: "var(--text-secondary)", fontWeight: 600 }} axisLine={false} tickLine={false} width={90} />
-                      <Tooltip content={<ChartTooltip />} cursor={{ fill: "rgba(59,111,212,0.05)" }} />
-                      <Bar dataKey="points" name="Points" radius={[0,8,8,0]} maxBarSize={22}>
-                        {pointsBySource.map((_: any, i: number) => (
-                          <Cell key={i} fill={`url(#hgrad${i % 6})`} />
-                        ))}
-                      </Bar>
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-line)" vertical={false} />
+                      <XAxis dataKey="month" tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} tickFormatter={v => fmtDate(v + "-01", "month")} />
+                      <YAxis tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} />
+                      <Tooltip content={<ChartTooltip />} cursor={{ fill: "rgba(59,111,212,0.04)" }} />
+                      <Legend wrapperStyle={{ fontSize: 12, paddingTop: 10, color: "var(--text-secondary)" }} iconType="circle" iconSize={8} />
+                      <Bar dataKey="completed" name="Completed" stackId="a" fill="url(#tg1)" radius={[0, 0, 0, 0]} maxBarSize={48} />
+                      <Bar dataKey="pending" name="Pending" stackId="a" fill="url(#tg2)" maxBarSize={48} />
+                      <Bar dataKey="overdue" name="Overdue" stackId="a" fill="url(#tg3)" radius={[8, 8, 0, 0]} maxBarSize={48} />
                     </BarChart>
                   </ResponsiveContainer>
-
-                  {/* Source legend */}
-                  <div style={{ display: "flex", flexDirection: "column", gap: 5, marginTop: 8 }}>
-                    {pointsBySource.map((item: any, i: number) => {
-                      const total = pointsBySource.reduce((s: number, d: any) => s + d.points, 0);
-                      const pct = total > 0 ? ((item.points / total) * 100).toFixed(1) : "0";
-                      return (
-                        <div key={i} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "3px 8px" }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                            <span style={{ width: 7, height: 7, borderRadius: "50%", background: PIE_COLORS[i % 6], flexShrink: 0 }} />
-                            <span style={{ fontSize: 11, color: "var(--text-secondary)", fontWeight: 500 }}>{item.source}</span>
-                          </div>
-                          <span style={{ fontSize: 11, fontWeight: 700, color: PIE_COLORS[i % 6] }}>{pct}%</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
+                </ChartCard>
               )}
-            </ChartCard>
-          </div>
 
-          {/* ── 6. TASK COMPLETION TREND ──────────────────────────── */}
-          {taskCompletion?.length > 0 && (
-            <ChartCard title="Task Completion Trend" desc="Monthly breakdown of task statuses" loading={isLoadingCharts} minH={310}>
-              <ResponsiveContainer width="100%" height={290}>
-                <BarChart data={taskCompletion} margin={{ top: 4, right: 16, left: -16, bottom: 0 }}>
-                  <defs>
-                    {[[C.emerald,"tg1"],[C.amber,"tg2"],[C.rose,"tg3"]].map(([c,id]) => (
-                      <linearGradient key={id as string} id={id as string} x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%"   stopColor={c as string} stopOpacity={1} />
-                        <stop offset="100%" stopColor={c as string} stopOpacity={0.55} />
-                      </linearGradient>
-                    ))}
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="var(--grid-line)" vertical={false} />
-                  <XAxis dataKey="month" tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} tickFormatter={v => fmtDate(v + "-01", "month")} />
-                  <YAxis tick={{ fontSize: 11, fill: "var(--text-muted)" }} axisLine={false} tickLine={false} />
-                  <Tooltip content={<ChartTooltip />} cursor={{ fill: "rgba(59,111,212,0.04)" }} />
-                  <Legend wrapperStyle={{ fontSize: 12, paddingTop: 10, color: "var(--text-secondary)" }} iconType="circle" iconSize={8} />
-                  <Bar dataKey="completed" name="Completed" stackId="a" fill="url(#tg1)" radius={[0,0,0,0]} maxBarSize={48} />
-                  <Bar dataKey="pending"   name="Pending"   stackId="a" fill="url(#tg2)" maxBarSize={48} />
-                  <Bar dataKey="overdue"   name="Overdue"   stackId="a" fill="url(#tg3)" radius={[8,8,0,0]} maxBarSize={48} />
-                </BarChart>
-              </ResponsiveContainer>
-            </ChartCard>
-          )}
+              {/* ── 6. RECENT FEEDBACK + ACTIVITY LOG ────────────────── */}
+              <div className="two-col-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
 
-          {/* ── 7. RECENT FEEDBACK + ACTIVITY LOG ────────────────── */}
-          <div className="two-col-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-
-            <ChartCard title="Recent Feedback" desc="Latest from your mentor" loading={isLoadingProfile} minH={0}>
-              {!recentFeedback?.length ? (
-                <EmptyState label="No feedback yet" />
-              ) : (
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  {recentFeedback.map((item: any, i: number) => (
-                    <FeedbackCard key={item.id ?? i} item={item} index={i} />
-                  ))}
-                </div>
-              )}
-            </ChartCard>
-
-            <ChartCard title="Recent Activity" desc="Your latest logged hours" loading={isLoadingProfile} minH={0}>
-              {!recentActivities?.length ? (
-                <EmptyState label="No recent activity" />
-              ) : (
-                <div style={{ display: "flex", flexDirection: "column" }}>
-                  {recentActivities.slice(0, 8).map((item: any, i: number) => (
-                    <ActivityRow key={i} item={item} index={i} />
-                  ))}
-                </div>
-              )}
-            </ChartCard>
-          </div>
-
-            </div>
-
-            <div className="student-side">
-              {/* ── STUDENT PROFILE ─────────────────────────── */}
-              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-                <div style={{ borderRadius: 20, background: "var(--profile-card)", padding: "26px 26px 22px", position: "relative", overflow: "hidden", boxShadow: "0 12px 40px rgba(0,0,0,0.25)" }}>
-                  <div style={{ position: "absolute", right: -40, top: -40, width: 180, height: 180, borderRadius: "50%", background: "rgba(255,255,255,0.05)", pointerEvents: "none" }} />
-                  <div style={{ position: "absolute", right: 40, bottom: -60, width: 140, height: 140, borderRadius: "50%", background: "rgba(255,255,255,0.04)", pointerEvents: "none" }} />
-                  <StarDeco color="rgba(255,255,255,0.14)" size={22} style={{ top: 18, right: 120, animation: "float-star 3s ease-in-out infinite" }} />
-                  <StarDeco color="rgba(255,255,255,0.10)" size={14} style={{ top: 50, right: 180, animation: "float-star 3.5s ease-in-out infinite 0.6s" }} />
-
-                  {isLoadingProfile ? (
+                <ChartCard title="Recent Feedback" desc="Latest from your mentor" loading={isLoadingProfile} minH={0}>
+                  {!recentFeedback?.length ? (
+                    <EmptyState label="No feedback yet" />
+                  ) : (
                     <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                      <Sk h={20} w="70%" />
-                      <Sk h={12} w="50%" />
-                      <Sk h={12} w="60%" />
-                      <Sk h={12} w="65%" />
+                      {recentFeedback.map((item: any, i: number) => (
+                        <FeedbackCard key={item.id ?? i} item={item} index={i} />
+                      ))}
                     </div>
-                  ) : (
-                    <>
-                      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
-                        <div style={{ width: 48, height: 48, borderRadius: 14, background: "rgba(255,255,255,0.18)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                          <User size={20} color="#fff" />
-                        </div>
-                        <div style={{ minWidth: 0 }}>
-                          <p style={{ fontSize: 16, fontWeight: 800, color: "#fff", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                            {student?.name || "Student"}
-                          </p>
-                          <p style={{ fontSize: 11, color: "rgba(255,255,255,0.7)", margin: 0 }}>
-                            {student?.department || "—"} • {student?.year || "—"}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, color: "rgba(255,255,255,0.8)", fontSize: 12 }}>
-                          <Mail size={13} /> {student?.email || "—"}
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, color: "rgba(255,255,255,0.8)", fontSize: 12 }}>
-                          <MapPin size={13} /> {student?.place || "—"}
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, color: "rgba(255,255,255,0.8)", fontSize: 12 }}>
-                          <Phone size={13} /> {student?.phone || "—"}
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8, color: "rgba(255,255,255,0.8)", fontSize: 12 }}>
-                          <Calendar size={13} /> {student?.academicYear || "—"}
-                        </div>
-                      </div>
-                    </>
                   )}
-                </div>
-              </motion.div>
+                </ChartCard>
 
-              {/* ── MENTOR CARD ─────────────────────────── */}
-              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}>
-                <div style={{ borderRadius: 18, background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)", padding: "18px 18px 16px" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                    <div style={{ width: 36, height: 36, borderRadius: 10, background: `${C.cyan}18`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <GraduationCap size={16} color={C.cyan} />
-                    </div>
-                    <div>
-                      <p style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>Mentor</p>
-                      <p style={{ fontSize: 11, color: "var(--text-muted)", margin: 0 }}>Assigned mentor info</p>
-                    </div>
-                  </div>
-                  {mentor ? (
-                    <div style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 12 }}>
-                      <div style={{ fontWeight: 700, color: "var(--text-primary)" }}>{mentor.name}</div>
-                      <div style={{ color: "var(--text-secondary)" }}>{mentor.department || "—"}</div>
-                      <div style={{ color: "var(--text-muted)" }}>{mentor.email || "—"}</div>
-                    </div>
+                <ChartCard title="Recent Activity" desc="Your latest logged hours" loading={isLoadingProfile} minH={0}>
+                  {!recentActivities?.length ? (
+                    <EmptyState label="No recent activity" />
                   ) : (
-                    <p style={{ fontSize: 12, color: "var(--text-muted)" }}>No mentor assigned</p>
-                  )}
-                </div>
-              </motion.div>
-
-              {/* ── RANK CARD ─────────────────────────── */}
-              <div style={{ borderRadius: 20, background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)", padding: "22px 22px 20px", display: "flex", flexDirection: "column", gap: 16 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <div style={{ width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg,#FFF7ED,#FFFBEB)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <Trophy size={17} color={C.amber} />
-                  </div>
-                  <div>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>Rankings</p>
-                    <p style={{ fontSize: 11, color: "var(--text-muted)", margin: 0 }}>Your current standing</p>
-                  </div>
-                </div>
-
-                {statsLoading ? (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                    <Sk h={60} /><Sk h={60} />
-                  </div>
-                ) : (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                    {[
-                      { label: "Overall Rank",    val: stats?.ranking?.overallRank,    color: C.amber,   icon: "🏆" },
-                      { label: "Department Rank", val: stats?.ranking?.departmentRank, color: C.blue,    icon: "🎯" },
-                    ].map(({ label, val, color, icon }) => (
-                      <div key={label} style={{ padding: "14px 16px", borderRadius: 14, background: `${color}0F`, border: `1px solid ${color}25`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                        <div>
-                          <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.05em", textTransform: "uppercase", margin: 0 }}>{label}</p>
-                          <p style={{ fontSize: 26, fontWeight: 800, color, margin: 0, lineHeight: 1.1 }}>
-                            {val != null ? `#${val}` : "—"}
-                          </p>
-                        </div>
-                        <span style={{ fontSize: 28 }}>{icon}</span>
-                      </div>
-                    ))}
-
-                    <div style={{ padding: "12px 16px", borderRadius: 14, background: `${C.violet}0F`, border: `1px solid ${C.violet}25`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                      <div>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.05em", textTransform: "uppercase", margin: 0 }}>Total Points</p>
-                        <p style={{ fontSize: 26, fontWeight: 800, color: C.violet, margin: 0, lineHeight: 1.1 }}>
-                          {stats?.totalPoints?.toLocaleString() ?? "—"}
-                        </p>
-                      </div>
-                      <Zap size={28} color={C.violet} />
+                    <div style={{ display: "flex", flexDirection: "column" }}>
+                      {recentActivities.slice(0, 8).map((item: any, i: number) => (
+                        <ActivityRow key={i} item={item} index={i} />
+                      ))}
                     </div>
-                  </div>
-                )}
+                  )}
+                </ChartCard>
               </div>
+
             </div>
           </div>
         </div>
