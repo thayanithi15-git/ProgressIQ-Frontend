@@ -314,3 +314,55 @@
 .dark ::-webkit-scrollbar-thumb          { background-color: var(--piq-blue); }
 .custom-scroll::-webkit-scrollbar-thumb  { background-color: var(--piq-blue-dark); }
 .dark .custom-scroll::-webkit-scrollbar-thumb { background-color: var(--piq-blue); }
+
+
+
+
+
+/* =========================================================
+   MODAL LAYOUT
+   ========================================================= */
+
+.modal-overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+
+  display: flex;
+  align-items: center;      /* CENTER VERTICALLY */
+  justify-content: center;  /* CENTER HORIZONTALLY */
+
+  z-index: 1000;
+  backdrop-filter: blur(6px);
+  padding: 24px;
+}
+
+.modal-sheet{
+  background: var(--color-card);
+  color: var(--color-card-foreground);
+
+  border-radius: 16px;
+  border: 1px solid var(--color-border);
+
+  width: 100%;
+  max-width: 720px;
+  max-height: 88vh;
+
+  overflow-y: auto;
+
+  box-shadow: var(--shadow-2xl);
+
+  animation: modalFade 0.25s ease;
+}
+
+/* Modal animation */
+@keyframes modalFade{
+  from{
+    opacity:0;
+    transform:translateY(20px) scale(0.96);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
+}
