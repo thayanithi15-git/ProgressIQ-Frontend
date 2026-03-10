@@ -351,10 +351,36 @@ export default function MentorSurveysPage() {
         subtitle="Monitor your mentorship progress and student activities"
         HeaderComp={
           <div style={{ display: "flex", gap: 10 }}>
-            <Button style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, background: "var(--primary)", color: "var(--primary-foreground)" }}>
+
+            {/* Create Survey Button */}
+            <Button
+              onClick={() => setCreateOpen(true)}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                fontSize: 13
+              }}
+            >
+              <Plus size={14} />
+              Create Survey
+            </Button>
+
+            {/* Export Button */}
+            <Button
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                fontSize: 13,
+                background: "var(--primary)",
+                color: "var(--primary-foreground)"
+              }}
+            >
               <Download size={14} />
               Export
             </Button>
+
           </div>
         }
       />
