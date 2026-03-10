@@ -98,6 +98,16 @@ const Sidebar: React.FC = () => {
     const getUserInitials = (name: string) =>
         name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
+    const formatRole = (r?: string) =>
+        (r || 'student')
+            .toLowerCase()
+            .replace(/_/g, ' ')
+            .replace(/\b\w/g, (c) => c.toUpperCase());
+
+    const displayName = sessionData?.username || formatRole(role);
+    const displayEmail = sessionData?.email || '';
+    const displayRole = formatRole(sessionData?.role || role);
+
     const formatDate = (dateString: string) =>
         new Date(dateString).toLocaleDateString('en-IN', {
             day: 'numeric',
@@ -336,8 +346,8 @@ const Sidebar: React.FC = () => {
                                                 color: 'white',
                                             }}
                                         >
-                                            {sessionData?.username
-                                                ? getUserInitials(sessionData.username)
+                                            {displayName
+                                                ? getUserInitials(displayName)
                                                 : role.charAt(0).toUpperCase()}
                                         </AvatarFallback>
                                     </Avatar>
@@ -345,18 +355,17 @@ const Sidebar: React.FC = () => {
                                     {isOpen && (
                                         <div className="flex-1 min-w-0 text-left">
                                             <p className="flex-1 text-gray-300 text-[14px] tracking-wide uppercase font-poppins">
-                                                {sessionData?.username ||
-                                                    role.charAt(0).toUpperCase() + role.slice(1)}
+                                                {displayName}
                                             </p>
                                             <p className="text-[10px] text-sidebar-foreground/50 truncate leading-tight mt-0.5">
-                                                {sessionData?.email || ''}
+                                                {displayEmail}
                                             </p>
                                             <div
                                                 // variant="outline"
                                                 className={cn('text-[13px] text-white mt-1 px-0.5 py-0 rounded-sm font-semibold')}
                                                 // style={roleBadgeStyle}
                                             >
-                                                {isRecruiter ? 'Recruiter' : 'Monitor Student'}
+                                                {displayRole}
                                             </div>
                                         </div>
                                     )}
@@ -397,22 +406,21 @@ const Sidebar: React.FC = () => {
                                                 // color: 'white',
                                             }}
                                         >
-                                            {sessionData?.username
-                                                ? getUserInitials(sessionData.username)
+                                            {displayName
+                                                ? getUserInitials(displayName)
                                                 : role.charAt(0).toUpperCase()}
                                         </AvatarFallback>
                                     </Avatar>
 
                                     <div className="flex-1 min-w-0">
                                         <p className="flex-1 text-foreground font-bold text-[11px] tracking-wide uppercase font-poppins">
-                                            {sessionData?.username ||
-                                                role.charAt(0).toUpperCase() + role.slice(1)}
+                                            {displayName}
                                         </p>
                                         <p
                                             className="text-[11px] truncate mt-0.5"
                                             style={{ color: 'var(--college-gold-light)' }}
                                         >
-                                            {sessionData?.email || ''}
+                                            {displayEmail}
                                         </p>
                                         <Badge
                                             className="mt-1.5 text-[13px] text-foreground -ml-2 py-0.5 rounded-sm font- border-0"
@@ -423,7 +431,7 @@ const Sidebar: React.FC = () => {
                                                 // color: 'white',
                                             }}
                                         >
-                                            {isRecruiter ? 'Recruiter Account' : 'Monitor Student and Faculty'}
+                                            {displayRole}
                                         </Badge>
                                     </div>
                                 </div>
@@ -432,8 +440,8 @@ const Sidebar: React.FC = () => {
                             {/* Details grid */}
                             <div className="px-4 py-3 space-y-1.5 text-[13px] text-white">
                                 {[
-                                    { label: 'Account Type', value: isRecruiter ? 'Recruiter' : 'Learner' },
-                                    { label: 'Email', value: sessionData?.email || 'N/A', truncate: true },
+                                    { label: 'Account Type', value: displayRole },
+                                    { label: 'Email', value: displayEmail || 'N/A', truncate: true },
                                     {
                                         label: 'Signed In',
                                         value: sessionData?.signedInAt ? formatDate(sessionData.signedInAt) : 'N/A',

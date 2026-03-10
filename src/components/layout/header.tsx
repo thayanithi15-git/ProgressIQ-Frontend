@@ -63,6 +63,16 @@ const Header: React.FC<HeaderProps> = ({
         setRole(r);
     }, []);
 
+    const formatRole = (r?: string) =>
+        (r || "student")
+            .toLowerCase()
+            .replace(/_/g, " ")
+            .replace(/\b\w/g, (c) => c.toUpperCase());
+
+    const displayName = sessionData?.username || formatRole(role);
+    const displayRole = formatRole(sessionData?.role || role);
+    const displayEmail = sessionData?.email || "";
+
     return (
         <header className="sticky top-0 z-50 w-full border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
             <div className="container flex h-16 items-center justify-between px-4">
@@ -111,8 +121,10 @@ const Header: React.FC<HeaderProps> = ({
 
                     <div className="flex items-center gap-3">
                         <div className="hidden text-right sm:block">
-                            <div className="text-sm font-semibold">{sessionData?.username || role.charAt(0).toUpperCase() + role.slice(1)}</div>
-                            <div className="text-xs text-muted-foreground">{'Explore'}</div>
+                            <div className="text-sm font-semibold">{displayName}</div>
+                            <div className="text-xs text-muted-foreground">
+                                {displayRole}{displayEmail ? ` • ${displayEmail}` : ''}
+                            </div>
                         </div>
                         <Avatar className="h-11 w-11 border-2 border-sidebar-border shadow-sm">
                             <AvatarFallback className={cn(
@@ -121,7 +133,7 @@ const Header: React.FC<HeaderProps> = ({
                                     ? "bg-gradient-to-br from-purple-600 to-pink-600"
                                     : "bg-gradient-to-br from-primary to-accent"
                             )}>
-                                {sessionData?.username ? getUserInitials(sessionData.username) : role.charAt(0).toUpperCase()}
+                                {displayName ? getUserInitials(displayName) : role.charAt(0).toUpperCase()}
                             </AvatarFallback>
                         </Avatar>
                     </div>

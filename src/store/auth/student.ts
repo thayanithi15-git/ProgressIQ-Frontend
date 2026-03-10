@@ -47,6 +47,30 @@ export const useStudentAuthStore = create<StudentAuthState>((set) => ({
       setEncryptedItem('role', role);
       setEncryptedItem('userId', userId);
 
+      // Store user session for UI (try profile, fallback to email prefix)
+      if (typeof window !== 'undefined') {
+        let displayName = email.split('@')[0] || 'Student';
+        try {
+          const profileRes = await api.get('/api/student/profile');
+          if (profileRes.data?.success && profileRes.data?.data) {
+            const first = profileRes.data.data.firstName || '';
+            const last = profileRes.data.data.lastName || '';
+            const full = `${first} ${last}`.trim();
+            if (full) displayName = full;
+          }
+        } catch {}
+
+        localStorage.setItem(
+          'credxUser',
+          JSON.stringify({
+            username: displayName,
+            email,
+            role,
+            signedInAt: new Date().toISOString(),
+          })
+        );
+      }
+
       const studentUser: StudentUser = {
         userId,
         email,
@@ -77,6 +101,9 @@ export const useStudentAuthStore = create<StudentAuthState>((set) => ({
     removeEncryptedItem('token');
     removeEncryptedItem('role');
     removeEncryptedItem('userId');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('credxUser');
+    }
 
     set({
       user: null,

@@ -47,6 +47,20 @@ export const useAdminAuthStore = create<AdminAuthState>((set) => ({
       setEncryptedItem('role', role);
       setEncryptedItem('userId', userId);
 
+      // Store user session for UI (fallback to email prefix as name)
+      if (typeof window !== 'undefined') {
+        const nameFromEmail = email.split('@')[0] || 'Admin';
+        localStorage.setItem(
+          'credxUser',
+          JSON.stringify({
+            username: nameFromEmail,
+            email,
+            role,
+            signedInAt: new Date().toISOString(),
+          })
+        );
+      }
+
       const adminUser: AdminUser = {
         userId,
         email,
@@ -77,6 +91,9 @@ export const useAdminAuthStore = create<AdminAuthState>((set) => ({
     removeEncryptedItem('token');
     removeEncryptedItem('role');
     removeEncryptedItem('userId');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('credxUser');
+    }
 
     set({
       user: null,

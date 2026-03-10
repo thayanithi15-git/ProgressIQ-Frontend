@@ -47,6 +47,27 @@ export const useMentorAuthStore = create<MentorAuthState>((set) => ({
       setEncryptedItem('role', role);
       setEncryptedItem('userId', userId);
 
+      // Store user session for UI (try profile, fallback to email prefix)
+      if (typeof window !== 'undefined') {
+        let displayName = email.split('@')[0] || 'Mentor';
+        try {
+          const profileRes = await api.get('/api/mentor/profile');
+          if (profileRes.data?.success && profileRes.data?.data?.name) {
+            displayName = profileRes.data.data.name;
+          }
+        } catch {}
+
+        localStorage.setItem(
+          'credxUser',
+          JSON.stringify({
+            username: displayName,
+            email,
+            role,
+            signedInAt: new Date().toISOString(),
+          })
+        );
+      }
+
       const mentorUser: MentorUser = {
         userId,
         email,
@@ -77,6 +98,9 @@ export const useMentorAuthStore = create<MentorAuthState>((set) => ({
     removeEncryptedItem('token');
     removeEncryptedItem('role');
     removeEncryptedItem('userId');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('credxUser');
+    }
 
     set({
       user: null,
