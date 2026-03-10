@@ -180,6 +180,23 @@ const FeedbackModal = ({ open, feedback, onClose }: any) => (
   </AnimatePresence>
 );
 
+const Field = ({ label, required, children }: any) => (
+  <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+    <label
+      style={{
+        fontSize: 12,
+        fontWeight: 700,
+        color: "var(--text-secondary)",
+        letterSpacing: "0.04em",
+      }}
+    >
+      {label}
+      {required && <span style={{ color: C.rose }}> *</span>}
+    </label>
+    {children}
+  </div>
+);
+
 // ─────────────────────────────────────────────────────────────────────────────
 // INTERNSHIP FORM MODAL
 // ─────────────────────────────────────────────────────────────────────────────
@@ -205,12 +222,12 @@ const InternshipFormModal = ({ open, editing, onClose, onSubmit, isSubmitting }:
     }
   }, [editing, open]);
 
-  const F = ({ label, required, children }: any) => (
-    <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
-      <label style={{ fontSize: 12, fontWeight: 700, color: "var(--text-secondary)", letterSpacing: "0.04em" }}>{label}{required && <span style={{ color: C.rose }}> *</span>}</label>
-      {children}
-    </div>
-  );
+  // const F = ({ label, required, children }: any) => (
+  //   <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+  //     <label style={{ fontSize: 12, fontWeight: 700, color: "var(--text-secondary)", letterSpacing: "0.04em" }}>{label}{required && <span style={{ color: C.rose }}> *</span>}</label>
+  //     {children}
+  //   </div>
+  // );
 
   return (
     <AnimatePresence>
@@ -228,26 +245,26 @@ const InternshipFormModal = ({ open, editing, onClose, onSubmit, isSubmitting }:
               <button onClick={onClose} style={{ width: 30, height: 30, borderRadius: 8, border: "none", background: "var(--pill-inactive-bg)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={14} color="var(--text-muted)" /></button>
             </div>
             <form onSubmit={(e) => { e.preventDefault(); onSubmit(form); }} style={{ padding: "20px 24px 24px", display: "flex", flexDirection: "column", gap: 15 }}>
-              <F label="Mentor ID" required><input className="form-input" value={form.mentorId} onChange={e => setForm(p => ({ ...p, mentorId: e.target.value }))} required placeholder="Mentor ID" /></F>
+              <Field label="Mentor ID" required><input className="form-input" value={form.mentorId} onChange={e => setForm(p => ({ ...p, mentorId: e.target.value }))} required placeholder="Mentor ID" /></Field>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                <F label="Company Name" required><input className="form-input" value={form.companyName} onChange={e => setForm(p => ({ ...p, companyName: e.target.value }))} required placeholder="e.g. Google" /></F>
-                <F label="Company URL"><input className="form-input" value={form.companyUrl} onChange={e => setForm(p => ({ ...p, companyUrl: e.target.value }))} placeholder="https://..." /></F>
+                <Field label="Company Name" required><input className="form-input" value={form.companyName} onChange={e => setForm(p => ({ ...p, companyName: e.target.value }))} required placeholder="e.g. Google" /></Field>
+                <Field label="Company URL"><input className="form-input" value={form.companyUrl} onChange={e => setForm(p => ({ ...p, companyUrl: e.target.value }))} placeholder="https://..." /></Field>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                <F label="Role" required><input className="form-input" value={form.role} onChange={e => setForm(p => ({ ...p, role: e.target.value }))} required placeholder="e.g. SWE Intern" /></F>
-                <F label="Type" required>
+                <Field label="Role" required><input className="form-input" value={form.role} onChange={e => setForm(p => ({ ...p, role: e.target.value }))} required placeholder="e.g. SWE Intern" /></Field>
+                <Field label="Type" required>
                   <select className="form-input" value={form.type} onChange={e => setForm(p => ({ ...p, type: e.target.value as any }))}>
                     <option value="REMOTE">Remote</option>
                     <option value="ONSITE">Onsite</option>
                     <option value="HYBRID">Hybrid</option>
                   </select>
-                </F>
+                </Field>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                <F label="From" required><input className="form-input" type="date" value={form.from} onChange={e => setForm(p => ({ ...p, from: e.target.value }))} required /></F>
-                <F label="To" required><input className="form-input" type="date" value={form.to} onChange={e => setForm(p => ({ ...p, to: e.target.value }))} required /></F>
+                <Field label="From" required><input className="form-input" type="date" value={form.from} onChange={e => setForm(p => ({ ...p, from: e.target.value }))} required /></Field>
+                <Field label="To" required><input className="form-input" type="date" value={form.to} onChange={e => setForm(p => ({ ...p, to: e.target.value }))} required /></Field>
               </div>
-              <F label="Description"><textarea className="form-input textarea" value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Describe your role and responsibilities..." /></F>
+              <Field label="Description"><textarea className="form-input textarea" value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} placeholder="Describe your role and responsibilities..." /></Field>
               <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 14px", borderRadius: 10, background: "var(--body-bg)", border: "1px solid var(--card-border)", cursor: "pointer" }} onClick={() => setForm(p => ({ ...p, paid: !p.paid }))}>
                 <div style={{ width: 18, height: 18, borderRadius: 5, border: `2px solid ${form.paid ? C.teal : "var(--input-border)"}`, background: form.paid ? C.teal : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   {form.paid && <CheckCircle size={11} color="#fff" />}

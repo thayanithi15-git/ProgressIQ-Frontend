@@ -155,6 +155,23 @@ const FeedbackModal = ({ open, feedback, onClose }: any) => (
   </AnimatePresence>
 );
 
+const Field = ({ label, required, children }: any) => (
+  <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+    <label
+      style={{
+        fontSize: 12,
+        fontWeight: 700,
+        color: "var(--text-secondary)",
+        letterSpacing: "0.04em",
+      }}
+    >
+      {label}
+      {required && <span style={{ color: C.rose }}> *</span>}
+    </label>
+    {children}
+  </div>
+);
+
 // ─────────────────────────────────────────────────────────────────────────────
 // CERT FORM MODAL
 // ─────────────────────────────────────────────────────────────────────────────
@@ -177,12 +194,12 @@ const CertFormModal = ({ open, editing, onClose, onSubmit, isSubmitting }: any) 
     }
   }, [editing, open]);
 
-  const F = ({ label, required, children }: any) => (
-    <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
-      <label style={{ fontSize: 12, fontWeight: 700, color: "var(--text-secondary)", letterSpacing: "0.04em" }}>{label}{required && <span style={{ color: C.rose }}> *</span>}</label>
-      {children}
-    </div>
-  );
+  // const F = ({ label, required, children }: any) => (
+  //   <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+  //     <label style={{ fontSize: 12, fontWeight: 700, color: "var(--text-secondary)", letterSpacing: "0.04em" }}>{label}{required && <span style={{ color: C.rose }}> *</span>}</label>
+  //     {children}
+  //   </div>
+  // );
 
   return (
     <AnimatePresence>
@@ -200,15 +217,15 @@ const CertFormModal = ({ open, editing, onClose, onSubmit, isSubmitting }: any) 
               <button onClick={onClose} style={{ width: 30, height: 30, borderRadius: 8, border: "none", background: "var(--pill-inactive-bg)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={14} color="var(--text-muted)" /></button>
             </div>
             <form onSubmit={(e) => { e.preventDefault(); onSubmit(form); }} style={{ padding: "20px 24px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
-              <F label="Mentor ID" required><input className="form-input" value={form.mentorId} onChange={e => setForm(p => ({ ...p, mentorId: e.target.value }))} required placeholder="Mentor ID" /></F>
-              <F label="Certification Title" required><input className="form-input" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} required placeholder="e.g. AWS Solutions Architect" /></F>
+              <Field label="Mentor ID" required><input className="form-input" value={form.mentorId} onChange={e => setForm(p => ({ ...p, mentorId: e.target.value }))} required placeholder="Mentor ID" /></Field>
+              <Field label="Certification Title" required><input className="form-input" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} required placeholder="e.g. AWS Solutions Architect" /></Field>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                <F label="Platform" required><input className="form-input" value={form.platform} onChange={e => setForm(p => ({ ...p, platform: e.target.value }))} required placeholder="e.g. Coursera" /></F>
-                <F label="Platform URL" required><input className="form-input" value={form.platformLink} onChange={e => setForm(p => ({ ...p, platformLink: e.target.value }))} required placeholder="https://..." /></F>
+                <Field label="Platform" required><input className="form-input" value={form.platform} onChange={e => setForm(p => ({ ...p, platform: e.target.value }))} required placeholder="e.g. Coursera" /></Field>
+                <Field label="Platform URL" required><input className="form-input" value={form.platformLink} onChange={e => setForm(p => ({ ...p, platformLink: e.target.value }))} required placeholder="https://..." /></Field>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                <F label="Start Date" required><input className="form-input" type="date" value={form.from} onChange={e => setForm(p => ({ ...p, from: e.target.value }))} required /></F>
-                <F label="End Date" required><input className="form-input" type="date" value={form.to} onChange={e => setForm(p => ({ ...p, to: e.target.value }))} required /></F>
+                <Field label="Start Date" required><input className="form-input" type="date" value={form.from} onChange={e => setForm(p => ({ ...p, from: e.target.value }))} required /></Field>
+                <Field label="End Date" required><input className="form-input" type="date" value={form.to} onChange={e => setForm(p => ({ ...p, to: e.target.value }))} required /></Field>
               </div>
               <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 4 }}>
                 <button type="button" onClick={onClose} style={{ padding: "9px 20px", borderRadius: 10, border: "1.5px solid var(--card-border)", background: "transparent", color: "var(--text-secondary)", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Cancel</button>

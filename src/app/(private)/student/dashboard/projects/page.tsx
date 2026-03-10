@@ -222,6 +222,23 @@ const FeedbackModal = ({ open, feedback, onClose }: any) => (
   </AnimatePresence>
 );
 
+const Field = ({ label, required, children }: any) => (
+  <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+    <label
+      style={{
+        fontSize: 12,
+        fontWeight: 700,
+        color: "var(--text-secondary)",
+        letterSpacing: "0.04em",
+      }}
+    >
+      {label}
+      {required && <span style={{ color: C.rose }}> *</span>}
+    </label>
+    {children}
+  </div>
+);
+
 // ─────────────────────────────────────────────────────────────────────────────
 // PROJECT FORM MODAL
 // ─────────────────────────────────────────────────────────────────────────────
@@ -251,14 +268,14 @@ const ProjectFormModal = ({ open, editing, onClose, onSubmit, isSubmitting }: an
     onSubmit(form);
   };
 
-  const F = ({ label, required, children }: any) => (
-    <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
-      <label style={{ fontSize: 12, fontWeight: 700, color: "var(--text-secondary)", letterSpacing: "0.04em" }}>
-        {label}{required && <span style={{ color: C.rose }}> *</span>}
-      </label>
-      {children}
-    </div>
-  );
+  // const F = ({ label, required, children }: any) => (
+  //   <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+  //     <label style={{ fontSize: 12, fontWeight: 700, color: "var(--text-secondary)", letterSpacing: "0.04em" }}>
+  //       {label}{required && <span style={{ color: C.rose }}> *</span>}
+  //     </label>
+  //     {children}
+  //   </div>
+  // );
 
   return (
     <AnimatePresence>
@@ -282,26 +299,26 @@ const ProjectFormModal = ({ open, editing, onClose, onSubmit, isSubmitting }: an
             </div>
 
             <form onSubmit={handleSubmit} style={{ padding: "20px 24px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
-              <F label="Mentor ID" required>
+              <Field label="Mentor ID" required>
                 <input className="form-input" placeholder="Mentor ID" value={form.mentorId} onChange={e => setForm(p => ({ ...p, mentorId: e.target.value }))} required />
-              </F>
-              <F label="Project Title" required>
+              </Field>
+              <Field label="Project Title" required>
                 <input className="form-input" placeholder="e.g. E-Commerce Platform" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} required />
-              </F>
-              <F label="Description" required>
+              </Field>
+              <Field label="Description" required>
                 <textarea className="form-input textarea" placeholder="Describe your project..." value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} required />
-              </F>
+              </Field>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                <F label="GitHub Link">
+                <Field label="GitHub Link">
                   <input className="form-input" placeholder="https://github.com/..." value={form.githubLink} onChange={e => setForm(p => ({ ...p, githubLink: e.target.value }))} />
-                </F>
-                <F label="Website Link">
+                </Field>
+                <Field label="Website Link">
                   <input className="form-input" placeholder="https://..." value={form.websiteLink} onChange={e => setForm(p => ({ ...p, websiteLink: e.target.value }))} />
-                </F>
+                </Field>
               </div>
-              <F label="Completed At" required>
+              <Field label="Completed At" required>
                 <input className="form-input" type="date" value={form.completedAt} onChange={e => setForm(p => ({ ...p, completedAt: e.target.value }))} required />
-              </F>
+              </Field>
 
               <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 4 }}>
                 <button type="button" onClick={onClose} style={{ padding: "9px 20px", borderRadius: 10, border: "1.5px solid var(--card-border)", background: "transparent", color: "var(--text-secondary)", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Cancel</button>
