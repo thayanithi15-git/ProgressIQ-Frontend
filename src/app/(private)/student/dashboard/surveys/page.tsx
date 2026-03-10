@@ -173,9 +173,9 @@ const QuestionInput = ({ q, idx, value, onChange, readOnly = false }: { q: Surve
 const AnswerModal = ({ open, survey, answers, onAnswer, onSubmit, onClose, isSubmitting, isLoading }: any) => (
   <AnimatePresence>
     {open && (
-      <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-overlay modal-overlay-center" onClick={onClose}>
         <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", damping: 28, stiffness: 300 }}
-          className="modal-sheet" onClick={(e) => e.stopPropagation()}>
+          className="modal-sheet modal-sheet-center" onClick={(e) => e.stopPropagation()}>
 
           {/* Handle */}
           <div style={{ display: "flex", justifyContent: "center", paddingTop: 12, paddingBottom: 4 }}>
