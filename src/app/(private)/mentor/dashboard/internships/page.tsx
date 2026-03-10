@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Search, Eye, ExternalLink, X, MapPin, DollarSign, Building2, Calendar, Download } from 'lucide-react';
+import { Search, Eye, ExternalLink, X, DollarSign, Building2, Calendar, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -52,6 +52,11 @@ const getStatusColor = (status: string) => {
   }
 };
 
+const getPaidColor = (paid: boolean) =>
+  paid
+    ? 'bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-900 dark:text-emerald-200'
+    : 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-900 dark:text-slate-200';
+
 const InternshipDetailModal = ({ internship, onClose, isLoading }: any) => {
   if (!internship) return null;
 
@@ -89,7 +94,7 @@ const InternshipDetailModal = ({ internship, onClose, isLoading }: any) => {
         ) : (
           <div className="space-y-6">
             {/* Status & Details */}
-            <div className="bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-950 dark:to-indigo-950 rounded-lg p-6">
+            <div className="bg-muted/40 border rounded-lg p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold font-poppins">Internship Details</h3>
                 <Badge className={`${getStatusColor(status)}`}>{status}</Badge>
@@ -156,9 +161,9 @@ const InternshipDetailModal = ({ internship, onClose, isLoading }: any) => {
 
             {/* Company Link */}
             {companyUrl && (
-              <div className="border rounded-lg p-4 bg-blue-50 dark:bg-blue-950">
-                <a
-                  href={companyUrl}
+            <div className="border rounded-lg p-4 bg-muted/40">
+              <a
+                href={companyUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-poppins"
@@ -172,7 +177,7 @@ const InternshipDetailModal = ({ internship, onClose, isLoading }: any) => {
 
             {/* Feedback */}
             {feedback && (
-              <div className="border-l-4 border-amber-500 bg-amber-50 dark:bg-amber-950 rounded p-4">
+              <div className="border-l-4 border-amber-500 bg-amber-50/60 dark:bg-amber-950 rounded p-4">
                 <h4 className="font-semibold mb-2 font-poppins text-amber-900 dark:text-amber-100">
                   Mentor Feedback
                 </h4>
@@ -229,7 +234,7 @@ export default function MentorInternshipsPage() {
     searchQuery || statusFilter || typeFilter || paidFilter || departmentFilter || yearFilter;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <Header
                 
@@ -253,7 +258,7 @@ export default function MentorInternshipsPage() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-6"
         >
-          <Card className="border-0 shadow-sm">
+          <Card className="shadow-none">
             <CardContent className="p-6">
               <div className="flex gap-2 mb-4">
                 <div className="flex-1 relative">
@@ -268,7 +273,7 @@ export default function MentorInternshipsPage() {
                 </div>
                 <Button
                   onClick={() => setSearchQuery(tempSearch)}
-                  className="gap-2 font-poppins bg-blue-600 hover:bg-blue-700"
+                  className="gap-2 font-poppins"
                 >
                   <Search className="w-4 h-4" />
                   Search
@@ -358,7 +363,7 @@ export default function MentorInternshipsPage() {
         >
           {isLoading ? (
             [...Array(6)].map((_, i) => (
-              <Card key={i} className="border-0 shadow-sm">
+              <Card key={i} className="shadow-none">
                 <CardContent className="pt-6">
                   <Skeleton className="h-6 w-3/4 mb-4" />
                   <Skeleton className="h-4 w-1/2 mb-4" />
@@ -368,7 +373,7 @@ export default function MentorInternshipsPage() {
               </Card>
             ))
           ) : internships.length === 0 ? (
-            <Card className="col-span-full border-0 shadow-sm">
+            <Card className="col-span-full shadow-none">
               <CardContent className="py-12 text-center">
                 <Building2 className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
                 <p className="text-muted-foreground font-poppins">No internships found</p>
@@ -382,7 +387,7 @@ export default function MentorInternshipsPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.05 }}
               >
-                <Card className="h-full hover:shadow-lg transition-all duration-300 border-0 shadow-sm hover:border-purple-200 dark:hover:border-purple-800 group cursor-pointer">
+                <Card className="h-full transition-all duration-300 shadow-none border hover:border-primary/30 group cursor-pointer">
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1">
@@ -407,11 +412,9 @@ export default function MentorInternshipsPage() {
                       <Badge className={`${getTypeColor(internship.type)}`}>
                         {internship.type}
                       </Badge>
-                      <Badge
-                        variant={internship.paid ? 'default' : 'secondary'}
-                        className="font-poppins"
-                      >
-                        {internship.paid ? '💰 Paid' : '⏰ Unpaid'}
+                      <Badge className={`${getPaidColor(internship.paid)} font-poppins`}>
+                        <DollarSign className="w-3 h-3 mr-1" />
+                        {internship.paid ? 'Paid' : 'Unpaid'}
                       </Badge>
                     </div>
 
@@ -447,7 +450,7 @@ export default function MentorInternshipsPage() {
                     <Button
                       onClick={() => fetchInternshipDetail(internship.id)}
                       disabled={isLoadingDetail}
-                      className="w-full gap-2 font-poppins mt-2 bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700"
+                      className="w-full gap-2 font-poppins mt-2"
                     >
                       <Eye className="w-4 h-4" />
                       View Details

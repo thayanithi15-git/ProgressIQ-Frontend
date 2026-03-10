@@ -63,7 +63,7 @@ const CertificationDetailModal = ({ certification, onClose, isLoading }: any) =>
         ) : (
           <div className="space-y-6">
             {/* Certificate Info */}
-            <div className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950 dark:to-orange-950 rounded-lg p-6">
+            <div className="bg-muted/40 border rounded-lg p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold font-poppins">Certificate Details</h3>
                 <Badge className={`${getStatusColor(status)}`}>{status}</Badge>
@@ -109,7 +109,7 @@ const CertificationDetailModal = ({ certification, onClose, isLoading }: any) =>
 
             {/* Platform Link */}
             {platformLink && (
-              <div className="border rounded-lg p-4 bg-blue-50 dark:bg-blue-950">
+            <div className="border rounded-lg p-4 bg-muted/40">
                 <a
                   href={platformLink}
                   target="_blank"
@@ -125,7 +125,7 @@ const CertificationDetailModal = ({ certification, onClose, isLoading }: any) =>
 
             {/* Feedback */}
             {feedback && (
-              <div className="border-l-4 border-blue-500 bg-blue-50 dark:bg-blue-950 rounded p-4">
+              <div className="border-l-4 border-blue-500 bg-blue-50/60 dark:bg-blue-950 rounded p-4">
                 <h4 className="font-semibold mb-2 font-poppins text-blue-900 dark:text-blue-100">
                   Mentor Notes
                 </h4>
@@ -177,7 +177,7 @@ export default function MentorCertificationsPage() {
   const hasActiveFilters = searchQuery || statusFilter || departmentFilter || yearFilter;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <Header
                       
@@ -201,7 +201,7 @@ export default function MentorCertificationsPage() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-6"
         >
-          <Card className="border-0 shadow-sm">
+          <Card className="shadow-none">
             <CardContent className="p-6">
               <div className="flex gap-2 mb-4">
                 <div className="flex-1 relative">
@@ -216,7 +216,7 @@ export default function MentorCertificationsPage() {
                 </div>
                 <Button
                   onClick={() => setSearchQuery(tempSearch)}
-                  className="gap-2 font-poppins bg-amber-600 hover:bg-amber-700"
+                  className="gap-2 font-poppins"
                 >
                   <Search className="w-4 h-4" />
                   Search
@@ -283,10 +283,10 @@ export default function MentorCertificationsPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <Card className="border-0 shadow-sm overflow-hidden">
+          <Card className="shadow-none overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950 dark:to-orange-950 border-b">
+                <thead className="bg-muted/50 border-b">
                   <tr>
                     <th className="px-6 py-4 text-left text-sm font-semibold font-poppins text-foreground">
                       Certificate

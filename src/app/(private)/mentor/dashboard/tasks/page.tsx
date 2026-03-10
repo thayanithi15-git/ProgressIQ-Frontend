@@ -169,6 +169,61 @@ const CreateTaskModal = ({ open, onClose, onCreate, isSubmitting, students }: an
   );
 };
 
+const TaskDetailModal = ({ task, onClose }: any) => {
+  if (!task) return null;
+
+  const isOverdue = new Date(task.dueDate) < new Date() && task.status !== 'Done';
+
+  return (
+    <Dialog open={!!task} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle className="font-poppins">{task.title}</DialogTitle>
+          <DialogDescription className="font-poppins">
+            Assigned to {task.assignedTo}
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-5">
+          {task.description && (
+            <div>
+              <p className="text-sm text-muted-foreground font-poppins mb-2">Description</p>
+              <p className="text-sm font-poppins leading-relaxed">{task.description}</p>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div>
+              <p className="text-muted-foreground font-poppins">Department</p>
+              <p className="font-medium font-poppins">{task.student?.department}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground font-poppins">Year</p>
+              <p className="font-medium font-poppins">{task.student?.year}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground font-poppins">Due Date</p>
+              <p className="font-medium font-poppins flex items-center gap-2">
+                <Calendar className="w-4 h-4" />
+                {new Date(task.dueDate).toLocaleDateString()}
+                {isOverdue && <span className="text-red-600 text-xs font-semibold">Overdue</span>}
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Badge className={getStatusColor(task.status)}>{task.status}</Badge>
+              {task.priority && (
+                <span className={`text-xs font-semibold px-2 py-1 rounded ${getPriorityColor(task.priority)}`}>
+                  {task.priority}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 export default function MentorTasksPage() {
   const taskStore = useMentorTasksStore();
   const studentStore = useAssignedStudentsStore();
@@ -203,6 +258,7 @@ export default function MentorTasksPage() {
 
   const [tempSearch, setTempSearch] = useState(searchQuery);
   const [createTaskOpen, setCreateTaskOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<any>(null);
 
   useEffect(() => {
     fetchTasks();
@@ -235,7 +291,7 @@ export default function MentorTasksPage() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-6"
         >
-          <Card>
+          <Card className="shadow-none">
             <CardContent className="p-6">
               <div className="flex gap-2 mb-4">
                 <div className="flex-1 relative">
@@ -304,97 +360,119 @@ export default function MentorTasksPage() {
           </Card>
         </motion.div>
 
-        {/* Tasks List */}
+        {/* Tasks Table */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="space-y-4"
         >
-          {isLoading ? (
-            [...Array(5)].map((_, i) => (
-              <Card key={i}>
-                <CardContent className="p-6">
-                  <Skeleton className="h-4 w-3/4 mb-4" />
-                  <Skeleton className="h-3 w-1/2" />
-                </CardContent>
-              </Card>
-            ))
-          ) : tasks.length === 0 ? (
-            <Card>
-              <CardContent className="py-12 text-center">
-                <p className="text-muted-foreground font-poppins">No tasks found</p>
-              </CardContent>
-            </Card>
-          ) : (
-            tasks.map((task, idx) => {
-              const isOverdue = new Date(task.dueDate) < new Date() && task.status !== 'Done';
+          <Card className="shadow-none overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-muted/50 border-b">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-sm font-semibold font-poppins">Task</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold font-poppins">Student</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold font-poppins">Due</th>
+                    <th className="px-6 py-3 text-center text-sm font-semibold font-poppins">Status</th>
+                    <th className="px-6 py-3 text-center text-sm font-semibold font-poppins">Priority</th>
+                    <th className="px-6 py-3 text-center text-sm font-semibold font-poppins">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="text-[13px]">
+                  {isLoading ? (
+                    [...Array(6)].map((_, i) => (
+                      <tr key={i} className="border-b">
+                        {[...Array(6)].map((_, j) => (
+                          <td key={j} className="px-6 py-4">
+                            <Skeleton className="h-4 w-24" />
+                          </td>
+                        ))}
+                      </tr>
+                    ))
+                  ) : tasks.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-8 text-center text-muted-foreground font-poppins">
+                        No tasks found
+                      </td>
+                    </tr>
+                  ) : (
+                    tasks.map((task, idx) => {
+                      const isOverdue = new Date(task.dueDate) < new Date() && task.status !== 'Done';
 
-              return (
-                <motion.div
-                  key={task.id}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: idx * 0.05 }}
-                >
-                  <Card className={`hover:shadow-md transition-shadow ${isOverdue ? 'border-red-300 dark:border-red-800' : ''}`}>
-                    <CardContent className="p-6">
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
-                            <h3 className="font-semibold font-poppins text-foreground">{task.title}</h3>
+                      return (
+                        <motion.tr
+                          key={task.id}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: idx * 0.02 }}
+                          className={`border-b hover:bg-muted/50 transition-colors cursor-pointer ${isOverdue ? 'bg-red-50/30' : ''}`}
+                          onClick={() => setSelectedTask(task)}
+                        >
+                          <td className="px-6 py-4">
+                            <div className="max-w-[360px]">
+                              <p className="font-medium font-poppins truncate" title={task.title}>
+                                {task.title}
+                              </p>
+                              {task.description && (
+                                <p className="text-muted-foreground font-poppins line-clamp-2" title={task.description}>
+                                  {task.description}
+                                </p>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <p className="font-medium font-poppins">{task.assignedTo}</p>
+                            <p className="text-muted-foreground font-poppins">
+                              {task.student?.department} • {task.student?.year}
+                            </p>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2 font-poppins">
+                              <Calendar className="w-3 h-3 text-muted-foreground" />
+                              {new Date(task.dueDate).toLocaleDateString()}
+                            </div>
+                            {isOverdue && (
+                              <div className="mt-1 flex items-center gap-1 text-red-600 font-poppins text-xs">
+                                <AlertCircle className="w-3 h-3" />
+                                Overdue
+                              </div>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 text-center">
                             <Badge className={getStatusColor(task.status)}>{task.status}</Badge>
-                            {task.priority && (
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            {task.priority ? (
                               <span className={`text-xs font-semibold px-2 py-1 rounded ${getPriorityColor(task.priority)}`}>
                                 {task.priority}
                               </span>
+                            ) : (
+                              <span className="text-muted-foreground font-poppins">—</span>
                             )}
-                          </div>
-
-                          <p className="text-sm text-muted-foreground mb-3 font-poppins">
-                            Assigned to: <span className="font-medium text-foreground">{task.assignedTo}</span>
-                          </p>
-
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                            <div>
-                              <p className="text-muted-foreground font-poppins">Department</p>
-                              <p className="font-medium font-poppins">{task.student.department}</p>
-                            </div>
-                            <div>
-                              <p className="text-muted-foreground font-poppins">Year</p>
-                              <p className="font-medium font-poppins">{task.student.year}</p>
-                            </div>
-                            <div>
-                              <p className="text-muted-foreground font-poppins">Due Date</p>
-                              <p className="font-medium font-poppins flex items-center gap-1">
-                                <Calendar className="w-3 h-3" />
-                                {new Date(task.dueDate).toLocaleDateString()}
-                              </p>
-                            </div>
-                            <div>
-                              <p className="text-muted-foreground font-poppins">Status</p>
-                              <p className="font-medium font-poppins">{task.priority}</p>
-                            </div>
-                          </div>
-
-                          {isOverdue && (
-                            <div className="mt-3 flex items-center gap-2 text-red-600 dark:text-red-400 font-poppins text-sm">
-                              <AlertCircle className="w-4 h-4" />
-                              Overdue
-                            </div>
-                          )}
-                        </div>
-
-                        <Button variant="ghost" size="sm" className="font-poppins">
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              );
-            })
-          )}
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedTask(task);
+                              }}
+                              className="gap-2 font-poppins"
+                            >
+                              <Eye className="w-4 h-4" />
+                              <span className="hidden sm:inline">View</span>
+                            </Button>
+                          </td>
+                        </motion.tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </Card>
         </motion.div>
 
         {/* Pagination */}
@@ -440,6 +518,7 @@ export default function MentorTasksPage() {
         isSubmitting={isSubmitting}
         students={students}
       />
+      <TaskDetailModal task={selectedTask} onClose={() => setSelectedTask(null)} />
     </div>
   );
 }

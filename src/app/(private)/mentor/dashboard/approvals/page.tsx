@@ -11,7 +11,12 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
-  Clock, Download
+  Clock,
+  Download,
+  FolderKanban,
+  ClipboardList,
+  Briefcase,
+  Eye,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -66,6 +71,38 @@ const getEntityTypeColor = (type: string) => {
       return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200';
   }
 };
+
+const getEntityTypeMeta = (type: string) => {
+  switch (type?.toUpperCase()) {
+    case 'PROJECT':
+      return { label: 'Project', icon: FolderKanban, color: 'text-blue-600' };
+    case 'TASK':
+      return { label: 'Task', icon: ClipboardList, color: 'text-purple-600' };
+    case 'INTERNSHIP':
+      return { label: 'Internship', icon: Briefcase, color: 'text-indigo-600' };
+    case 'CERTIFICATION':
+      return { label: 'Certification', icon: Award, color: 'text-amber-600' };
+    default:
+      return { label: type || 'Other', icon: Award, color: 'text-slate-600' };
+  }
+};
+
+const StatCard = ({ icon: Icon, label, value, subtext, color }: any) => (
+  <Card className="shadow-none">
+    <CardContent className="pt-6">
+      <div className="flex items-start justify-between">
+        <div>
+          <p className={`text-2xl font-bold font-poppins ${color}`}>{value}</p>
+          <p className="text-xs text-muted-foreground mt-2 font-poppins">{label}</p>
+          {subtext && <p className="text-[11px] text-muted-foreground font-poppins mt-1">{subtext}</p>}
+        </div>
+        <div className={`w-9 h-9 rounded-lg bg-muted/60 flex items-center justify-center ${color}`}>
+          <Icon className="w-4 h-4" />
+        </div>
+      </div>
+    </CardContent>
+  </Card>
+);
 
 const ReviewModal = ({ submission, onClose, onApprove, isSubmitting }: any) => {
   const [pointType, setPointType] = useState('basic');
@@ -301,7 +338,7 @@ export default function MentorApprovalsPage() {
   const hasActiveFilters = searchQuery || statusFilter || entityTypeFilter;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
+    <div className="min-h-screen bg-background">
       {/* Header */}
       <Header
         title="Mentor Dashboard"
@@ -326,14 +363,13 @@ export default function MentorApprovalsPage() {
             className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8"
           >
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-              <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
-                <CardContent className="pt-6">
-                  <p className="text-3xl font-bold text-blue-600 dark:text-blue-400 font-poppins">
-                    {stats.total}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-2 font-poppins">Total</p>
-                </CardContent>
-              </Card>
+              <StatCard
+                icon={MessageSquare}
+                label="Total Submissions"
+                subtext="All types combined"
+                value={stats.total}
+                color="text-blue-600"
+              />
             </motion.div>
 
             <motion.div
@@ -341,14 +377,13 @@ export default function MentorApprovalsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.05 }}
             >
-              <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
-                <CardContent className="pt-6">
-                  <p className="text-3xl font-bold text-yellow-600 dark:text-yellow-400 font-poppins">
-                    {stats.pending}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-2 font-poppins">Pending</p>
-                </CardContent>
-              </Card>
+              <StatCard
+                icon={Clock}
+                label="Pending Review"
+                subtext="Awaiting your approval"
+                value={stats.pending}
+                color="text-yellow-600"
+              />
             </motion.div>
 
             <motion.div
@@ -356,14 +391,13 @@ export default function MentorApprovalsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
-                <CardContent className="pt-6">
-                  <p className="text-3xl font-bold text-green-600 dark:text-green-400 font-poppins">
-                    {stats.approved}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-2 font-poppins">Approved</p>
-                </CardContent>
-              </Card>
+              <StatCard
+                icon={CheckCircle}
+                label="Approved"
+                subtext="Completed approvals"
+                value={stats.approved}
+                color="text-green-600"
+              />
             </motion.div>
 
             <motion.div
@@ -371,14 +405,13 @@ export default function MentorApprovalsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 }}
             >
-              <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
-                <CardContent className="pt-6">
-                  <p className="text-3xl font-bold text-red-600 dark:text-red-400 font-poppins">
-                    {stats.rejected}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-2 font-poppins">Rejected</p>
-                </CardContent>
-              </Card>
+              <StatCard
+                icon={XCircle}
+                label="Rejected"
+                subtext="Not approved"
+                value={stats.rejected}
+                color="text-red-600"
+              />
             </motion.div>
 
             <motion.div
@@ -386,19 +419,37 @@ export default function MentorApprovalsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-              <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
+              <Card className="shadow-none">
                 <CardContent className="pt-6">
-                  <div className="space-y-1">
-                    <p className="text-sm font-semibold text-muted-foreground font-poppins mb-2">
-                      By Type
-                    </p>
-                    <div className="text-xs space-y-1 font-poppins">
-                      <p>
-                        <span className="font-bold text-blue-600">{stats.byType.project}</span> P
-                      </p>
-                      <p>
-                        <span className="font-bold text-purple-600">{stats.byType.task}</span> T
-                      </p>
+                  <p className="text-xs text-muted-foreground font-poppins mb-2">By Type Breakdown</p>
+                  <div className="space-y-2 text-[12px] font-poppins">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <FolderKanban className="w-3.5 h-3.5 text-blue-600" />
+                        <span>Projects</span>
+                      </div>
+                      <span className="font-semibold text-blue-600">{stats.byType.project}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <ClipboardList className="w-3.5 h-3.5 text-purple-600" />
+                        <span>Tasks</span>
+                      </div>
+                      <span className="font-semibold text-purple-600">{stats.byType.task}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Briefcase className="w-3.5 h-3.5 text-indigo-600" />
+                        <span>Internships</span>
+                      </div>
+                      <span className="font-semibold text-indigo-600">{stats.byType.internship}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Award className="w-3.5 h-3.5 text-amber-600" />
+                        <span>Certifications</span>
+                      </div>
+                      <span className="font-semibold text-amber-600">{stats.byType.certification}</span>
                     </div>
                   </div>
                 </CardContent>
@@ -414,7 +465,7 @@ export default function MentorApprovalsPage() {
           transition={{ delay: 0.25 }}
           className="mb-6"
         >
-          <Card className="border-0 shadow-sm">
+          <Card className="shadow-none">
             <CardContent className="p-6">
               <div className="flex gap-2 mb-4">
                 <div className="flex-1 relative">
@@ -427,10 +478,7 @@ export default function MentorApprovalsPage() {
                     className="pl-10 font-poppins"
                   />
                 </div>
-                <Button
-                  onClick={() => setSearchQuery(tempSearch)}
-                  className="gap-2 font-poppins bg-blue-600 hover:bg-blue-700"
-                >
+                <Button onClick={() => setSearchQuery(tempSearch)} className="gap-2 font-poppins">
                   <Search className="w-4 h-4" />
                 </Button>
               </div>
@@ -476,83 +524,108 @@ export default function MentorApprovalsPage() {
           </Card>
         </motion.div>
 
-        {/* Submissions List */}
+        {/* Submissions Table */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="space-y-3"
         >
-          {isLoading ? (
-            [...Array(5)].map((_, i) => (
-              <Card key={i} className="border-0 shadow-sm">
-                <CardContent className="p-6">
-                  <div className="space-y-2">
-                    <div className="h-4 bg-muted rounded w-3/4" />
-                    <div className="h-3 bg-muted rounded w-1/2" />
-                  </div>
-                </CardContent>
-              </Card>
-            ))
-          ) : submissions.length === 0 ? (
-            <Card className="border-0 shadow-sm">
-              <CardContent className="py-12 text-center">
-                <MessageSquare className="w-12 h-12 mx-auto mb-4 text-muted-foreground opacity-50" />
-                <p className="text-muted-foreground font-poppins">No submissions found</p>
-              </CardContent>
-            </Card>
-          ) : (
-            submissions.map((submission, idx) => (
-              <motion.div
-                key={submission.id}
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: idx * 0.02 }}
-              >
-                <Card
-                  className="border-0 shadow-sm hover:shadow-md transition-all cursor-pointer hover:border-l-4"
-                  onClick={() => fetchSubmissionDetail(submission.entityType, submission.entityId)}
-                >
-                  <CardContent className="p-6">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2">
-                          <h3 className="font-semibold font-poppins text-foreground flex-1">
-                            {submission.entityTitle}
-                          </h3>
-                          <Badge className={`${getStatusColor(submission.status)}`}>
-                            {submission.status}
-                          </Badge>
-                        </div>
+          <Card className="shadow-none overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-muted/50 border-b">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-sm font-semibold font-poppins">Submission</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold font-poppins">Student</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold font-poppins">Type</th>
+                    <th className="px-6 py-3 text-center text-sm font-semibold font-poppins">Status</th>
+                    <th className="px-6 py-3 text-left text-sm font-semibold font-poppins">Submitted</th>
+                    <th className="px-6 py-3 text-center text-sm font-semibold font-poppins">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="text-[13px]">
+                  {isLoading ? (
+                    [...Array(6)].map((_, i) => (
+                      <tr key={i} className="border-b">
+                        {[...Array(6)].map((_, j) => (
+                          <td key={j} className="px-6 py-4">
+                            <div className="h-4 bg-muted rounded w-24" />
+                          </td>
+                        ))}
+                      </tr>
+                    ))
+                  ) : submissions.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-10 text-center text-muted-foreground font-poppins">
+                        <MessageSquare className="w-10 h-10 mx-auto mb-3 text-muted-foreground opacity-60" />
+                        No submissions found
+                      </td>
+                    </tr>
+                  ) : (
+                    submissions.map((submission, idx) => {
+                      const meta = getEntityTypeMeta(submission.entityType);
+                      const TypeIcon = meta.icon;
 
-                        <p className="text-sm text-muted-foreground mb-3 font-poppins">
-                          <span className="font-medium text-foreground">{submission.studentName}</span>{' '}
-                          • Submitted{' '}
-                          {new Date(submission.submittedDate).toLocaleDateString()}
-                        </p>
-
-                        <Badge
-                          className={`${getEntityTypeColor(submission.entityType)}`}
+                      return (
+                        <motion.tr
+                          key={submission.id}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: idx * 0.02 }}
+                          className="border-b hover:bg-muted/50 transition-colors cursor-pointer"
+                          onClick={() => fetchSubmissionDetail(submission.entityType, submission.entityId)}
                         >
-                          {submission.entityType}
-                        </Badge>
-                      </div>
-
-                      {submission.status === 'Pending' && (
-                        <Clock className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
-                      )}
-                      {submission.status === 'Approved' && (
-                        <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
-                      )}
-                      {submission.status === 'Rejected' && (
-                        <XCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))
-          )}
+                          <td className="px-6 py-4">
+                            <p className="font-medium font-poppins line-clamp-1" title={submission.entityTitle}>
+                              {submission.entityTitle}
+                            </p>
+                            <p className="text-xs text-muted-foreground font-poppins">
+                              ID: {submission.entityId}
+                            </p>
+                          </td>
+                          <td className="px-6 py-4">
+                            <p className="font-medium font-poppins">{submission.studentName}</p>
+                            <p className="text-xs text-muted-foreground font-poppins">Student Submission</p>
+                          </td>
+                          <td className="px-6 py-4">
+                            <Badge className={`${getEntityTypeColor(submission.entityType)} gap-2`}>
+                              <TypeIcon className={`w-3.5 h-3.5 ${meta.color}`} />
+                              {meta.label}
+                            </Badge>
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            <Badge className={`${getStatusColor(submission.status)}`}>
+                              {submission.status}
+                            </Badge>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2 font-poppins">
+                              <Clock className="w-3 h-3 text-muted-foreground" />
+                              {new Date(submission.submittedDate).toLocaleDateString()}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="gap-2 font-poppins"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                fetchSubmissionDetail(submission.entityType, submission.entityId);
+                              }}
+                            >
+                              <Eye className="w-4 h-4" />
+                              <span className="hidden sm:inline">Review</span>
+                            </Button>
+                          </td>
+                        </motion.tr>
+                      );
+                    })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </Card>
         </motion.div>
 
         {/* Pagination */}

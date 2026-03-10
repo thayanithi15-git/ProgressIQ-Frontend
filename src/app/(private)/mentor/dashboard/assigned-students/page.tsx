@@ -31,6 +31,12 @@ import { Select,
   SelectTrigger,
   SelectValue, } from '@/components/ui/select';
 
+const statusBadgeClass = (status?: string) => {
+  if (status === 'Active') return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+  if (status === 'Inactive') return 'bg-rose-100 text-rose-700 border-rose-200';
+  return 'bg-slate-100 text-slate-700 border-slate-200';
+};
+
 const StudentProfileModal = ({ student, onClose }: any) => {
   if (!student) return null;
 
@@ -55,7 +61,7 @@ const StudentProfileModal = ({ student, onClose }: any) => {
               <div className="flex gap-4 text-sm font-poppins">
                 <span className="font-medium">{profile.department}</span>
                 <span className="text-muted-foreground">Year {profile.year}</span>
-                <Badge variant={profile.status === 'Active' ? 'default' : 'secondary'}>
+                <Badge variant="outline" className={statusBadgeClass(profile.status)}>
                   {profile.status}
                 </Badge>
               </div>
@@ -207,7 +213,7 @@ export default function AssignedStudentsPage() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-6"
         >
-          <Card>
+          <Card className="shadow-none">
             <CardContent className="p-6">
               {/* Search Bar */}
               <div className="flex gap-2 mb-4">
@@ -348,7 +354,7 @@ export default function AssignedStudentsPage() {
                       <th className="px-6 py-3 text-center text-sm font-semibold font-poppins">Actions</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="text-[13px]">
                     {isLoading ? (
                       [...Array(5)].map((_, i) => (
                         <tr key={i} className="border-b">
@@ -386,17 +392,18 @@ export default function AssignedStudentsPage() {
                               </div>
                             </div>
                           </td>
-                          <td className="px-6 py-4 text-sm text-muted-foreground font-poppins">
+                          <td className="px-6 py-4 text-muted-foreground font-poppins">
                             {student.email}
                           </td>
-                          <td className="px-6 py-4 text-sm font-poppins">{student.department}</td>
-                          <td className="px-6 py-4 text-center text-sm font-poppins">{student.year}</td>
+                          <td className="px-6 py-4 font-poppins">{student.department}</td>
+                          <td className="px-6 py-4 text-center font-poppins">{student.year}</td>
                           <td className="px-6 py-4 text-right font-semibold text-blue-600 font-poppins">
                             {student.points.toLocaleString()}
                           </td>
                           <td className="px-6 py-4 text-center">
                             <Badge
-                              variant={student.status === 'Active' ? 'default' : 'secondary'}
+                              variant="outline"
+                              className={statusBadgeClass(student.status)}
                             >
                               {student.status}
                             </Badge>
