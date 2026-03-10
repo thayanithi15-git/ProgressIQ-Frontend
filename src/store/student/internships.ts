@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import api from '@/utils/api';
 import { useNotificationStore } from '@/utils/notification';
+import { getStoredMentorId } from '@/utils/mentorSession';
 
 // ==========================================
 // TYPES
@@ -30,7 +31,7 @@ export interface Internship {
 }
 
 export interface CreateInternshipPayload {
-  mentorId: string;
+  mentorId?: string;
   companyName: string;
   companyUrl?: string;
   role: string;
@@ -155,8 +156,13 @@ export const useInternshipsStore = create<InternshipsState>((set, get) => ({
   createInternship: async (payload) => {
     const { showNotification } = useNotificationStore.getState();
     try {
+      const mentorId = getStoredMentorId();
+      if (!mentorId) {
+        showNotification('No mentor assigned. Please contact admin.', 'error');
+        return false;
+      }
       set({ isSubmitting: true });
-      const res = await api.post('/api/student/internships', payload);
+      const res = await api.post('/api/student/internships', { ...payload, mentorId });
       if (res.data.success) {
         showNotification('Internship created successfully', 'success');
         get().fetchInternships();

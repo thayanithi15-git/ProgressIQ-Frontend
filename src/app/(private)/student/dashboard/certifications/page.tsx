@@ -177,12 +177,11 @@ const Field = ({ label, required, children }: any) => (
 // ─────────────────────────────────────────────────────────────────────────────
 const CertFormModal = ({ open, editing, onClose, onSubmit, isSubmitting }: any) => {
   const isEdit = !!editing;
-  const [form, setForm] = useState({ mentorId: "", title: "", platform: "", platformLink: "", from: "", to: "" });
+  const [form, setForm] = useState({ title: "", platform: "", platformLink: "", from: "", to: "" });
 
   useEffect(() => {
     if (editing) {
       setForm({
-        mentorId: typeof editing.mentorId === "object" ? editing.mentorId._id : editing.mentorId,
         title: editing.title ?? "",
         platform: editing.platform ?? "",
         platformLink: editing.platformLink ?? "",
@@ -190,7 +189,7 @@ const CertFormModal = ({ open, editing, onClose, onSubmit, isSubmitting }: any) 
         to: editing.to ? editing.to.split("T")[0] : "",
       });
     } else {
-      setForm({ mentorId: "", title: "", platform: "", platformLink: "", from: "", to: "" });
+      setForm({ title: "", platform: "", platformLink: "", from: "", to: "" });
     }
   }, [editing, open]);
 
@@ -217,7 +216,6 @@ const CertFormModal = ({ open, editing, onClose, onSubmit, isSubmitting }: any) 
               <button onClick={onClose} style={{ width: 30, height: 30, borderRadius: 8, border: "none", background: "var(--pill-inactive-bg)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={14} color="var(--text-muted)" /></button>
             </div>
             <form onSubmit={(e) => { e.preventDefault(); onSubmit(form); }} style={{ padding: "20px 24px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
-              <Field label="Mentor ID" required><input className="form-input" value={form.mentorId} onChange={e => setForm(p => ({ ...p, mentorId: e.target.value }))} required placeholder="Mentor ID" /></Field>
               <Field label="Certification Title" required><input className="form-input" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} required placeholder="e.g. AWS Solutions Architect" /></Field>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                 <Field label="Platform" required><input className="form-input" value={form.platform} onChange={e => setForm(p => ({ ...p, platform: e.target.value }))} required placeholder="e.g. Coursera" /></Field>

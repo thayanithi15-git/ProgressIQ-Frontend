@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import api from '@/utils/api';
 import { useNotificationStore } from '@/utils/notification';
+import { getStoredMentorId } from '@/utils/mentorSession';
 
 // ==========================================
 // TYPES
@@ -27,7 +28,7 @@ export interface Project {
 }
 
 export interface CreateProjectPayload {
-  mentorId: string;
+  mentorId?: string;
   title: string;
   description: string;
   githubLink?: string;
@@ -148,8 +149,13 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
   createProject: async (payload) => {
     const { showNotification } = useNotificationStore.getState();
     try {
+      const mentorId = getStoredMentorId();
+      if (!mentorId) {
+        showNotification('No mentor assigned. Please contact admin.', 'error');
+        return false;
+      }
       set({ isSubmitting: true });
-      const res = await api.post('/api/student/projects', payload);
+      const res = await api.post('/api/student/projects', { ...payload, mentorId });
       if (res.data.success) {
         showNotification('Project created successfully', 'success');
         get().fetchProjects();

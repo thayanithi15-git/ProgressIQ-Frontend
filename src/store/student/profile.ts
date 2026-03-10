@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import api from '@/utils/api';
 import { useNotificationStore } from '@/utils/notification';
+import { setStoredMentorProfile } from '@/utils/mentorSession';
 
 // ==========================================
 // TYPES
@@ -100,7 +101,10 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
     try {
       set({ isLoading: true });
       const res = await api.get('/api/student/profile/complete');
-      if (res.data.success) set({ profile: res.data.data });
+      if (res.data.success) {
+        set({ profile: res.data.data });
+        setStoredMentorProfile(res.data.data?.mentorInfo || null);
+      }
     } catch (error: any) {
       showNotification(error.response?.data?.message || 'Failed to fetch profile', 'error');
     } finally {

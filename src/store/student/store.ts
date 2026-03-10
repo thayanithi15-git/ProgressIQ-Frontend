@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import api from '@/utils/api';
+import { getStoredMentorId } from '@/utils/mentorSession';
 
 // ==========================================
 // TYPES & INTERFACES
@@ -251,7 +252,9 @@ export const useStudentStore = create<StudentStore>((set, get) => ({
   },
   createProject: async (data: Partial<Project>) => {
     try {
-      const response = await api.post('/api/student/projects', data);
+      const mentorId = getStoredMentorId();
+      if (!mentorId) throw new Error('No mentor assigned. Please contact admin.');
+      const response = await api.post('/api/student/projects', { ...data, mentorId });
       set((state) => ({
         projects: [...state.projects, response.data.data],
       }));
@@ -316,7 +319,9 @@ export const useStudentStore = create<StudentStore>((set, get) => ({
   },
   createTask: async (data: Partial<Task>) => {
     try {
-      const response = await api.post('/api/student/tasks', data);
+      const mentorId = getStoredMentorId();
+      if (!mentorId) throw new Error('No mentor assigned. Please contact admin.');
+      const response = await api.post('/api/student/tasks', { ...data, mentorId });
       set((state) => ({
         tasks: [...state.tasks, response.data.data],
       }));
@@ -387,7 +392,9 @@ export const useStudentStore = create<StudentStore>((set, get) => ({
   },
   createCertification: async (data: Partial<Certification>) => {
     try {
-      const response = await api.post('/api/student/certifications', data);
+      const mentorId = getStoredMentorId();
+      if (!mentorId) throw new Error('No mentor assigned. Please contact admin.');
+      const response = await api.post('/api/student/certifications', { ...data, mentorId });
       set((state) => ({
         certifications: [...state.certifications, response.data.data],
       }));
@@ -442,7 +449,9 @@ export const useStudentStore = create<StudentStore>((set, get) => ({
   },
   createInternship: async (data: Partial<Internship>) => {
     try {
-      const response = await api.post('/api/student/internships', data);
+      const mentorId = getStoredMentorId();
+      if (!mentorId) throw new Error('No mentor assigned. Please contact admin.');
+      const response = await api.post('/api/student/internships', { ...data, mentorId });
       set((state) => ({
         internships: [...state.internships, response.data.data],
       }));

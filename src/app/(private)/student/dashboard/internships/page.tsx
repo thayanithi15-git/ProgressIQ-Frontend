@@ -202,12 +202,11 @@ const Field = ({ label, required, children }: any) => (
 // ─────────────────────────────────────────────────────────────────────────────
 const InternshipFormModal = ({ open, editing, onClose, onSubmit, isSubmitting }: any) => {
   const isEdit = !!editing;
-  const [form, setForm] = useState({ mentorId: "", companyName: "", companyUrl: "", role: "", type: "REMOTE", paid: false, from: "", to: "", description: "" });
+  const [form, setForm] = useState({ companyName: "", companyUrl: "", role: "", type: "REMOTE", paid: false, from: "", to: "", description: "" });
 
   useEffect(() => {
     if (editing) {
       setForm({
-        mentorId: typeof editing.mentorId === "object" ? editing.mentorId._id : editing.mentorId,
         companyName: editing.companyName ?? "",
         companyUrl: editing.companyUrl ?? "",
         role: editing.role ?? "",
@@ -218,7 +217,7 @@ const InternshipFormModal = ({ open, editing, onClose, onSubmit, isSubmitting }:
         description: editing.description ?? "",
       });
     } else {
-      setForm({ mentorId: "", companyName: "", companyUrl: "", role: "", type: "REMOTE", paid: false, from: "", to: "", description: "" });
+      setForm({ companyName: "", companyUrl: "", role: "", type: "REMOTE", paid: false, from: "", to: "", description: "" });
     }
   }, [editing, open]);
 
@@ -245,7 +244,6 @@ const InternshipFormModal = ({ open, editing, onClose, onSubmit, isSubmitting }:
               <button onClick={onClose} style={{ width: 30, height: 30, borderRadius: 8, border: "none", background: "var(--pill-inactive-bg)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={14} color="var(--text-muted)" /></button>
             </div>
             <form onSubmit={(e) => { e.preventDefault(); onSubmit(form); }} style={{ padding: "20px 24px 24px", display: "flex", flexDirection: "column", gap: 15 }}>
-              <Field label="Mentor ID" required><input className="form-input" value={form.mentorId} onChange={e => setForm(p => ({ ...p, mentorId: e.target.value }))} required placeholder="Mentor ID" /></Field>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                 <Field label="Company Name" required><input className="form-input" value={form.companyName} onChange={e => setForm(p => ({ ...p, companyName: e.target.value }))} required placeholder="e.g. Google" /></Field>
                 <Field label="Company URL"><input className="form-input" value={form.companyUrl} onChange={e => setForm(p => ({ ...p, companyUrl: e.target.value }))} placeholder="https://..." /></Field>

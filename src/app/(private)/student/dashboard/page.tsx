@@ -167,6 +167,10 @@ const GLOBAL_CSS = `
   }
   .heat-cell:hover { transform: scale(1.35); opacity: 0.85; }
 
+  .student-shell { display: grid; grid-template-columns: minmax(0,1fr) 360px; gap: 22px; align-items: start; }
+  .student-main { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+  .student-side { display: flex; flex-direction: column; gap: 18px; }
+
   @media (max-width: 1280px) {
     .stat-grid-student { grid-template-columns: repeat(3,1fr) !important; }
   }
@@ -175,6 +179,7 @@ const GLOBAL_CSS = `
     .two-col-grid { grid-template-columns: 1fr !important; }
     .three-col-grid { grid-template-columns: 1fr !important; }
     .profile-grid { grid-template-columns: 1fr !important; }
+    .student-shell { grid-template-columns: 1fr !important; }
   }
   @media (max-width: 580px) {
     .stat-grid-student { grid-template-columns: 1fr !important; }
@@ -676,157 +681,9 @@ export default function StudentDashboard() {
           }
         />
 
-        <div style={{ padding: "24px 24px 48px", display: "flex", flexDirection: "column", gap: 24 }}>
-
-          {/* ── 1. PROFILE + RANK BANNER ─────────────────────────── */}
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-            <div className="profile-grid" style={{ display: "grid", gridTemplateColumns: "1fr 340px", gap: 18 }}>
-
-              {/* Profile card */}
-              <div style={{ borderRadius: 20, background: "var(--profile-card)", padding: "28px 28px 24px", position: "relative", overflow: "hidden", boxShadow: "0 12px 40px rgba(0,0,0,0.25)" }}>
-                {/* Decorative circles */}
-                <div style={{ position: "absolute", right: -40, top: -40, width: 180, height: 180, borderRadius: "50%", background: "rgba(255,255,255,0.05)", pointerEvents: "none" }} />
-                <div style={{ position: "absolute", right: 40, bottom: -60, width: 140, height: 140, borderRadius: "50%", background: "rgba(255,255,255,0.04)", pointerEvents: "none" }} />
-                <StarDeco color="rgba(255,255,255,0.14)" size={22} style={{ top: 18, right: 120, animation: "float-star 3s ease-in-out infinite" }} />
-                <StarDeco color="rgba(255,255,255,0.10)" size={14} style={{ top: 50, right: 180, animation: "float-star 3.5s ease-in-out infinite 0.6s" }} />
-                <StarDeco color="rgba(255,255,255,0.09)" size={18} style={{ bottom: 24, left: 80, animation: "float-star 2.8s ease-in-out infinite 1.2s" }} />
-
-                {isLoadingProfile ? (
-                  <div style={{ display: "flex", gap: 20, alignItems: "center" }}>
-                    <Sk w={72} h={72} style={{ borderRadius: "50%", flexShrink: 0 }} />
-                    <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 9 }}>
-                      <Sk w="55%" h={18} /><Sk w="38%" h={13} /><Sk w="70%" h={11} />
-                    </div>
-                  </div>
-                ) : (
-                  <div style={{ display: "flex", gap: 20, alignItems: "flex-start", flexWrap: "wrap" }}>
-                    {/* Avatar */}
-                    <div style={{ position: "relative", flexShrink: 0 }}>
-                      <div style={{ width: 72, height: 72, borderRadius: "50%", background: `linear-gradient(135deg,${C.blue},${C.violet})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 26, fontWeight: 800, color: "#fff", boxShadow: `0 0 0 4px rgba(255,255,255,0.15)` }}>
-                        {student?.name?.charAt(0) ?? "S"}
-                      </div>
-                      <div style={{ position: "absolute", bottom: 2, right: 2, width: 16, height: 16, borderRadius: "50%", background: C.emerald, border: "2px solid rgba(255,255,255,0.2)" }} />
-                    </div>
-
-                    {/* Info */}
-                    <div style={{ flex: 1, minWidth: 200 }}>
-                      <h2 className="font-poppins" style={{ fontSize: 22, fontWeight: 800, color: "#fff", margin: "0 0 4px", lineHeight: 1.2 }}>
-                        {student?.name ?? "Student Name"}
-                      </h2>
-                      <p style={{ fontSize: 13, color: "rgba(255,255,255,0.65)", fontWeight: 500, margin: "0 0 14px" }}>
-                        {student?.department} • {student?.year}
-                      </p>
-
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
-                        {[
-                          { icon: Mail,     val: student?.email },
-                          { icon: Phone,    val: student?.phone },
-                          { icon: MapPin,   val: student?.place },
-                          { icon: Calendar, val: student?.academicYear },
-                        ].map(({ icon: Icon, val }, i) => val ? (
-                          <div key={i} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-                            <Icon size={12} color="rgba(255,255,255,0.55)" />
-                            <span style={{ fontSize: 11, color: "rgba(255,255,255,0.65)", fontWeight: 500 }}>{val}</span>
-                          </div>
-                        ) : null)}
-                      </div>
-                    </div>
-
-                    {/* Status pill */}
-                    <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "flex-end" }}>
-                      <span style={{ fontSize: 11, fontWeight: 700, padding: "4px 12px", borderRadius: 20, background: student?.status === "ACTIVE" ? `${C.emerald}30` : `${C.amber}30`, color: student?.status === "ACTIVE" ? C.emerald : C.amber, border: `1px solid ${student?.status === "ACTIVE" ? C.emerald : C.amber}44` }}>
-                        {student?.status ?? "—"}
-                      </span>
-                      {student && (
-                        <span style={{ fontSize: 10, color: "rgba(255,255,255,0.45)", fontWeight: 500, textAlign: "right" }}>
-                          ID: {student.id?.slice(-8) ?? "—"}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Mentor row */}
-                {!isLoadingProfile && (
-                  <div style={{ marginTop: 20, paddingTop: 18, borderTop: "1px solid rgba(255,255,255,0.10)", display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-                    <div style={{ width: 36, height: 36, borderRadius: 10, background: `${C.violet}30`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <User size={16} color={C.violet} />
-                    </div>
-                    <div>
-                      <p style={{ fontSize: 10, color: "rgba(255,255,255,0.45)", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", margin: 0 }}>Assigned Mentor</p>
-                      <p style={{ fontSize: 13, fontWeight: 700, color: "rgba(255,255,255,0.90)", margin: 0 }}>{mentor?.name ?? "Not Assigned"}</p>
-                    </div>
-                    {mentor && (
-                      <>
-                        <div style={{ width: 1, height: 30, background: "rgba(255,255,255,0.12)", marginLeft: 4 }} />
-                        <div>
-                          <p style={{ fontSize: 10, color: "rgba(255,255,255,0.45)", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", margin: 0 }}>Department</p>
-                          <p style={{ fontSize: 12, fontWeight: 600, color: "rgba(255,255,255,0.75)", margin: 0 }}>{mentor.department}</p>
-                        </div>
-                        {mentor.expertise?.length > 0 && (
-                          <>
-                            <div style={{ width: 1, height: 30, background: "rgba(255,255,255,0.12)", marginLeft: 4 }} />
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: 5 }}>
-                              {mentor.expertise.slice(0, 3).map((e: string, i: number) => (
-                                <span key={i} style={{ fontSize: 10, fontWeight: 600, padding: "3px 8px", borderRadius: 20, background: `${C.cyan}25`, color: C.cyan, border: `1px solid ${C.cyan}40` }}>{e}</span>
-                              ))}
-                            </div>
-                          </>
-                        )}
-                      </>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Rank card */}
-              <div style={{ borderRadius: 20, background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)", padding: "22px 22px 20px", display: "flex", flexDirection: "column", gap: 16 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <div style={{ width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg,#FFF7ED,#FFFBEB)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <Trophy size={17} color={C.amber} />
-                  </div>
-                  <div>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>Rankings</p>
-                    <p style={{ fontSize: 11, color: "var(--text-muted)", margin: 0 }}>Your current standing</p>
-                  </div>
-                </div>
-
-                {statsLoading ? (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                    <Sk h={60} /><Sk h={60} />
-                  </div>
-                ) : (
-                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                    {[
-                      { label: "Overall Rank",    val: stats?.ranking?.overallRank,    color: C.amber,   icon: "🏆" },
-                      { label: "Department Rank", val: stats?.ranking?.departmentRank, color: C.blue,    icon: "🎯" },
-                    ].map(({ label, val, color, icon }) => (
-                      <div key={label} style={{ padding: "14px 16px", borderRadius: 14, background: `${color}0F`, border: `1px solid ${color}25`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                        <div>
-                          <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.05em", textTransform: "uppercase", margin: 0 }}>{label}</p>
-                          <p style={{ fontSize: 26, fontWeight: 800, color, margin: 0, lineHeight: 1.1 }}>
-                            {val != null ? `#${val}` : "—"}
-                          </p>
-                        </div>
-                        <span style={{ fontSize: 28 }}>{icon}</span>
-                      </div>
-                    ))}
-
-                    {/* Points */}
-                    <div style={{ padding: "12px 16px", borderRadius: 14, background: `${C.violet}0F`, border: `1px solid ${C.violet}25`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                      <div>
-                        <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.05em", textTransform: "uppercase", margin: 0 }}>Total Points</p>
-                        <p style={{ fontSize: 26, fontWeight: 800, color: C.violet, margin: 0, lineHeight: 1.1 }}>
-                          {stats?.totalPoints?.toLocaleString() ?? "—"}
-                        </p>
-                      </div>
-                      <Zap size={28} color={C.violet} />
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </motion.div>
+        <div style={{ padding: "24px 24px 48px" }}>
+          <div className="student-shell">
+            <div className="student-main">
 
           {/* ── 2. STAT CARDS ─────────────────────────────────────── */}
           <div className="stat-grid-student" style={{ display: "grid", gridTemplateColumns: "repeat(6,1fr)", gap: 14 }}>
@@ -1064,6 +921,130 @@ export default function StudentDashboard() {
             </ChartCard>
           </div>
 
+            </div>
+
+            <div className="student-side">
+              {/* ── STUDENT PROFILE ─────────────────────────── */}
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
+                <div style={{ borderRadius: 20, background: "var(--profile-card)", padding: "26px 26px 22px", position: "relative", overflow: "hidden", boxShadow: "0 12px 40px rgba(0,0,0,0.25)" }}>
+                  <div style={{ position: "absolute", right: -40, top: -40, width: 180, height: 180, borderRadius: "50%", background: "rgba(255,255,255,0.05)", pointerEvents: "none" }} />
+                  <div style={{ position: "absolute", right: 40, bottom: -60, width: 140, height: 140, borderRadius: "50%", background: "rgba(255,255,255,0.04)", pointerEvents: "none" }} />
+                  <StarDeco color="rgba(255,255,255,0.14)" size={22} style={{ top: 18, right: 120, animation: "float-star 3s ease-in-out infinite" }} />
+                  <StarDeco color="rgba(255,255,255,0.10)" size={14} style={{ top: 50, right: 180, animation: "float-star 3.5s ease-in-out infinite 0.6s" }} />
+
+                  {isLoadingProfile ? (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                      <Sk h={20} w="70%" />
+                      <Sk h={12} w="50%" />
+                      <Sk h={12} w="60%" />
+                      <Sk h={12} w="65%" />
+                    </div>
+                  ) : (
+                    <>
+                      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 16 }}>
+                        <div style={{ width: 48, height: 48, borderRadius: 14, background: "rgba(255,255,255,0.18)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <User size={20} color="#fff" />
+                        </div>
+                        <div style={{ minWidth: 0 }}>
+                          <p style={{ fontSize: 16, fontWeight: 800, color: "#fff", margin: 0, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                            {student?.name || "Student"}
+                          </p>
+                          <p style={{ fontSize: 11, color: "rgba(255,255,255,0.7)", margin: 0 }}>
+                            {student?.department || "—"} • {student?.year || "—"}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, color: "rgba(255,255,255,0.8)", fontSize: 12 }}>
+                          <Mail size={13} /> {student?.email || "—"}
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, color: "rgba(255,255,255,0.8)", fontSize: 12 }}>
+                          <MapPin size={13} /> {student?.place || "—"}
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, color: "rgba(255,255,255,0.8)", fontSize: 12 }}>
+                          <Phone size={13} /> {student?.phone || "—"}
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, color: "rgba(255,255,255,0.8)", fontSize: 12 }}>
+                          <Calendar size={13} /> {student?.academicYear || "—"}
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </motion.div>
+
+              {/* ── MENTOR CARD ─────────────────────────── */}
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}>
+                <div style={{ borderRadius: 18, background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)", padding: "18px 18px 16px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                    <div style={{ width: 36, height: 36, borderRadius: 10, background: `${C.cyan}18`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <GraduationCap size={16} color={C.cyan} />
+                    </div>
+                    <div>
+                      <p style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>Mentor</p>
+                      <p style={{ fontSize: 11, color: "var(--text-muted)", margin: 0 }}>Assigned mentor info</p>
+                    </div>
+                  </div>
+                  {mentor ? (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 12 }}>
+                      <div style={{ fontWeight: 700, color: "var(--text-primary)" }}>{mentor.name}</div>
+                      <div style={{ color: "var(--text-secondary)" }}>{mentor.department || "—"}</div>
+                      <div style={{ color: "var(--text-muted)" }}>{mentor.email || "—"}</div>
+                    </div>
+                  ) : (
+                    <p style={{ fontSize: 12, color: "var(--text-muted)" }}>No mentor assigned</p>
+                  )}
+                </div>
+              </motion.div>
+
+              {/* ── RANK CARD ─────────────────────────── */}
+              <div style={{ borderRadius: 20, background: "var(--card-bg)", border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)", padding: "22px 22px 20px", display: "flex", flexDirection: "column", gap: 16 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <div style={{ width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg,#FFF7ED,#FFFBEB)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Trophy size={17} color={C.amber} />
+                  </div>
+                  <div>
+                    <p style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>Rankings</p>
+                    <p style={{ fontSize: 11, color: "var(--text-muted)", margin: 0 }}>Your current standing</p>
+                  </div>
+                </div>
+
+                {statsLoading ? (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    <Sk h={60} /><Sk h={60} />
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    {[
+                      { label: "Overall Rank",    val: stats?.ranking?.overallRank,    color: C.amber,   icon: "🏆" },
+                      { label: "Department Rank", val: stats?.ranking?.departmentRank, color: C.blue,    icon: "🎯" },
+                    ].map(({ label, val, color, icon }) => (
+                      <div key={label} style={{ padding: "14px 16px", borderRadius: 14, background: `${color}0F`, border: `1px solid ${color}25`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                        <div>
+                          <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.05em", textTransform: "uppercase", margin: 0 }}>{label}</p>
+                          <p style={{ fontSize: 26, fontWeight: 800, color, margin: 0, lineHeight: 1.1 }}>
+                            {val != null ? `#${val}` : "—"}
+                          </p>
+                        </div>
+                        <span style={{ fontSize: 28 }}>{icon}</span>
+                      </div>
+                    ))}
+
+                    <div style={{ padding: "12px 16px", borderRadius: 14, background: `${C.violet}0F`, border: `1px solid ${C.violet}25`, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                      <div>
+                        <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.05em", textTransform: "uppercase", margin: 0 }}>Total Points</p>
+                        <p style={{ fontSize: 26, fontWeight: 800, color: C.violet, margin: 0, lineHeight: 1.1 }}>
+                          {stats?.totalPoints?.toLocaleString() ?? "—"}
+                        </p>
+                      </div>
+                      <Zap size={28} color={C.violet} />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </>

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import api from '@/utils/api';
 import { useNotificationStore } from '@/utils/notification';
+import { getStoredMentorId } from '@/utils/mentorSession';
 
 // ==========================================
 // TYPES
@@ -26,7 +27,7 @@ export interface Certification {
 }
 
 export interface CreateCertificationPayload {
-  mentorId: string;
+  mentorId?: string;
   title: string;
   platform: string;
   platformLink: string;
@@ -143,8 +144,13 @@ export const useCertificationsStore = create<CertificationsState>((set, get) => 
   createCertification: async (payload) => {
     const { showNotification } = useNotificationStore.getState();
     try {
+      const mentorId = getStoredMentorId();
+      if (!mentorId) {
+        showNotification('No mentor assigned. Please contact admin.', 'error');
+        return false;
+      }
       set({ isSubmitting: true });
-      const res = await api.post('/api/student/certifications', payload);
+      const res = await api.post('/api/student/certifications', { ...payload, mentorId });
       if (res.data.success) {
         showNotification('Certification created successfully', 'success');
         get().fetchCertifications();

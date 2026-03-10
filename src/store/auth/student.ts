@@ -1,6 +1,7 @@
 import api from '@/utils/api';
 import { getEncryptedItem, removeEncryptedItem, setEncryptedItem } from '@/utils/encryption';
 import { useNotificationStore } from '@/utils/notification';
+import { setStoredMentorProfile } from '@/utils/mentorSession';
 import { create } from 'zustand';
 
 interface StudentUser {
@@ -59,6 +60,17 @@ export const useStudentAuthStore = create<StudentAuthState>((set) => ({
             if (full) displayName = full;
           }
         } catch {}
+
+        try {
+          const completeRes = await api.get('/api/student/profile/complete');
+          if (completeRes.data?.success && completeRes.data?.data?.mentorInfo) {
+            setStoredMentorProfile(completeRes.data.data.mentorInfo);
+          } else {
+            setStoredMentorProfile(null);
+          }
+        } catch {
+          setStoredMentorProfile(null);
+        }
 
         localStorage.setItem(
           'credxUser',

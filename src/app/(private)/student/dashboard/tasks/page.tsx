@@ -210,18 +210,17 @@ const Field = ({ label, required, children }: any) => (
 // ─────────────────────────────────────────────────────────────────────────────
 const TaskFormModal = ({ open, editing, onClose, onSubmit, isSubmitting }: any) => {
   const isEdit = !!editing;
-  const [form, setForm] = useState({ mentorId: "", title: "", description: "", dueDate: "" });
+  const [form, setForm] = useState({ title: "", description: "", dueDate: "" });
 
   useEffect(() => {
     if (editing) {
       setForm({
-        mentorId: typeof editing.mentorId === "object" ? editing.mentorId._id : editing.mentorId,
         title: editing.title ?? "",
         description: editing.description ?? "",
         dueDate: editing.dueDate ? editing.dueDate.split("T")[0] : "",
       });
     } else {
-      setForm({ mentorId: "", title: "", description: "", dueDate: "" });
+      setForm({ title: "", description: "", dueDate: "" });
     }
   }, [editing, open]);
 
@@ -248,7 +247,6 @@ const TaskFormModal = ({ open, editing, onClose, onSubmit, isSubmitting }: any) 
               <button onClick={onClose} style={{ width: 30, height: 30, borderRadius: 8, border: "none", background: "var(--pill-inactive-bg)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={14} color="var(--text-muted)" /></button>
             </div>
             <form onSubmit={(e) => { e.preventDefault(); onSubmit(form); }} style={{ padding: "20px 24px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
-              <Field label="Mentor ID" required><input className="form-input" value={form.mentorId} onChange={e => setForm(p => ({ ...p, mentorId: e.target.value }))} required placeholder="Mentor ID" /></Field>
               <Field label="Task Title" required><input className="form-input" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} required placeholder="e.g. Build Authentication Module" /></Field>
               <Field label="Description" required><textarea className="form-input textarea" value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} required placeholder="Describe what needs to be done..." /></Field>
               <Field label="Due Date" required><input className="form-input" type="date" value={form.dueDate} onChange={e => setForm(p => ({ ...p, dueDate: e.target.value }))} required /></Field>

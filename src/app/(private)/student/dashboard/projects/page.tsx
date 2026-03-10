@@ -245,13 +245,12 @@ const Field = ({ label, required, children }: any) => (
 const ProjectFormModal = ({ open, editing, onClose, onSubmit, isSubmitting }: any) => {
   const isEdit = !!editing;
   const [form, setForm] = useState({
-    mentorId: "", title: "", description: "", githubLink: "", websiteLink: "", completedAt: "",
+    title: "", description: "", githubLink: "", websiteLink: "", completedAt: "",
   });
 
   useEffect(() => {
     if (editing) {
       setForm({
-        mentorId: typeof editing.mentorId === "object" ? editing.mentorId._id : editing.mentorId,
         title: editing.title ?? "",
         description: editing.description ?? "",
         githubLink: editing.githubLink ?? "",
@@ -259,7 +258,7 @@ const ProjectFormModal = ({ open, editing, onClose, onSubmit, isSubmitting }: an
         completedAt: editing.completedAt ? editing.completedAt.split("T")[0] : "",
       });
     } else {
-      setForm({ mentorId: "", title: "", description: "", githubLink: "", websiteLink: "", completedAt: "" });
+      setForm({ title: "", description: "", githubLink: "", websiteLink: "", completedAt: "" });
     }
   }, [editing, open]);
 
@@ -299,9 +298,6 @@ const ProjectFormModal = ({ open, editing, onClose, onSubmit, isSubmitting }: an
             </div>
 
             <form onSubmit={handleSubmit} style={{ padding: "20px 24px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
-              <Field label="Mentor ID" required>
-                <input className="form-input" placeholder="Mentor ID" value={form.mentorId} onChange={e => setForm(p => ({ ...p, mentorId: e.target.value }))} required />
-              </Field>
               <Field label="Project Title" required>
                 <input className="form-input" placeholder="e.g. E-Commerce Platform" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} required />
               </Field>
