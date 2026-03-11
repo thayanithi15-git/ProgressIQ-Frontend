@@ -121,14 +121,15 @@ const ReviewModal = ({ submission, onClose, onApprove, isSubmitting }: any) => {
   const handleApprove = () => {
     const points =
       pointType === 'manual' ? parseInt(customPoints) || 0 : pointOptions[pointType];
-    onApprove(submission.id, submission.entityType, 'Approved', points, feedback);
+      console.log(submission.submission);
+    onApprove(submission.submission._id, submission.entityType, 'Approved', points, feedback);
     setPointType('basic');
     setCustomPoints('');
     setFeedback('');
   };
 
   const handleReject = () => {
-    onApprove(submission.id, submission.entityType, 'Rejected', 0, feedback);
+    onApprove(submission.submission._id, submission.entityType, 'Rejected', 0, feedback);
     setFeedback('');
   };
 

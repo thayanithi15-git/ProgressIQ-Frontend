@@ -172,7 +172,7 @@ export const useApprovalsStore = create<ApprovalsState>((set, get) => ({
       const user = storedUser ? JSON.parse(storedUser) : null;
       const userId = user?.userId;
 
-      const response = await api.put(`/api/mentor/approvals/${userId}`, {
+      const response = await api.put(`/api/mentor/approvals/${id}`, {
         entityType,
         status,
         points: points || 0,
