@@ -273,28 +273,38 @@ const StarDeco = ({ color, size, style }) => (
 // ─────────────────────────────────────────────────────────────────────────────
 // STAT CARD — gradient bg, floating icon, star decorations
 // ─────────────────────────────────────────────────────────────────────────────
-const StatCard = ({ meta, value, loading, index }) => {
+const StatCard = ({ meta, value, loading, index }: any) => {
   const Icon = meta.icon;
   const [g1, g2] = meta.grad;
 
-  // Skeleton state (dark-mode-aware shimmer)
-  if (loading) return (
-    <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }}>
-      <div style={{
-        borderRadius: 18, padding: "20px 22px", height: 130,
-        background: "var(--card-bg)", border: "1px solid var(--card-border)",
-      }}>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 9, flex: 1 }}>
-            <Sk w="55%" h={11} />
-            <Sk w="38%" h={28} />
-            <Sk w="70%" h={10} />
+  if (loading) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.05 }}
+      >
+        <div
+          style={{
+            borderRadius: 18,
+            padding: "20px 22px",
+            height: 130,
+            background: "var(--card-bg)",
+            border: "1px solid var(--card-border)",
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 9, flex: 1 }}>
+              <Sk w="55%" h={11} />
+              <Sk w="38%" h={28} />
+              <Sk w="70%" h={10} />
+            </div>
+            <Sk w={46} h={46} style={{ borderRadius: 12, flexShrink: 0 }} />
           </div>
-          <Sk w={46} h={46} style={{ borderRadius: 12, flexShrink: 0 }} />
         </div>
-      </div>
-    </motion.div>
-  );
+      </motion.div>
+    );
+  }
 
   const isNull = value === null || value === undefined;
 
@@ -305,68 +315,78 @@ const StatCard = ({ meta, value, loading, index }) => {
       transition={{ delay: index * 0.055, duration: 0.38 }}
       whileHover={{ y: -4, transition: { duration: 0.18 } }}
     >
-      <div style={{
-        borderRadius: 18,
-        background: `linear-gradient(135deg, ${g1} 0%, ${g2} 100%)`,
-        padding: "20px 20px 18px",
-        position: "relative",
-        overflow: "hidden",
-        boxShadow: `0 8px 28px ${g1}55`,
-        minHeight: 130,
-        cursor: "default",
-      }}>
-        {/* Decorative stars */}
-        <StarDeco color={meta.stars} size={18} style={{ top: 10, right: 80, opacity: 0.22, animation: "float-star 2.8s ease-in-out infinite" }} />
-        <StarDeco color={meta.stars} size={11} style={{ top: 30, right: 110, opacity: 0.18, animation: "float-star 3.4s ease-in-out infinite 0.5s" }} />
-        <StarDeco color={meta.stars} size={14} style={{ bottom: 18, left: 16, opacity: 0.15, animation: "float-star 3.1s ease-in-out infinite 1s" }} />
-        <StarDeco color={meta.stars} size={8}  style={{ bottom: 30, left: 50, opacity: 0.12, animation: "float-star 2.6s ease-in-out infinite 1.5s" }} />
-        <StarDeco color={meta.stars} size={10} style={{ top: 14, left: "45%", opacity: 0.14, animation: "float-star 3.6s ease-in-out infinite 0.8s" }} />
-
-        {/* Large translucent circle bg shape */}
-        <div style={{
-          position: "absolute", right: -20, top: -20,
-          width: 100, height: 100, borderRadius: "50%",
-          background: "rgba(255,255,255,0.10)",
-          pointerEvents: "none",
-        }} />
-        <div style={{
-          position: "absolute", right: 10, bottom: -30,
-          width: 80, height: 80, borderRadius: "50%",
-          background: "rgba(255,255,255,0.07)",
-          pointerEvents: "none",
-        }} />
-
-        {/* Top row: label + icon */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-          <p style={{
-            fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.80)",
-            letterSpacing: "0.05em", textTransform: "uppercase",
-          }}>
+      <div
+        style={{
+          borderRadius: 18,
+          background: "var(--card-bg)",
+          border: "1px solid var(--card-border)",
+          padding: "20px 20px 18px",
+          position: "relative",
+          overflow: "hidden",
+          boxShadow: "var(--card-shadow)",
+          minHeight: 130,
+        }}
+      >
+        {/* Top Section */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "flex-start",
+          }}
+        >
+          <p
+            style={{
+              fontSize: 11,
+              fontWeight: 700,
+              color: "var(--text-muted)",
+              letterSpacing: "0.05em",
+              textTransform: "uppercase",
+            }}
+          >
             {meta.label}
           </p>
-          {/* Icon box */}
-          <div style={{
-            width: 40, height: 40, borderRadius: 10, flexShrink: 0,
-            background: "rgba(255,255,255,0.18)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            backdropFilter: "blur(6px)",
-          }}>
-            <Icon size={19} color="rgba(255,255,255,0.95)" strokeWidth={2.2} />
+
+          {/* Icon */}
+          <div
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 10,
+              flexShrink: 0,
+              background: `linear-gradient(135deg, ${g1}22, ${g2}22)`,
+              border: `1px solid ${g1}22`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Icon size={19} color={g1} strokeWidth={2.2} />
           </div>
         </div>
 
         {/* Value */}
-        <h3 className="font-poppins" style={{
-          fontSize: 34, fontWeight: 700, lineHeight: 1,
-          color: isNull ? "rgba(255,255,255,0.35)" : "#fff",
-          margin: "10px 0 4px",
-          textShadow: "0 2px 8px rgba(0,0,0,0.15)",
-        }}>
+        <h3
+          className="font-poppins"
+          style={{
+            fontSize: 32,
+            fontWeight: 700,
+            lineHeight: 1,
+            color: isNull ? "var(--text-muted)" : "var(--text-primary)",
+            margin: "10px 0 4px",
+          }}
+        >
           {isNull ? "—" : Number(value).toLocaleString()}
         </h3>
 
-        {/* Desc */}
-        <p style={{ fontSize: 11, color: "rgba(255,255,255,0.70)", fontWeight: 500 }}>
+        {/* Description */}
+        <p
+          style={{
+            fontSize: 11,
+            color: "var(--text-secondary)",
+            fontWeight: 500,
+          }}
+        >
           {meta.desc}
         </p>
       </div>
