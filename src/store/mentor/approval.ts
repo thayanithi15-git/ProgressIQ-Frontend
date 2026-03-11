@@ -168,7 +168,11 @@ export const useApprovalsStore = create<ApprovalsState>((set, get) => ({
     try {
       set({ isSubmitting: true });
 
-      const response = await api.put(`/api/mentor/approvals/${id}`, {
+      const storedUser = localStorage.getItem("credxUser");
+      const user = storedUser ? JSON.parse(storedUser) : null;
+      const userId = user?.userId;
+
+      const response = await api.put(`/api/mentor/approvals/${userId}`, {
         entityType,
         status,
         points: points || 0,

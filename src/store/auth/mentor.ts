@@ -63,6 +63,7 @@ export const useMentorAuthStore = create<MentorAuthState>((set) => ({
             username: displayName,
             email,
             role,
+            userId,
             signedInAt: new Date().toISOString(),
           })
         );
