@@ -434,7 +434,7 @@ export default function ProfilePage() {
                 {/* Mentor hero row */}
                 <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 0 16px", borderBottom: "1px solid var(--divider)", marginBottom: 4 }}>
                   <div style={{ width: 56, height: 56, borderRadius: "50%", background: `linear-gradient(135deg,${C.emerald},${C.cyan})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, fontWeight: 900, color: "#fff", flexShrink: 0 }}>
-                    {mi.fullName.split(" ").map(p => p[0]).join("").toUpperCase().slice(0, 2)}
+                    {mi.fullName?.split(" ").map(p => p[0]).join("").toUpperCase().slice(0, 2)}
                   </div>
                   <div>
                     <p style={{ fontSize: 16, fontWeight: 800, color: "var(--text-primary)", margin: "0 0 3px" }}>{mi.fullName}</p>
