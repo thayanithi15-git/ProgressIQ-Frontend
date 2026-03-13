@@ -5,26 +5,21 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
     FileText,
     FileSpreadsheet,
-    //   FileCsv,
     Download,
-    Trash2,
     Filter,
     X,
-    Calendar,
     Users,
     TrendingUp,
     Briefcase,
     Award,
     GraduationCap,
-    Clock,
     CheckCircle,
     Loader2,
-    AlertCircle,
-    Search,
-    RefreshCw,
     Eye,
     ChevronDown,
     Settings,
+    RefreshCw,
+    Star,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -40,37 +35,13 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
-import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-import {
-    Tabs,
-    TabsContent,
-    TabsList,
-    TabsTrigger,
-} from "@/components/ui/tabs";
 import { useAdminReportsStore, ReportCategory, ReportType } from "@/store/admin/report";
 import GlobalNotification from "@/components/notify/notification";
 import Header from "@/components/layout/header";
-// import { Header } from "@/components/layout/header";
 
 // ==========================================
-// REPORT TYPE CARDS
+// REPORT TYPE CARD
 // ==========================================
 interface ReportTypeCardProps {
     type: ReportType;
@@ -83,7 +54,6 @@ interface ReportTypeCardProps {
 }
 
 const ReportTypeCard: React.FC<ReportTypeCardProps> = ({
-    type,
     icon: Icon,
     title,
     description,
@@ -91,32 +61,27 @@ const ReportTypeCard: React.FC<ReportTypeCardProps> = ({
     isSelected,
     onClick,
 }) => (
-    <motion.div
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        onClick={onClick}
-    >
+    <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={onClick}>
         <Card
-            className={`cursor-pointer transition-all duration-300 ${isSelected
-                ? "border-primary shadow-lg shadow-primary/20 bg-primary/5"
-                : "border-border hover:border-primary/50"
-                }`}
+            className={`cursor-pointer font-poppins transition-all duration-300 ${
+                isSelected
+                    ? "border-primary shadow-lg shadow-primary/20 bg-primary/5"
+                    : "border-border hover:border-primary/50"
+            }`}
         >
             <CardContent className="p-6">
                 <div className="flex items-start gap-4">
                     <div
                         className="w-12 h-12 rounded-xl flex items-center justify-center"
-                        style={{ backgroundColor: `${color}15` }}
+                        style={{ backgroundColor: `${color}20` }}
                     >
                         <Icon className="w-6 h-6" style={{ color }} />
                     </div>
                     <div className="flex-1">
-                        <h3 className="font-bold text-foreground mb-1 font-poppins">{title}</h3>
-                        <p className="text-sm text-muted-foreground font-poppins">{description}</p>
+                        <h3 className="font-bold text-foreground mb-1  font-poppins">{title}</h3>
+                        <p className="text-sm text-muted-foreground  font-poppins">{description}</p>
                     </div>
-                    {isSelected && (
-                        <CheckCircle className="w-5 h-5 text-primary" />
-                    )}
+                    {isSelected && <CheckCircle className="w-5 h-5 text-primary" />}
                 </div>
             </CardContent>
         </Card>
@@ -131,7 +96,7 @@ interface CategoryCardProps {
     icon: React.ElementType;
     title: string;
     description: string;
-    count?: number;
+    color: string;
     isSelected: boolean;
     onClick: () => void;
 }
@@ -140,37 +105,41 @@ const CategoryCard: React.FC<CategoryCardProps> = ({
     icon: Icon,
     title,
     description,
-    count,
+    color,
     isSelected,
     onClick,
 }) => (
-    <motion.div
-        whileHover={{ y: -4 }}
-        whileTap={{ scale: 0.98 }}
-        onClick={onClick}
-    >
+    <motion.div whileHover={{ y: -6 }} whileTap={{ scale: 0.97 }} onClick={onClick}>
         <Card
-            className={`cursor-pointer transition-all duration-300 ${isSelected
-                ? "border-primary shadow-lg shadow-primary/20 bg-primary/5"
-                : "border-border hover:border-primary/30 hover:shadow-md"
-                }`}
+            className={`cursor-pointer transition-all duration-300 ${
+                isSelected
+                    ? "shadow-lg bg-background"
+                    : "border-border hover:shadow-md"
+            }`}
+            style={isSelected ? { borderColor: color, boxShadow: `0 4px 20px ${color}30` } : {}}
         >
             <CardContent className="p-4">
-                <div className="flex flex-col items-center text-center space-y-2">
+                <div className="flex flex-col items-center text-center space-y-3">
+                    {/* Colored icon bubble */}
                     <div
-                        className={`w-14 h-14 rounded-xl flex items-center justify-center transition-colors ${isSelected ? "bg-primary/20" : "bg-muted"
-                            }`}
+                        className="w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-300"
+                        style={{
+                            backgroundColor: isSelected ? `${color}25` : `${color}15`,
+                            border: isSelected ? `2px solid ${color}60` : `2px solid ${color}25`,
+                        }}
                     >
-                        <Icon className={`w-7 h-7 ${isSelected ? "text-primary" : "text-muted-foreground"}`} />
+                        <Icon className="w-7 h-7" style={{ color }} />
                     </div>
                     <div>
                         <h3 className="font-bold text-foreground text-sm font-poppins">{title}</h3>
-                        <p className="text-xs text-muted-foreground mt-1 font-poppins">{description}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5 font-poppins">{description}</p>
                     </div>
-                    {count !== undefined && (
-                        <Badge variant="secondary" className="text-xs">
-                            {count} records
-                        </Badge>
+                    {/* Selected indicator dot */}
+                    {isSelected && (
+                        <div
+                            className="w-2 h-2 rounded-full"
+                            style={{ backgroundColor: color }}
+                        />
                     )}
                 </div>
             </CardContent>
@@ -204,18 +173,18 @@ const FilterSection: React.FC = () => {
         fetchYears();
         fetchMentors();
         fetchPlatforms();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // Auto-fetch preview when filters change
-    useEffect(() => {
-        const timeoutId = setTimeout(() => {
-            if (validateFilters()) {
-                fetchReportPreview(selectedCategory, filters);
-            }
-        }, 500); // Debounce for 500ms
+    const isStudentRelated =
+        selectedCategory === "students" ||
+        selectedCategory === "performance" ||
+        selectedCategory === "comprehensive";
 
-        return () => clearTimeout(timeoutId);
-    }, [filters, selectedCategory]);
+    const isCertRelated =
+        selectedCategory === "certifications" ||
+        selectedCategory === "students" ||
+        selectedCategory === "comprehensive";
 
     return (
         <Card className="border-border">
@@ -263,13 +232,15 @@ const FilterSection: React.FC = () => {
                 </div>
 
                 {/* Department & Year */}
-                {(selectedCategory === 'students' || selectedCategory === 'performance' || selectedCategory === 'comprehensive') && (
+                {isStudentRelated && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label className="text-sm font-semibold">Department</Label>
                             <Select
-                                value={Array.isArray(filters.department) ? filters.department[0] : filters.department || "all"}
-                                onValueChange={(value) => updateFilters({ department: value === "all" ? undefined : value })}
+                                value={filters.department || "all"}
+                                onValueChange={(v) =>
+                                    updateFilters({ department: v === "all" ? undefined : v })
+                                }
                             >
                                 <SelectTrigger className="border-border">
                                     <SelectValue placeholder="Select department" />
@@ -284,12 +255,13 @@ const FilterSection: React.FC = () => {
                                 </SelectContent>
                             </Select>
                         </div>
-
                         <div className="space-y-2">
                             <Label className="text-sm font-semibold">Academic Year</Label>
                             <Select
-                                value={Array.isArray(filters.year) ? filters.year[0] : filters.year || "all"}
-                                onValueChange={(value) => updateFilters({ year: value === "all" ? undefined : value })}
+                                value={filters.year || "all"}
+                                onValueChange={(v) =>
+                                    updateFilters({ year: v === "all" ? undefined : v })
+                                }
                             >
                                 <SelectTrigger className="border-border">
                                     <SelectValue placeholder="Select year" />
@@ -307,13 +279,13 @@ const FilterSection: React.FC = () => {
                     </div>
                 )}
 
-                {/* Status */}
-                {(selectedCategory === 'students' || selectedCategory === 'comprehensive') && (
+                {/* Student Status */}
+                {(selectedCategory === "students" || selectedCategory === "comprehensive") && (
                     <div className="space-y-2">
                         <Label className="text-sm font-semibold">Student Status</Label>
                         <Select
                             value={filters.status || "All"}
-                            onValueChange={(value: any) => updateFilters({ status: value })}
+                            onValueChange={(v: any) => updateFilters({ status: v })}
                         >
                             <SelectTrigger className="border-border">
                                 <SelectValue />
@@ -328,12 +300,12 @@ const FilterSection: React.FC = () => {
                 )}
 
                 {/* Project Status */}
-                {(selectedCategory === 'projects' || selectedCategory === 'comprehensive') && (
+                {(selectedCategory === "projects" || selectedCategory === "comprehensive") && (
                     <div className="space-y-2">
                         <Label className="text-sm font-semibold">Project Status</Label>
                         <Select
                             value={filters.projectStatus || "All"}
-                            onValueChange={(value: any) => updateFilters({ projectStatus: value })}
+                            onValueChange={(v: any) => updateFilters({ projectStatus: v })}
                         >
                             <SelectTrigger className="border-border">
                                 <SelectValue />
@@ -349,13 +321,13 @@ const FilterSection: React.FC = () => {
                 )}
 
                 {/* Internship Filters */}
-                {(selectedCategory === 'internships' || selectedCategory === 'comprehensive') && (
+                {(selectedCategory === "internships" || selectedCategory === "comprehensive") && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label className="text-sm font-semibold">Internship Type</Label>
                             <Select
                                 value={filters.internshipType || "All"}
-                                onValueChange={(value: any) => updateFilters({ internshipType: value })}
+                                onValueChange={(v: any) => updateFilters({ internshipType: v })}
                             >
                                 <SelectTrigger className="border-border">
                                     <SelectValue />
@@ -368,12 +340,11 @@ const FilterSection: React.FC = () => {
                                 </SelectContent>
                             </Select>
                         </div>
-
                         <div className="space-y-2">
-                            <Label className="text-sm font-semibold">Status</Label>
+                            <Label className="text-sm font-semibold">Internship Status</Label>
                             <Select
                                 value={filters.internshipStatus || "All"}
-                                onValueChange={(value: any) => updateFilters({ internshipStatus: value })}
+                                onValueChange={(v: any) => updateFilters({ internshipStatus: v })}
                             >
                                 <SelectTrigger className="border-border">
                                     <SelectValue />
@@ -389,15 +360,63 @@ const FilterSection: React.FC = () => {
                     </div>
                 )}
 
+                {/* Certification Platform */}
+                {isCertRelated && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label className="text-sm font-semibold">Cert Platform</Label>
+                            <Select
+                                value={filters.platform || "all"}
+                                onValueChange={(v) =>
+                                    updateFilters({ platform: v === "all" ? undefined : v })
+                                }
+                            >
+                                <SelectTrigger className="border-border">
+                                    <SelectValue placeholder="All Platforms" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="all">All Platforms</SelectItem>
+                                    {platforms.map((p) => (
+                                        <SelectItem key={p} value={p}>
+                                            {p}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="space-y-2">
+                            <Label className="text-sm font-semibold">Cert Status</Label>
+                            <Select
+                                value={filters.certificationStatus || "All"}
+                                onValueChange={(v: any) =>
+                                    updateFilters({ certificationStatus: v })
+                                }
+                            >
+                                <SelectTrigger className="border-border">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="All">All</SelectItem>
+                                    <SelectItem value="Verified">Verified</SelectItem>
+                                    <SelectItem value="Pending">Pending</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
+                )}
+
                 {/* Advanced Filters Toggle */}
                 <Button
+                    type="button"
                     variant="outline"
                     onClick={() => setShowAdvanced(!showAdvanced)}
                     className="w-full"
                 >
                     <Settings className="w-4 h-4 mr-2" />
                     {showAdvanced ? "Hide" : "Show"} Advanced Filters
-                    <ChevronDown className={`w-4 h-4 ml-2 transition-transform ${showAdvanced ? "rotate-180" : ""}`} />
+                    <ChevronDown
+                        className={`w-4 h-4 ml-2 transition-transform ${showAdvanced ? "rotate-180" : ""}`}
+                    />
                 </Button>
 
                 {/* Advanced Filters */}
@@ -411,23 +430,132 @@ const FilterSection: React.FC = () => {
                         >
                             <Separator />
 
-                            {/* Performance Filters */}
-                            {(selectedCategory === 'performance' || selectedCategory === 'comprehensive') && (
-                                <>
+                            {/* ——— Advanced Student Sub-Filters ——— */}
+                            {isStudentRelated && (
+                                <div className="space-y-4 p-4 bg-muted/30 rounded-lg border border-dashed border-border">
+                                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+                                        🎯 Advanced Student Filters
+                                    </p>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label className="text-sm font-semibold">
+                                                Min. Projects Done
+                                            </Label>
+                                            <Input
+                                                type="number"
+                                                placeholder="e.g. 4"
+                                                min={0}
+                                                value={filters.minProjects ?? ""}
+                                                onChange={(e) =>
+                                                    updateFilters({
+                                                        minProjects: e.target.value
+                                                            ? Number(e.target.value)
+                                                            : undefined,
+                                                    })
+                                                }
+                                                className="border-border"
+                                            />
+                                            <p className="text-xs text-muted-foreground">
+                                                Only students with ≥ N completed projects
+                                            </p>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label className="text-sm font-semibold">
+                                                Min. Internships Done
+                                            </Label>
+                                            <Input
+                                                type="number"
+                                                placeholder="e.g. 3"
+                                                min={0}
+                                                value={filters.minInternships ?? ""}
+                                                onChange={(e) =>
+                                                    updateFilters({
+                                                        minInternships: e.target.value
+                                                            ? Number(e.target.value)
+                                                            : undefined,
+                                                    })
+                                                }
+                                                className="border-border"
+                                            />
+                                            <p className="text-xs text-muted-foreground">
+                                                Only students with ≥ N approved internships
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label className="text-sm font-semibold">
+                                            Certification Search (Name / Platform)
+                                        </Label>
+                                        <Input
+                                            type="text"
+                                            placeholder="e.g. AWS, Oracle, Python, Microsoft"
+                                            value={filters.certificationName || ""}
+                                            onChange={(e) =>
+                                                updateFilters({
+                                                    certificationName: e.target.value || undefined,
+                                                })
+                                            }
+                                            className="border-border"
+                                        />
+                                        <p className="text-xs text-muted-foreground">
+                                            Filters students who hold this certification
+                                        </p>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <Label className="text-sm font-semibold flex items-center gap-1">
+                                            <Star className="w-3.5 h-3.5 text-yellow-500" />
+                                            Top N Students by Activity Points
+                                        </Label>
+                                        <Input
+                                            type="number"
+                                            placeholder="e.g. 30 (for top 30 students)"
+                                            min={1}
+                                            value={filters.topNPoints ?? ""}
+                                            onChange={(e) =>
+                                                updateFilters({
+                                                    topNPoints: e.target.value
+                                                        ? Number(e.target.value)
+                                                        : undefined,
+                                                })
+                                            }
+                                            className="border-border"
+                                        />
+                                        <p className="text-xs text-muted-foreground">
+                                            Report only the top N students by total points
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Designation & Points (Performance) */}
+                            {(selectedCategory === "performance" ||
+                                selectedCategory === "comprehensive") && (
+                                <div className="space-y-4">
                                     <div className="space-y-2">
                                         <Label className="text-sm font-semibold">Designation</Label>
                                         <Select
                                             value={filters.designation || "All"}
-                                            onValueChange={(value: any) => updateFilters({ designation: value })}
+                                            onValueChange={(v: any) =>
+                                                updateFilters({ designation: v })
+                                            }
                                         >
                                             <SelectTrigger className="border-border">
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectItem value="All">All Designations</SelectItem>
-                                                <SelectItem value="Gold Scholar">Gold Scholar</SelectItem>
-                                                <SelectItem value="Silver Scholar">Silver Scholar</SelectItem>
-                                                <SelectItem value="Bronze Scholar">Bronze Scholar</SelectItem>
+                                                <SelectItem value="Gold Scholar">
+                                                    Gold Scholar
+                                                </SelectItem>
+                                                <SelectItem value="Silver Scholar">
+                                                    Silver Scholar
+                                                </SelectItem>
+                                                <SelectItem value="Bronze Scholar">
+                                                    Bronze Scholar
+                                                </SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
@@ -438,8 +566,14 @@ const FilterSection: React.FC = () => {
                                             <Input
                                                 type="number"
                                                 placeholder="0"
-                                                value={filters.minPoints || ""}
-                                                onChange={(e) => updateFilters({ minPoints: Number(e.target.value) })}
+                                                value={filters.minPoints ?? ""}
+                                                onChange={(e) =>
+                                                    updateFilters({
+                                                        minPoints: e.target.value
+                                                            ? Number(e.target.value)
+                                                            : undefined,
+                                                    })
+                                                }
                                                 className="border-border"
                                             />
                                         </div>
@@ -448,22 +582,28 @@ const FilterSection: React.FC = () => {
                                             <Input
                                                 type="number"
                                                 placeholder="1000"
-                                                value={filters.maxPoints || ""}
-                                                onChange={(e) => updateFilters({ maxPoints: Number(e.target.value) })}
+                                                value={filters.maxPoints ?? ""}
+                                                onChange={(e) =>
+                                                    updateFilters({
+                                                        maxPoints: e.target.value
+                                                            ? Number(e.target.value)
+                                                            : undefined,
+                                                    })
+                                                }
                                                 className="border-border"
                                             />
                                         </div>
                                     </div>
-                                </>
+                                </div>
                             )}
 
-                            {/* Sorting */}
-                            <div className="grid grid-cols-2 gap-4">
+                            {/* Sorting & Limit */}
+                            <div className="grid grid-cols-3 gap-4">
                                 <div className="space-y-2">
                                     <Label className="text-sm font-semibold">Sort By</Label>
                                     <Select
                                         value={filters.sortBy || "name"}
-                                        onValueChange={(value: any) => updateFilters({ sortBy: value })}
+                                        onValueChange={(v: any) => updateFilters({ sortBy: v })}
                                     >
                                         <SelectTrigger className="border-border">
                                             <SelectValue />
@@ -476,12 +616,11 @@ const FilterSection: React.FC = () => {
                                         </SelectContent>
                                     </Select>
                                 </div>
-
                                 <div className="space-y-2">
                                     <Label className="text-sm font-semibold">Order</Label>
                                     <Select
                                         value={filters.sortOrder || "asc"}
-                                        onValueChange={(value: any) => updateFilters({ sortOrder: value })}
+                                        onValueChange={(v: any) => updateFilters({ sortOrder: v })}
                                     >
                                         <SelectTrigger className="border-border">
                                             <SelectValue />
@@ -492,96 +631,28 @@ const FilterSection: React.FC = () => {
                                         </SelectContent>
                                     </Select>
                                 </div>
-                            </div>
-
-                            {/* Limit */}
-                            <div className="space-y-2">
-                                <Label className="text-sm font-semibold">Record Limit</Label>
-                                <Input
-                                    type="number"
-                                    placeholder="No limit"
-                                    value={filters.limit || ""}
-                                    onChange={(e) => updateFilters({ limit: Number(e.target.value) })}
-                                    className="border-border"
-                                />
+                                <div className="space-y-2">
+                                    <Label className="text-sm font-semibold">Record Limit</Label>
+                                    <Input
+                                        type="number"
+                                        placeholder="No limit"
+                                        value={filters.limit ?? ""}
+                                        onChange={(e) =>
+                                            updateFilters({
+                                                limit: e.target.value
+                                                    ? Number(e.target.value)
+                                                    : undefined,
+                                            })
+                                        }
+                                        className="border-border"
+                                    />
+                                </div>
                             </div>
                         </motion.div>
                     )}
                 </AnimatePresence>
             </CardContent>
         </Card>
-    );
-};
-
-// ==========================================
-// REPORT STATS
-// ==========================================
-const ReportStats: React.FC = () => {
-    const { reportStats, isLoadingStats } = useAdminReportsStore();
-
-    if (isLoadingStats) {
-        return (
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                {[...Array(4)].map((_, i) => (
-                    <Card key={i} className="border-border">
-                        <CardContent className="p-6">
-                            <Skeleton className="h-8 w-16 mb-2" />
-                            <Skeleton className="h-4 w-24" />
-                        </CardContent>
-                    </Card>
-                ))}
-            </div>
-        );
-    }
-
-    if (!reportStats) return null;
-
-    return (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="border-border">
-                <CardContent className="p-6">
-                    <div className="flex items-center gap-2 mb-2">
-                        <FileText className="w-5 h-5 text-primary" />
-                        <span className="text-sm font-medium text-muted-foreground">Total Reports</span>
-                    </div>
-                    <p className="text-2xl font-bold text-foreground">{reportStats.totalReports}</p>
-                </CardContent>
-            </Card>
-
-            <Card className="border-border">
-                <CardContent className="p-6">
-                    <div className="flex items-center gap-2 mb-2">
-                        <CheckCircle className="w-5 h-5 text-green-500" />
-                        <span className="text-sm font-medium text-muted-foreground">Completed</span>
-                    </div>
-                    <p className="text-2xl font-bold text-foreground">{reportStats.completedReports}</p>
-                </CardContent>
-            </Card>
-
-            <Card className="border-border">
-                <CardContent className="p-6">
-                    <div className="flex items-center gap-2 mb-2">
-                        <AlertCircle className="w-5 h-5 text-red-500" />
-                        <span className="text-sm font-medium text-muted-foreground">Failed</span>
-                    </div>
-                    <p className="text-2xl font-bold text-foreground">{reportStats.failedReports}</p>
-                </CardContent>
-            </Card>
-
-            <Card className="border-border">
-                <CardContent className="p-6">
-                    <div className="flex items-center gap-2 mb-2">
-                        <TrendingUp className="w-5 h-5 text-blue-500" />
-                        <span className="text-sm font-medium text-muted-foreground">Success Rate</span>
-                    </div>
-                    <p className="text-2xl font-bold text-foreground">
-                        {reportStats.totalReports > 0 
-                            ? Math.round((reportStats.completedReports / reportStats.totalReports) * 100) 
-                            : 0}%
-                    </p>
-                </CardContent>
-            </Card>
-        </div>
     );
 };
 
@@ -597,11 +668,9 @@ const ReportPreview: React.FC = () => {
                 <CardHeader>
                     <CardTitle className="text-lg font-bold">Report Preview</CardTitle>
                 </CardHeader>
-                <CardContent>
-                    <div className="space-y-3">
-                        <Skeleton className="h-20 w-full" />
-                        <Skeleton className="h-40 w-full" />
-                    </div>
+                <CardContent className="space-y-3">
+                    <Skeleton className="h-20 w-full" />
+                    <Skeleton className="h-40 w-full" />
                 </CardContent>
             </Card>
         );
@@ -612,8 +681,9 @@ const ReportPreview: React.FC = () => {
             <Card className="border-border border-dashed">
                 <CardContent className="p-12 text-center">
                     <Eye className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground">
-                        Configure filters and click preview to see report summary
+                    <p className="text-muted-foreground font-medium">No preview yet</p>
+                    <p className="text-sm text-muted-foreground mt-1">
+                        Click &ldquo;Preview Data&rdquo; to see a summary before downloading
                     </p>
                 </CardContent>
             </Card>
@@ -629,23 +699,29 @@ const ReportPreview: React.FC = () => {
                 </CardTitle>
                 <CardDescription>Summary of your configured report</CardDescription>
                 {reportPreview.usedDefaultDateRange && (
-                    <CardDescription className="text-xs text-muted-foreground">
-                        No date range selected; showing last 30 days by default
-                    </CardDescription>
+                    <p className="text-xs text-muted-foreground mt-1">
+                        No date range selected — showing last 30 days by default
+                    </p>
                 )}
             </CardHeader>
             <CardContent className="space-y-4">
+                {/* Stats Row */}
                 <div className="grid grid-cols-2 gap-4 p-4 bg-muted/50 rounded-lg">
                     <div>
                         <p className="text-sm text-muted-foreground mb-1">Total Records</p>
-                        <p className="text-2xl font-black text-foreground">{reportPreview.totalRecords}</p>
+                        <p className="text-3xl font-black text-foreground">
+                            {reportPreview.totalRecords}
+                        </p>
                     </div>
                     <div>
                         <p className="text-sm text-muted-foreground mb-1">Estimated Size</p>
-                        <p className="text-2xl font-black text-foreground">{reportPreview.estimatedFileSize}</p>
+                        <p className="text-3xl font-black text-foreground">
+                            {reportPreview.estimatedFileSize}
+                        </p>
                     </div>
                 </div>
 
+                {/* Active Filters */}
                 <div>
                     <Label className="text-sm font-semibold mb-2 block">Active Filters</Label>
                     <p className="text-sm text-muted-foreground bg-muted/30 p-3 rounded-lg">
@@ -653,27 +729,36 @@ const ReportPreview: React.FC = () => {
                     </p>
                 </div>
 
+                {/* Sample Data */}
                 {reportPreview.sampleData && reportPreview.sampleData.length > 0 && (
                     <div>
-                        <Label className="text-sm font-semibold mb-2 block">Sample Data</Label>
+                        <Label className="text-sm font-semibold mb-2 block">
+                            Sample Data (first 3–5 records)
+                        </Label>
                         <ScrollArea className="h-48 rounded-lg border border-border">
                             <div className="p-4 text-xs">
                                 {Array.isArray(reportPreview.sampleData) &&
                                 reportPreview.sampleData[0] &&
-                                typeof reportPreview.sampleData[0] === 'object' &&
-                                'section' in reportPreview.sampleData[0] ? (
-                                    // comprehensive format
+                                typeof reportPreview.sampleData[0] === "object" &&
+                                "section" in reportPreview.sampleData[0] ? (
                                     reportPreview.sampleData.map((sec: any) => (
                                         <div key={sec.section} className="mb-3">
-                                            <strong>{sec.section} ({sec.count} records)</strong>
-                                            <pre className="text-xs mt-1">
+                                            <strong>
+                                                {sec.section} ({sec.count} records)
+                                            </strong>
+                                            <pre className="text-xs mt-1 overflow-auto">
                                                 {JSON.stringify(sec.sample || [], null, 2)}
                                             </pre>
                                         </div>
                                     ))
                                 ) : (
-                                    // normal format
-                                    <pre>{JSON.stringify(reportPreview.sampleData.slice(0, 3), null, 2)}</pre>
+                                    <pre className="overflow-auto">
+                                        {JSON.stringify(
+                                            reportPreview.sampleData.slice(0, 3),
+                                            null,
+                                            2
+                                        )}
+                                    </pre>
                                 )}
                             </div>
                         </ScrollArea>
@@ -685,119 +770,7 @@ const ReportPreview: React.FC = () => {
 };
 
 // ==========================================
-// REPORT HISTORY
-// ==========================================
-const ReportHistory: React.FC = () => {
-    const { reportHistory, isLoadingHistory, downloadReport, deleteReport } = useAdminReportsStore();
-
-    const getStatusBadge = (status: string) => {
-        const variants: Record<string, { color: string; icon: React.ElementType }> = {
-            queued: { color: "bg-blue-500/10 text-blue-500 border-blue-500/20", icon: Clock },
-            processing: { color: "bg-yellow-500/10 text-yellow-500 border-yellow-500/20", icon: Loader2 },
-            completed: { color: "bg-green-500/10 text-green-500 border-green-500/20", icon: CheckCircle },
-            failed: { color: "bg-red-500/10 text-red-500 border-red-500/20", icon: AlertCircle },
-        };
-
-        const variant = variants[status] || variants.queued;
-        const Icon = variant.icon;
-
-        return (
-            <Badge className={`${variant.color} border`}>
-                <Icon className="w-3 h-3 mr-1" />
-                {status}
-            </Badge>
-        );
-    };
-
-    if (isLoadingHistory) {
-        return (
-            <div className="space-y-3">
-                {[...Array(3)].map((_, i) => (
-                    <Skeleton key={i} className="h-20 w-full" />
-                ))}
-            </div>
-        );
-    }
-
-    if (reportHistory.length === 0) {
-        return (
-            <Card className="border-dashed border-border">
-                <CardContent className="p-12 text-center">
-                    <FileText className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground">No reports generated yet</p>
-                    <p className="text-sm text-muted-foreground mt-2">
-                        Create your first report to see it here
-                    </p>
-                </CardContent>
-            </Card>
-        );
-    }
-
-    return (
-        <div className="space-y-3">
-            {reportHistory.map((report) => (
-                <motion.div
-                    key={report.id}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                >
-                    <Card className="border-border hover:border-primary/50 transition-all">
-                        <CardContent className="p-4">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-4 flex-1">
-                                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                                        {report.type === "pdf" && <FileText className="w-6 h-6 text-primary" />}
-                                        {report.type === "excel" && <FileSpreadsheet className="w-6 h-6 text-primary" />}
-                                        {report.type === "csv" && <FileSpreadsheet className="w-6 h-6 text-primary" />}
-                                    </div>
-                                    <div className="flex-1">
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <h4 className="font-semibold font-poppins text-foreground capitalize">
-                                                {report.category} Report
-                                            </h4>
-                                            {getStatusBadge(report.status)}
-                                        </div>
-                                        <p className="text-sm font-poppins text-muted-foreground">
-                                            Generated {new Date(report.generatedAt).toLocaleString()}
-                                        </p>
-                                        {report.fileSize && (
-                                            <p className="text-xs font-poppins text-muted-foreground mt-1">
-                                                Size: {report.fileSize}
-                                            </p>
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="flex gap-2">
-                                    {report.status === "completed" && report.downloadUrl && (
-                                        <Button
-                                            size="sm"
-                                            onClick={() => downloadReport(report.id)}
-                                            className="gap-2"
-                                        >
-                                            <Download className="w-4 h-4" />
-                                            Download
-                                        </Button>
-                                    )}
-                                    <Button
-                                        size="sm"
-                                        variant="ghost"
-                                        onClick={() => deleteReport(report.id)}
-                                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                                    >
-                                        <Trash2 className="w-4 h-4" />
-                                    </Button>
-                                </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </motion.div>
-            ))}
-        </div>
-    );
-};
-
-// ==========================================
-// MAIN REPORTS PAGE
+// MAIN PAGE
 // ==========================================
 export default function AdminReports() {
     const {
@@ -805,21 +778,12 @@ export default function AdminReports() {
         selectedCategory,
         filters,
         isGenerating,
-        lastGeneratedReport,
         setReportType,
         setReportCategory,
         generateReport,
-        fetchReportHistory,
         fetchReportPreview,
-        fetchReportStats,
-        downloadReport,
         validateFilters,
     } = useAdminReportsStore();
-
-    useEffect(() => {
-        fetchReportHistory();
-        fetchReportStats();
-    }, []);
 
     const reportTypes = [
         {
@@ -906,7 +870,7 @@ export default function AdminReports() {
             options: {
                 includeCharts: true,
                 includeStatistics: true,
-                includeRankings: selectedCategory === 'performance',
+                includeRankings: selectedCategory === "performance",
             },
         });
     };
@@ -916,192 +880,159 @@ export default function AdminReports() {
             <GlobalNotification />
             <Header
                 title="Reports"
-                subtitle="Welcome back! Here's what's happening today."
+                subtitle="Generate and instantly download dynamic reports."
                 HeaderComp={
                     <div className="flex gap-3">
                         <Button
-                            onClick={fetchReportHistory}
+                            type="button"
+                            onClick={handlePreview}
                             variant="outline"
                             className="gap-2"
                         >
                             <RefreshCw className="w-4 h-4" />
-                            Refresh History
+                            Preview Data
+                        </Button>
+                        <Button
+                            type="button"
+                            onClick={handleGenerate}
+                            disabled={isGenerating}
+                            className="gap-2 bg-primary hover:bg-primary/90"
+                        >
+                            {isGenerating ? (
+                                <>
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                    Generating...
+                                </>
+                            ) : (
+                                <>
+                                    <Download className="w-4 h-4" />
+                                    Generate &amp; Download
+                                </>
+                            )}
                         </Button>
                     </div>
-                } />
+                }
+            />
+
             <div className="min-h-screen bg-background p-6 font-poppins space-y-6">
+                {/* Step 1: Report Type */}
+                <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+                    <Card className="border-border">
+                        <CardHeader>
+                            <CardTitle className="text-xl font-bold">
+                                Step 1: Choose Report Format
+                            </CardTitle>
+                            <CardDescription>Select the output format</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                {reportTypes.map((t) => (
+                                    <ReportTypeCard
+                                        key={t.type}
+                                        {...t}
+                                        isSelected={selectedType === t.type}
+                                        onClick={() => setReportType(t.type)}
+                                    />
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+                </motion.div>
 
-                {/* Report Statistics */}
-                <ReportStats />
+                {/* Step 2: Category */}
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 }}
+                >
+                    <Card className="border-border">
+                        <CardHeader>
+                            <CardTitle className="text-xl font-bold">
+                                Step 2: Select Report Category
+                            </CardTitle>
+                            <CardDescription>Choose what data to report on</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
+                                {categories.map((c) => (
+                                    <CategoryCard
+                                        key={c.category}
+                                        {...c}
+                                        isSelected={selectedCategory === c.category}
+                                        onClick={() => setReportCategory(c.category)}
+                                    />
+                                ))}
+                            </div>
+                        </CardContent>
+                    </Card>
+                </motion.div>
 
-                <Tabs defaultValue="generate" className="space-y-6">
-                    <TabsList className="grid w-full max-w-md grid-cols-2">
-                        <TabsTrigger value="generate" className="gap-2">
-                            <FileText className="w-4 h-4" />
-                            Generate Report
-                        </TabsTrigger>
-                        <TabsTrigger value="history" className="gap-2">
-                            <Clock className="w-4 h-4" />
-                            History
-                        </TabsTrigger>
-                    </TabsList>
+                {/* Step 3: Filters & Preview side by side */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.2 }}
+                    >
+                        <FilterSection />
+                    </motion.div>
 
-                    {/* Generate Tab */}
-                    <TabsContent value="generate" className="space-y-6">
-                        {/* Step 1: Report Type */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                        >
-                            <Card className="border-border font-poppins">
-                                <CardHeader>
-                                    <CardTitle className="text-xl font-bold">
-                                        Step 1: Choose Report Type
-                                    </CardTitle>
-                                    <CardDescription>Select the output format for your report</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        {reportTypes.map((type) => (
-                                            <ReportTypeCard
-                                                key={type.type}
-                                                {...type}
-                                                isSelected={selectedType === type.type}
-                                                onClick={() => setReportType(type.type)}
-                                            />
-                                        ))}
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </motion.div>
+                    <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="space-y-4"
+                    >
+                        <ReportPreview />
 
-                        {/* Step 2: Category */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 }}
-                        >
-                            <Card className="border-border">
-                                <CardHeader>
-                                    <CardTitle className="text-xl font-bold">
-                                        Step 2: Select Report Category
-                                    </CardTitle>
-                                    <CardDescription>Choose what data to include</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
-                                        {categories.map((category) => (
-                                            <CategoryCard
-                                                key={category.category}
-                                                {...category}
-                                                isSelected={selectedCategory === category.category}
-                                                onClick={() => setReportCategory(category.category)}
-                                            />
-                                        ))}
-                                    </div>
-                                </CardContent>
-                            </Card>
-                        </motion.div>
-
-                        {/* Step 3: Filters & Preview */}
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            <motion.div
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.2 }}
+                        {/* Action Buttons */}
+                        <div className="flex gap-3">
+                            <Button
+                                type="button"
+                                onClick={handlePreview}
+                                variant="outline"
+                                className="flex-1"
                             >
-                                <FilterSection />
-                            </motion.div>
-
-                            <motion.div
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.2 }}
-                                className="space-y-4"
+                                <Eye className="w-4 h-4 mr-2" />
+                                Preview Data
+                            </Button>
+                            <Button
+                                type="button"
+                                onClick={handleGenerate}
+                                disabled={isGenerating}
+                                className="flex-1 bg-primary hover:bg-primary/90 font-bold text-base py-6"
                             >
-                                <ReportPreview />
-
-                                {/* Action Buttons */}
-                                <div className="flex gap-3">
-                                    <Button
-                                        onClick={handlePreview}
-                                        variant="outline"
-                                        className="flex-1"
-                                    >
-                                        <Eye className="w-4 h-4 mr-2" />
-                                        Preview
-                                    </Button>
-                                    <Button
-                                        onClick={handleGenerate}
-                                        disabled={isGenerating}
-                                        className="flex-1 bg-primary hover:bg-primary/90"
-                                    >
-                                        {isGenerating ? (
-                                            <>
-                                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                                Generating...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <FileText className="w-4 h-4 mr-2" />
-                                                Generate Report
-                                            </>
-                                        )}
-                                    </Button>
-                                </div>
-
-                                {/* Download Latest Report */}
-                                {lastGeneratedReport && lastGeneratedReport.status === 'completed' && lastGeneratedReport.downloadUrl && (
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg"
-                                    >
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-3">
-                                                <CheckCircle className="w-5 h-5 text-green-600" />
-                                                <div>
-                                                    <p className="font-medium text-green-800 dark:text-green-200">
-                                                        Report Generated Successfully!
-                                                    </p>
-                                                    <p className="text-sm text-green-600 dark:text-green-400">
-                                                        {lastGeneratedReport.category} • {lastGeneratedReport.type.toUpperCase()} • {lastGeneratedReport.fileSize}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <Button
-                                                onClick={() => downloadReport(lastGeneratedReport.id)}
-                                                size="sm"
-                                                className="gap-2"
-                                            >
-                                                <Download className="w-4 h-4" />
-                                                Download
-                                            </Button>
-                                        </div>
-                                    </motion.div>
+                                {isGenerating ? (
+                                    <>
+                                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                                        Generating…
+                                    </>
+                                ) : (
+                                    <>
+                                        <Download className="w-5 h-5 mr-2" />
+                                        Generate &amp; Download
+                                    </>
                                 )}
-                            </motion.div>
+                            </Button>
                         </div>
-                    </TabsContent>
 
-                    {/* History Tab */}
-                    <TabsContent value="history" className="space-y-6">
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                        >
-                            <Card className="border-border">
-                                <CardHeader>
-                                    <CardTitle className="text-xl font-bold">Report History</CardTitle>
-                                    <CardDescription>View and download previously generated reports</CardDescription>
-                                </CardHeader>
-                                <CardContent>
-                                    <ReportHistory />
-                                </CardContent>
-                            </Card>
-                        </motion.div>
-                    </TabsContent>
-                </Tabs>
+                        {/* Format badge info */}
+                        <div className="flex gap-2 flex-wrap">
+                            <Badge variant="secondary" className="gap-1">
+                                <FileText className="w-3 h-3" />
+                                Instant download
+                            </Badge>
+                            <Badge variant="secondary" className="gap-1">
+                                <CheckCircle className="w-3 h-3" />
+                                No server storage
+                            </Badge>
+                            <Badge variant="secondary" className="gap-1">
+                                <TrendingUp className="w-3 h-3" />
+                                Advanced filters
+                            </Badge>
+                        </div>
+                    </motion.div>
+                </div>
             </div>
         </>
     );
