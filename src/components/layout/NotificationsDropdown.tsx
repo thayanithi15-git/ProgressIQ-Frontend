@@ -165,7 +165,7 @@ export const NotificationsDropdown = () => {
             {notifications.length > 0 && (
               <div className="border-t border-gray-100 dark:border-gray-800/60 p-3 bg-gray-50/80 dark:bg-white/[0.01]">
                 <button
-                  onClick={() => { setIsOpen(false); router.push('/notifications'); }}
+                  onClick={() => { setIsOpen(false); router.push('/student/dashboard/notifications'); }}
                   className="flex w-full items-center justify-center gap-1 rounded-lg py-2 text-xs font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-200/50 dark:hover:bg-white/5 transition-colors"
                 >
                   View all notifications <ChevronRight size={14} />
