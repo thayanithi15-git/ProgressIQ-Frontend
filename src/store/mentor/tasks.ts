@@ -2,12 +2,18 @@ import { create } from 'zustand';
 import api from '@/utils/api';
 import { useNotificationStore } from '@/utils/notification';
 
+// ==========================================
+// TYPES
+// ==========================================
+
 export interface MentorTask {
   id: string;
+  _id?: string;        // alias so both id forms work
   title: string;
   description: string;
-  assignedTo: string;
-  status: string;
+  assignedTo: string;  // student full name
+  status: string;      // display status  (To Do / In Progress / Submitted / Done / Rejected)
+  rawStatus: string;   // backend enum   (PENDING / IN_PROGRESS / SUBMITTED / APPROVED / REJECTED)
   dueDate: string;
   priority: string;
   student: {
@@ -16,24 +22,23 @@ export interface MentorTask {
     department: string;
     year: string;
   };
-  feedback?: string;
-}
-
-export interface TaskDetail extends MentorTask {
-  completedAt?: string;
+  submissionNote?: string | null;
+  verificationNote?: string | null;
+  pointsAwarded?: number;
+  verifiedAt?: string | null;
+  feedback?: string | null;
 }
 
 interface TasksState {
   // Data
   tasks: MentorTask[];
-  taskDetail: TaskDetail | null;
+  taskDetail: MentorTask | null;
 
   // Filters
   searchQuery: string;
   statusFilter: string;
   departmentFilter: string;
   yearFilter: string;
-  priorityFilter: string;
   sortBy: 'title' | 'student' | 'status' | 'dueDate';
   sortOrder: 'asc' | 'desc';
 
@@ -52,11 +57,16 @@ interface TasksState {
   fetchTasks: () => Promise<void>;
   fetchTaskDetail: (id: string) => Promise<void>;
   createTask: (title: string, description: string, dueDate: string, studentIds: string[]) => Promise<void>;
+  updateTask: (id: string, data: any) => Promise<void>;
+  deleteTask: (id: string) => Promise<void>;
+  verifyTask: (id: string, status: 'APPROVED' | 'REJECTED', verificationNote: string, points: number) => Promise<void>;
+  notifyStudents: (id: string, message: string) => Promise<void>;
+
+  // UI
   setSearchQuery: (query: string) => void;
   setStatusFilter: (status: string) => void;
   setDepartmentFilter: (dept: string) => void;
   setYearFilter: (year: string) => void;
-  setPriorityFilter: (priority: string) => void;
   setSortBy: (by: 'title' | 'student' | 'status' | 'dueDate') => void;
   setSortOrder: (order: 'asc' | 'desc') => void;
   setPage: (page: number) => void;
@@ -65,7 +75,6 @@ interface TasksState {
 }
 
 export const useMentorTasksStore = create<TasksState>((set, get) => ({
-  // Initial States
   tasks: [],
   taskDetail: null,
 
@@ -73,7 +82,6 @@ export const useMentorTasksStore = create<TasksState>((set, get) => ({
   statusFilter: '',
   departmentFilter: '',
   yearFilter: '',
-  priorityFilter: '',
   sortBy: 'dueDate',
   sortOrder: 'asc',
 
@@ -86,160 +94,152 @@ export const useMentorTasksStore = create<TasksState>((set, get) => ({
   isLoadingDetail: false,
   isSubmitting: false,
 
-  // =====================================
-  // FETCH TASKS
-  // =====================================
+  // ─── FETCH LIST ────────────────────────────────────────────
   fetchTasks: async () => {
     const { showNotification } = useNotificationStore.getState();
     const state = get();
-
     try {
       set({ isLoading: true });
 
       const params = new URLSearchParams({
-        page: state.page.toString(),
-        limit: state.limit.toString(),
-        search: state.searchQuery,
-        ...(state.statusFilter && { status: state.statusFilter }),
-        ...(state.departmentFilter && { department: state.departmentFilter }),
-        ...(state.yearFilter && { year: state.yearFilter }),
-        sortBy: state.sortBy,
+        page:      state.page.toString(),
+        limit:     state.limit.toString(),
+        search:    state.searchQuery,
+        sortBy:    state.sortBy,
         sortOrder: state.sortOrder,
+        ...(state.statusFilter     && { status:     state.statusFilter }),
+        ...(state.departmentFilter && { department: state.departmentFilter }),
+        ...(state.yearFilter       && { year:        state.yearFilter }),
       });
 
-      const response = await api.get(`/api/mentor/tasks?${params}`);
-
-      if (response.data.success) {
+      const res = await api.get(`/api/mentor/tasks?${params}`);
+      if (res.data.success) {
         set({
-          tasks: response.data.data,
-          total: response.data.pagination?.total || 0,
-          totalPages: response.data.pagination?.totalPages || 0,
+          tasks:      res.data.data,
+          total:      res.data.pagination?.total      || 0,
+          totalPages: res.data.pagination?.totalPages || 0,
         });
       }
     } catch (error: any) {
-      const message = error.response?.data?.message || 'Failed to fetch tasks';
-      showNotification(message, 'error');
-      console.error('Error fetching tasks:', error);
+      showNotification(error.response?.data?.message || 'Failed to fetch tasks', 'error');
     } finally {
       set({ isLoading: false });
     }
   },
 
-  // =====================================
-  // FETCH TASK DETAIL
-  // =====================================
-  fetchTaskDetail: async (id: string) => {
+  // ─── FETCH DETAIL ──────────────────────────────────────────
+  fetchTaskDetail: async (id) => {
     const { showNotification } = useNotificationStore.getState();
-
     try {
       set({ isLoadingDetail: true });
-
-      const response = await api.get(`/api/mentor/tasks/${id}`);
-
-      if (response.data.success) {
-        set({ taskDetail: response.data.data });
-      }
+      const res = await api.get(`/api/mentor/tasks/${id}`);
+      if (res.data.success) set({ taskDetail: res.data.data });
     } catch (error: any) {
-      const message = error.response?.data?.message || 'Failed to fetch task details';
-      showNotification(message, 'error');
-      console.error('Error fetching task detail:', error);
+      showNotification(error.response?.data?.message || 'Failed to fetch task details', 'error');
     } finally {
       set({ isLoadingDetail: false });
     }
   },
 
-  // =====================================
-  // CREATE TASK
-  // =====================================
-  createTask: async (title: string, description: string, dueDate: string, studentIds: string[]) => {
+  // ─── CREATE ────────────────────────────────────────────────
+  createTask: async (title, description, dueDate, studentIds) => {
     const { showNotification } = useNotificationStore.getState();
-
     try {
       set({ isSubmitting: true });
-
-      const response = await api.post('/api/mentor/tasks/assign', {
-        title,
-        description,
-        dueDate,
-        studentIds,
-      });
-
-      if (response.data.success) {
+      const res = await api.post('/api/mentor/tasks/assign', { title, description, dueDate, studentIds });
+      if (res.data.success) {
         showNotification('Task assigned successfully', 'success');
         get().fetchTasks();
       }
     } catch (error: any) {
-      const message = error.response?.data?.message || 'Failed to create task';
-      showNotification(message, 'error');
-      console.error('Error creating task:', error);
+      showNotification(error.response?.data?.message || 'Failed to create task', 'error');
     } finally {
       set({ isSubmitting: false });
     }
   },
 
-  // =====================================
-  // FILTER ACTIONS
-  // =====================================
-  setSearchQuery: (query: string) => {
-    set({ searchQuery: query, page: 1 });
-    get().fetchTasks();
+  // ─── UPDATE ────────────────────────────────────────────────
+  updateTask: async (id, data) => {
+    const { showNotification } = useNotificationStore.getState();
+    try {
+      set({ isSubmitting: true });
+      const res = await api.put(`/api/mentor/tasks/${id}`, data);
+      if (res.data.success) {
+        showNotification('Task updated successfully', 'success');
+        get().fetchTasks();
+      }
+    } catch (error: any) {
+      showNotification(error.response?.data?.message || 'Failed to update task', 'error');
+    } finally {
+      set({ isSubmitting: false });
+    }
   },
 
-  setStatusFilter: (status: string) => {
-    set({ statusFilter: status, page: 1 });
-    get().fetchTasks();
+  // ─── DELETE ────────────────────────────────────────────────
+  deleteTask: async (id) => {
+    const { showNotification } = useNotificationStore.getState();
+    try {
+      set({ isSubmitting: true });
+      const res = await api.delete(`/api/mentor/tasks/${id}`);
+      if (res.data.success) {
+        showNotification('Task deleted', 'success');
+        get().fetchTasks();
+        if (get().taskDetail?.id === id) set({ taskDetail: null });
+      }
+    } catch (error: any) {
+      showNotification(error.response?.data?.message || 'Failed to delete task', 'error');
+    } finally {
+      set({ isSubmitting: false });
+    }
   },
 
-  setDepartmentFilter: (dept: string) => {
-    set({ departmentFilter: dept, page: 1 });
-    get().fetchTasks();
+  // ─── VERIFY ────────────────────────────────────────────────
+  verifyTask: async (id, status, verificationNote, points) => {
+    const { showNotification } = useNotificationStore.getState();
+    try {
+      set({ isSubmitting: true });
+      const res = await api.put(`/api/mentor/tasks/${id}/verify`, { status, verificationNote, points });
+      if (res.data.success) {
+        showNotification(`Task ${status === 'APPROVED' ? 'approved' : 'rejected'} successfully`, 'success');
+        get().fetchTasks();
+        if (get().taskDetail?.id === id) get().fetchTaskDetail(id);
+      }
+    } catch (error: any) {
+      showNotification(error.response?.data?.message || 'Failed to verify task', 'error');
+    } finally {
+      set({ isSubmitting: false });
+    }
   },
 
-  setYearFilter: (year: string) => {
-    set({ yearFilter: year, page: 1 });
-    get().fetchTasks();
+  // ─── NOTIFY ────────────────────────────────────────────────
+  notifyStudents: async (id, message) => {
+    const { showNotification } = useNotificationStore.getState();
+    try {
+      set({ isSubmitting: true });
+      const res = await api.post('/api/mentor/notify', { type: 'TASK', entityId: id, message });
+      if (res.data.success) {
+        showNotification(res.data.message || 'Students notified', 'success');
+      }
+    } catch (error: any) {
+      showNotification(error.response?.data?.message || 'Failed to notify', 'error');
+    } finally {
+      set({ isSubmitting: false });
+    }
   },
 
-  setPriorityFilter: (priority: string) => {
-    set({ priorityFilter: priority, page: 1 });
-  },
+  // ─── UI / FILTERS ──────────────────────────────────────────
+  setSearchQuery: (query) => { set({ searchQuery: query, page: 1 }); get().fetchTasks(); },
+  setStatusFilter: (status) => { set({ statusFilter: status, page: 1 }); get().fetchTasks(); },
+  setDepartmentFilter: (dept) => { set({ departmentFilter: dept, page: 1 }); get().fetchTasks(); },
+  setYearFilter: (year) => { set({ yearFilter: year, page: 1 }); get().fetchTasks(); },
+  setSortBy: (by) => { set({ sortBy: by, page: 1 }); get().fetchTasks(); },
+  setSortOrder: (order) => { set({ sortOrder: order, page: 1 }); get().fetchTasks(); },
+  setPage: (page) => { set({ page }); get().fetchTasks(); },
 
-  setSortBy: (by: 'title' | 'student' | 'status' | 'dueDate') => {
-    set({ sortBy: by, page: 1 });
-    get().fetchTasks();
-  },
-
-  setSortOrder: (order: 'asc' | 'desc') => {
-    set({ sortOrder: order, page: 1 });
-    get().fetchTasks();
-  },
-
-  setPage: (page: number) => {
-    set({ page });
-    get().fetchTasks();
-  },
-
-  // =====================================
-  // RESET FILTERS
-  // =====================================
   resetFilters: () => {
-    set({
-      searchQuery: '',
-      statusFilter: '',
-      departmentFilter: '',
-      yearFilter: '',
-      priorityFilter: '',
-      sortBy: 'dueDate',
-      sortOrder: 'asc',
-      page: 1,
-    });
+    set({ searchQuery:'', statusFilter:'', departmentFilter:'', yearFilter:'', sortBy:'dueDate', sortOrder:'asc', page:1 });
     get().fetchTasks();
   },
 
-  // =====================================
-  // CLOSE DETAIL
-  // =====================================
-  closeDetail: () => {
-    set({ taskDetail: null });
-  },
+  closeDetail: () => set({ taskDetail: null }),
 }));

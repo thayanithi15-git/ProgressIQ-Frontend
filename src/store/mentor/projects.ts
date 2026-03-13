@@ -22,6 +22,11 @@ export interface MentorProject {
     website?: string;
   };
   feedback?: string;
+  createdByMentor?: boolean;
+  submissionNote?: string;
+  verificationNote?: string;
+  pointsAwarded?: number;
+  verifiedAt?: string;
 }
 
 export interface ProjectDetail extends MentorProject {
@@ -52,10 +57,15 @@ interface ProjectsState {
   // Loading
   isLoading: boolean;
   isLoadingDetail: boolean;
+  isSubmitting: boolean;
 
   // Actions
   fetchProjects: () => Promise<void>;
   fetchProjectDetail: (id: string) => Promise<void>;
+  createProject: (data: any) => Promise<void>;
+  updateProject: (id: string, data: any) => Promise<void>;
+  deleteProject: (id: string) => Promise<void>;
+  verifyProject: (id: string, status: string, note: string, points: number) => Promise<void>;
   setSearchQuery: (query: string) => void;
   setStatusFilter: (status: string) => void;
   setDepartmentFilter: (dept: string) => void;
@@ -86,6 +96,7 @@ export const useMentorProjectsStore = create<ProjectsState>((set, get) => ({
 
   isLoading: false,
   isLoadingDetail: false,
+  isSubmitting: false,
 
   // =====================================
   // FETCH PROJECTS
@@ -146,6 +157,106 @@ export const useMentorProjectsStore = create<ProjectsState>((set, get) => ({
       console.error('Error fetching project detail:', error);
     } finally {
       set({ isLoadingDetail: false });
+    }
+  },
+
+  // =====================================
+  // CREATE PROJECT
+  // =====================================
+  createProject: async (data: any) => {
+    const { showNotification } = useNotificationStore.getState();
+    try {
+      set({ isSubmitting: true });
+      const response = await api.post('/api/mentor/projects', data);
+      if (response.data.success) {
+        showNotification('Project created successfully', 'success');
+        get().fetchProjects();
+      }
+    } catch (error: any) {
+      showNotification(error.response?.data?.message || 'Failed to create project', 'error');
+    } finally {
+      set({ isSubmitting: false });
+    }
+  },
+
+  // =====================================
+  // UPDATE PROJECT
+  // =====================================
+  updateProject: async (id: string, data: any) => {
+    const { showNotification } = useNotificationStore.getState();
+    try {
+      set({ isSubmitting: true });
+      const response = await api.put(`/api/mentor/projects/${id}`, data);
+      if (response.data.success) {
+        showNotification('Project updated successfully', 'success');
+        get().fetchProjects();
+        if (get().projectDetail?.id === id) {
+          get().fetchProjectDetail(id);
+        }
+      }
+    } catch (error: any) {
+      showNotification(error.response?.data?.message || 'Failed to update project', 'error');
+    } finally {
+      set({ isSubmitting: false });
+    }
+  },
+
+  // =====================================
+  // DELETE PROJECT
+  // =====================================
+  deleteProject: async (id: string) => {
+    const { showNotification } = useNotificationStore.getState();
+    try {
+      set({ isSubmitting: true });
+      const response = await api.delete(`/api/mentor/projects/${id}`);
+      if (response.data.success) {
+        showNotification('Project deleted successfully', 'success');
+        get().fetchProjects();
+      }
+    } catch (error: any) {
+      showNotification(error.response?.data?.message || 'Failed to delete project', 'error');
+    } finally {
+      set({ isSubmitting: false });
+    }
+  },
+
+  // =====================================
+  // VERIFY PROJECT
+  // =====================================
+  verifyProject: async (id: string, status: string, verificationNote: string, points: number) => {
+    const { showNotification } = useNotificationStore.getState();
+    try {
+      set({ isSubmitting: true });
+      const response = await api.put(`/api/mentor/projects/${id}/verify`, { status, verificationNote, points });
+      if (response.data.success) {
+        showNotification('Project verified successfully', 'success');
+        get().fetchProjects();
+        if (get().projectDetail?.id === id) {
+          get().fetchProjectDetail(id);
+        }
+      }
+    } catch (error: any) {
+      showNotification(error.response?.data?.message || 'Failed to verify project', 'error');
+    } finally {
+      set({ isSubmitting: false });
+    }
+  },
+
+  // =====================================
+  // NOTIFY STUDENTS
+  // =====================================
+  notifyStudents: async (id: string, message: string) => {
+    const { showNotification } = useNotificationStore.getState();
+    try {
+      set({ isSubmitting: true });
+      const res = await api.post('/api/mentor/notify', { type: 'PROJECT', entityId: id, message });
+      if (res.data.success) {
+        showNotification(res.data.message || 'Students notified', 'success');
+      }
+    } catch (error: any) {
+      showNotification(error.response?.data?.message || 'Failed to notify', 'error');
+    } finally {
+      set({ isSubmitting: false });
     }
   },
 

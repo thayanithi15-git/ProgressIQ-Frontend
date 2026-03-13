@@ -9,6 +9,7 @@ import { useSidebarStore } from '@/store/layoutStore';
 import { useThemeStore } from '@/store/layoutStore';
 import { cn } from '@/lib/utils';
 import { getEncryptedItem } from '@/utils/encryption';
+import { NotificationsDropdown } from './NotificationsDropdown';
 
 type HeaderProps = {
     title?: string;
@@ -96,10 +97,7 @@ const Header: React.FC<HeaderProps> = ({
 
                 {/* Right Section */}
                 <div className="flex items-center gap-4">
-                    <Button variant="ghost" size="icon" className="relative">
-                        <Bell className="h-5 w-5" />
-                        <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-destructive"></span>
-                    </Button>
+                    <NotificationsDropdown />
 
                     <Button
                         variant="ghost"

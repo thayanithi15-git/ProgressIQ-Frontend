@@ -19,9 +19,13 @@ export interface Task {
   description: string;
   dueDate: string;
   completedAt?: string;
-  status: 'PENDING' | 'SUBMITTED' | 'COMPLETED' | 'REJECTED';
+  status: 'PENDING' | 'IN_PROGRESS' | 'SUBMITTED' | 'APPROVED' | 'REJECTED';
   feedback?: string | null;
   isOverdue?: boolean;
+  submissionNote?: string;
+  verificationNote?: string;
+  pointsAwarded?: number;
+  verifiedAt?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -44,7 +48,7 @@ export interface TaskFeedback {
   type: string;
 }
 
-export type TaskStatusFilter = 'ALL' | 'PENDING' | 'SUBMITTED' | 'COMPLETED' | 'REJECTED';
+export type TaskStatusFilter = 'ALL' | 'PENDING' | 'IN_PROGRESS' | 'SUBMITTED' | 'APPROVED' | 'REJECTED';
 
 interface Pagination {
   total: number;
@@ -77,7 +81,8 @@ interface TasksState {
   createTask: (payload: CreateTaskPayload) => Promise<boolean>;
   updateTask: (id: string, payload: UpdateTaskPayload) => Promise<boolean>;
   deleteTask: (id: string) => Promise<boolean>;
-  submitTask: (id: string, completedAt?: string) => Promise<boolean>;
+  startTask: (id: string) => Promise<boolean>;
+  submitTask: (id: string, completedAt?: string, submissionNote?: string) => Promise<boolean>;
   fetchFeedback: (id: string) => Promise<void>;
 
   // UI
@@ -207,17 +212,43 @@ export const useTasksStore = create<TasksState>((set, get) => ({
     }
   },
 
-  submitTask: async (id, completedAt) => {
+  startTask: async (id) => {
+    const { showNotification } = useNotificationStore.getState();
+    try {
+      set({ isSubmitting: true });
+      const res = await api.put(`/api/student/tasks/${id}/start`);
+      if (res.data.success) {
+        showNotification('Task started', 'success');
+        get().fetchTasks();
+        if (get().selectedTask?._id === id) {
+          get().fetchTaskById(id);
+        }
+        return true;
+      }
+      return false;
+    } catch (error: any) {
+      showNotification(error.response?.data?.message || 'Failed to start task', 'error');
+      return false;
+    } finally {
+      set({ isSubmitting: false });
+    }
+  },
+
+  submitTask: async (id, completedAt, submissionNote) => {
     const { showNotification } = useNotificationStore.getState();
     try {
       set({ isSubmitting: true });
       const res = await api.put(`/api/student/tasks/${id}/complete`, {
         completedAt: completedAt || new Date().toISOString(),
+        submissionNote: submissionNote || ''
       });
       if (res.data.success) {
         showNotification('Task submitted for review', 'success');
         get().fetchTasks();
         set({ isCompleteModalOpen: false, completingTaskId: null });
+        if (get().selectedTask?._id === id) {
+          get().fetchTaskById(id);
+        }
         return true;
       }
       return false;

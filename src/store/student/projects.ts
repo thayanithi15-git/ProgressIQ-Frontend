@@ -20,9 +20,14 @@ export interface Project {
   description: string;
   githubLink?: string;
   websiteLink?: string;
-  completedAt: string;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  completedAt?: string;
+  status: 'PENDING' | 'IN_PROGRESS' | 'SUBMITTED' | 'APPROVED' | 'REJECTED';
   feedback?: string | null;
+  submissionNote?: string | null;
+  verificationNote?: string | null;
+  pointsAwarded?: number;
+  verifiedAt?: string | null;
+  createdByMentor?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -33,21 +38,12 @@ export interface CreateProjectPayload {
   description: string;
   githubLink?: string;
   websiteLink?: string;
-  completedAt: string;
+  completedAt?: string;
 }
 
 export interface UpdateProjectPayload extends Partial<CreateProjectPayload> {}
 
-export interface ProjectFeedback {
-  id: string;
-  mentor: string;
-  mentorEmail: string;
-  message: string;
-  createdAt: string;
-  type: string;
-}
-
-export type ProjectStatusFilter = 'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED';
+export type ProjectStatusFilter = 'ALL' | 'PENDING' | 'IN_PROGRESS' | 'SUBMITTED' | 'APPROVED' | 'REJECTED';
 
 interface Pagination {
   total: number;
@@ -62,15 +58,15 @@ interface Pagination {
 interface ProjectsState {
   projects: Project[];
   selectedProject: Project | null;
-  selectedFeedback: ProjectFeedback | null;
   pagination: Pagination;
   statusFilter: ProjectStatusFilter;
   searchQuery: string;
   isLoading: boolean;
   isSubmitting: boolean;
   isModalOpen: boolean;
-  isFeedbackModalOpen: boolean;
+  isSubmitModalOpen: boolean;
   editingProject: Project | null;
+  submittingProjectId: string | null;
 
   // Actions
   fetchProjects: (status?: ProjectStatusFilter) => Promise<void>;
@@ -78,7 +74,8 @@ interface ProjectsState {
   createProject: (payload: CreateProjectPayload) => Promise<boolean>;
   updateProject: (id: string, payload: UpdateProjectPayload) => Promise<boolean>;
   deleteProject: (id: string) => Promise<boolean>;
-  fetchFeedback: (id: string) => Promise<void>;
+  startProject: (id: string) => Promise<boolean>;
+  submitProject: (id: string, submissionNote?: string) => Promise<boolean>;
 
   // UI
   setStatusFilter: (filter: ProjectStatusFilter) => void;
@@ -87,44 +84,43 @@ interface ProjectsState {
   openCreateModal: () => void;
   openEditModal: (project: Project) => void;
   closeModal: () => void;
-  openFeedbackModal: (id: string) => Promise<void>;
-  closeFeedbackModal: () => void;
+  openSubmitModal: (id: string) => void;
+  closeSubmitModal: () => void;
   setSelectedProject: (p: Project | null) => void;
 }
 
 export const useProjectsStore = create<ProjectsState>((set, get) => ({
   projects: [],
   selectedProject: null,
-  selectedFeedback: null,
   pagination: { total: 0, limit: 10, skip: 0 },
   statusFilter: 'ALL',
   searchQuery: '',
   isLoading: false,
   isSubmitting: false,
   isModalOpen: false,
-  isFeedbackModalOpen: false,
+  isSubmitModalOpen: false,
   editingProject: null,
+  submittingProjectId: null,
 
   // ─── FETCH LIST ───────────────────────────────────────────
-  fetchProjects: async (status?: ProjectStatusFilter) => {
+  fetchProjects: async (status?) => {
     const { showNotification } = useNotificationStore.getState();
     const { pagination, statusFilter } = get();
     const activeFilter = status ?? statusFilter;
 
     try {
       set({ isLoading: true });
-
       const params = new URLSearchParams({
         limit: String(pagination.limit),
-        skip: String(pagination.skip),
+        skip:  String(pagination.skip),
       });
       if (activeFilter !== 'ALL') params.append('status', activeFilter);
 
       const res = await api.get(`/api/student/projects?${params}`);
       if (res.data.success) {
         set({
-          projects: res.data.data.projects,
-          pagination: { ...pagination, total: res.data.data.pagination.total },
+          projects:   res.data.data.projects,
+          pagination: { ...pagination, total: res.data.data.pagination?.total ?? 0 },
         });
       }
     } catch (error: any) {
@@ -135,7 +131,7 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
   },
 
   // ─── FETCH SINGLE ─────────────────────────────────────────
-  fetchProjectById: async (id: string) => {
+  fetchProjectById: async (id) => {
     const { showNotification } = useNotificationStore.getState();
     try {
       const res = await api.get(`/api/student/projects/${id}`);
@@ -209,14 +205,47 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
     }
   },
 
-  // ─── FEEDBACK ─────────────────────────────────────────────
-  fetchFeedback: async (id) => {
+  // ─── START ────────────────────────────────────────────────
+  startProject: async (id) => {
     const { showNotification } = useNotificationStore.getState();
     try {
-      const res = await api.get(`/api/student/projects/${id}/feedback`);
-      if (res.data.success) set({ selectedFeedback: res.data.data });
+      set({ isSubmitting: true });
+      const res = await api.put(`/api/student/projects/${id}/start`);
+      if (res.data.success) {
+        showNotification('Project started!', 'success');
+        get().fetchProjects();
+        return true;
+      }
+      return false;
     } catch (error: any) {
-      showNotification(error.response?.data?.message || 'No feedback found', 'error');
+      showNotification(error.response?.data?.message || 'Failed to start project', 'error');
+      return false;
+    } finally {
+      set({ isSubmitting: false });
+    }
+  },
+
+  // ─── SUBMIT ───────────────────────────────────────────────
+  submitProject: async (id, submissionNote) => {
+    const { showNotification } = useNotificationStore.getState();
+    try {
+      set({ isSubmitting: true });
+      const res = await api.put(`/api/student/projects/${id}/complete`, {
+        submissionNote: submissionNote || '',
+        completedAt: new Date().toISOString(),
+      });
+      if (res.data.success) {
+        showNotification('Project submitted for review!', 'success');
+        get().fetchProjects();
+        set({ isSubmitModalOpen: false, submittingProjectId: null });
+        return true;
+      }
+      return false;
+    } catch (error: any) {
+      showNotification(error.response?.data?.message || 'Failed to submit project', 'error');
+      return false;
+    } finally {
+      set({ isSubmitting: false });
     }
   },
 
@@ -233,18 +262,10 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
     get().fetchProjects();
   },
 
-  openCreateModal: () => set({ isModalOpen: true, editingProject: null }),
-
-  openEditModal: (project) => set({ isModalOpen: true, editingProject: project }),
-
-  closeModal: () => set({ isModalOpen: false, editingProject: null }),
-
-  openFeedbackModal: async (id) => {
-    await get().fetchFeedback(id);
-    set({ isFeedbackModalOpen: true });
-  },
-
-  closeFeedbackModal: () => set({ isFeedbackModalOpen: false, selectedFeedback: null }),
-
-  setSelectedProject: (p) => set({ selectedProject: p }),
+  openCreateModal:  ()      => set({ isModalOpen: true, editingProject: null }),
+  openEditModal:    (p)     => set({ isModalOpen: true, editingProject: p }),
+  closeModal:       ()      => set({ isModalOpen: false, editingProject: null }),
+  openSubmitModal:  (id)    => set({ isSubmitModalOpen: true, submittingProjectId: id }),
+  closeSubmitModal: ()      => set({ isSubmitModalOpen: false, submittingProjectId: null }),
+  setSelectedProject: (p)   => set({ selectedProject: p }),
 }));
