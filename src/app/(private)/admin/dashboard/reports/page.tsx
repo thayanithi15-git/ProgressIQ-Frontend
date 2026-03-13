@@ -815,42 +815,49 @@ export default function AdminReports() {
             icon: Users,
             title: "Students",
             description: "Student profiles & data",
+            color: "#6366F1",   // indigo
         },
         {
             category: "mentors" as ReportCategory,
             icon: GraduationCap,
             title: "Mentors",
             description: "Mentor information",
+            color: "#8B5CF6",   // violet
         },
         {
             category: "projects" as ReportCategory,
             icon: Briefcase,
             title: "Projects",
             description: "Project submissions",
+            color: "#F59E0B",   // amber
         },
         {
             category: "internships" as ReportCategory,
             icon: Award,
             title: "Internships",
             description: "Internship records",
+            color: "#10B981",   // emerald
         },
         {
             category: "certifications" as ReportCategory,
-            icon: Award,
+            icon: Star,
             title: "Certifications",
             description: "Certificate data",
+            color: "#F97316",   // orange
         },
         {
             category: "performance" as ReportCategory,
             icon: TrendingUp,
             title: "Performance",
             description: "Analytics & metrics",
+            color: "#EF4444",   // rose
         },
         {
             category: "comprehensive" as ReportCategory,
             icon: FileText,
             title: "Comprehensive",
             description: "All-in-one report",
+            color: "#0EA5E9",   // sky
         },
     ];
 
