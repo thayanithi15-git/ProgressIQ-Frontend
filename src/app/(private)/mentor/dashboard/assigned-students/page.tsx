@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Search, Filter, ChevronLeft, ChevronRight, Eye, ArrowUpDown, X, Download } from 'lucide-react';
+import { Search, Filter, ChevronLeft, ChevronRight, Eye, ArrowUpDown, X, Download, Github, Linkedin, Code, Terminal, Link2, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -351,6 +351,7 @@ export default function AssignedStudentsPage() {
                       <th className="px-6 py-3 text-center text-sm font-semibold font-poppins">Year</th>
                       <th className="px-6 py-3 text-right text-sm font-semibold font-poppins">Points</th>
                       <th className="px-6 py-3 text-center text-sm font-semibold font-poppins">Status</th>
+                      <th className="px-6 py-3 text-center text-sm font-semibold font-poppins">Socials</th>
                       <th className="px-6 py-3 text-center text-sm font-semibold font-poppins">Actions</th>
                     </tr>
                   </thead>
@@ -407,6 +408,19 @@ export default function AssignedStudentsPage() {
                             >
                               {student.status}
                             </Badge>
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            {student.socials && Object.values(student.socials).some(v => v) ? (
+                              <div className="flex items-center justify-center gap-1.5 flex-wrap">
+                                {student.socials.linkedin && <a href={student.socials.linkedin.startsWith('http') ? student.socials.linkedin : `https://${student.socials.linkedin}`} target="_blank" rel="noopener noreferrer" title="LinkedIn" className="text-[#0A66C2] hover:opacity-80"><Linkedin size={15} /></a>}
+                                {student.socials.github && <a href={student.socials.github.startsWith('http') ? student.socials.github : `https://${student.socials.github}`} target="_blank" rel="noopener noreferrer" title="GitHub" className="text-foreground hover:opacity-80"><Github size={15} /></a>}
+                                {student.socials.leetcode && <a href={student.socials.leetcode.startsWith('http') ? student.socials.leetcode : `https://${student.socials.leetcode}`} target="_blank" rel="noopener noreferrer" title="LeetCode" className="text-[#FFA116] hover:opacity-80"><Code size={15} /></a>}
+                                {student.socials.codechef && <a href={student.socials.codechef.startsWith('http') ? student.socials.codechef : `https://${student.socials.codechef}`} target="_blank" rel="noopener noreferrer" title="CodeChef" className="text-[#5B4638] hover:opacity-80"><Terminal size={15} /></a>}
+                                {student.socials.portfolio && <a href={student.socials.portfolio.startsWith('http') ? student.socials.portfolio : `https://${student.socials.portfolio}`} target="_blank" rel="noopener noreferrer" title="Portfolio" className="text-teal-600 hover:opacity-80"><Link2 size={15} /></a>}
+                              </div>
+                            ) : (
+                              <span className="text-xs text-muted-foreground italic">No socials</span>
+                            )}
                           </td>
                           <td className="px-6 py-4 text-center">
                             <Button

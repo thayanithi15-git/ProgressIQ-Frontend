@@ -30,7 +30,7 @@ export interface SidebarSection {
   items: SidebarItem[];
 }
 
-/* ===================== ADMIN (7 → 3 + 4) ===================== */
+/* ===================== ADMIN (7 â†’ 3 + 4) ===================== */
 
 export const adminSections = (base: string): SidebarSection[] => [
 
@@ -62,12 +62,12 @@ export const adminSections = (base: string): SidebarSection[] => [
         href: `${base}/mentor-manage`,
         description: "Manage mentors",
       },
-      // {
-      //   icon: Activity,
-      //   label: "Logs",
-      //   href: `${base}/logs`,
-      //   description: "Audit trail",
-      // },
+      {
+        icon: Activity,
+        label: "System Logs",
+        href: `${base}/system-logs`,
+        description: "Audit trail",
+      },
     ],
   },
 
@@ -109,7 +109,7 @@ export const adminSections = (base: string): SidebarSection[] => [
   },
 ];
 
-/* ===================== MENTOR (4 → 2 + 2) ===================== */
+/* ===================== MENTOR (4 â†’ 2 + 2) ===================== */
 
 export const mentorSections = (base: string): SidebarSection[] => [
 
@@ -176,7 +176,7 @@ export const mentorSections = (base: string): SidebarSection[] => [
   },
 ];
 
-/* ===================== STUDENT (5 → 2 + 3) ===================== */
+/* ===================== STUDENT (5 â†’ 2 + 3) ===================== */
 
 export const studentSections = (base: string): SidebarSection[] => [
 

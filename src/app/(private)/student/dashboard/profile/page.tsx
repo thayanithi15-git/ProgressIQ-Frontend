@@ -7,10 +7,10 @@ import {
   Building2, Edit2, Save, X, Loader2, CheckCircle,
   Star, GraduationCap, UserCheck, Heart, Shield,
   Briefcase, Clock, Hash, ChevronRight,
+  Github, Linkedin, Link2, Code, Terminal, Globe
 } from "lucide-react";
-import { useProfileStore, UpdateProfilePayload } from "@/store/student/profile";
+import { useProfileStore, UpdateProfilePayload, SocialLinks } from "@/store/student/profile";
 import Header from "@/components/layout/header";
-import { Button } from "@/components/ui/button";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // TOKENS
@@ -25,6 +25,7 @@ const C = {
   indigo:  "#6366F1",
   pink:    "#DB2777",
   teal:    "#0D9488",
+  slate:   "#475569",
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -83,7 +84,7 @@ const initials = (f?: string, l?: string) =>
 // ─────────────────────────────────────────────────────────────────────────────
 // SECTION CARD WRAPPER
 // ─────────────────────────────────────────────────────────────────────────────
-const SectionCard = ({ title, icon: Icon, color, children, delay = 0 }: any) => (
+const SectionCard = ({ title, icon: Icon, color, children, delay = 0, action }: any) => (
   <motion.div
     initial={{ opacity: 0, y: 14 }}
     animate={{ opacity: 1, y: 0 }}
@@ -96,12 +97,15 @@ const SectionCard = ({ title, icon: Icon, color, children, delay = 0 }: any) => 
     {/* Section header */}
     <div style={{
       padding: "16px 22px", borderBottom: "1px solid var(--divider)",
-      display: "flex", alignItems: "center", gap: 10,
+      display: "flex", alignItems: "center", justifyContent: "space-between",
     }}>
-      <div style={{ width: 34, height: 34, borderRadius: 9, background: `${color}16`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-        <Icon size={16} color={color} />
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ width: 34, height: 34, borderRadius: 9, background: `${color}16`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <Icon size={16} color={color} />
+        </div>
+        <p style={{ fontSize: 13, fontWeight: 800, color: "var(--text-primary)", margin: 0 }}>{title}</p>
       </div>
-      <p style={{ fontSize: 13, fontWeight: 800, color: "var(--text-primary)", margin: 0 }}>{title}</p>
+      {action && <div>{action}</div>}
     </div>
     <div style={{ padding: "6px 22px 18px" }}>{children}</div>
   </motion.div>
@@ -110,16 +114,22 @@ const SectionCard = ({ title, icon: Icon, color, children, delay = 0 }: any) => 
 // ─────────────────────────────────────────────────────────────────────────────
 // INFO ROW
 // ─────────────────────────────────────────────────────────────────────────────
-const InfoRow = ({ icon: Icon, label, value, color = "var(--text-muted)" }: any) => (
+const InfoRow = ({ icon: Icon, label, value, color = "var(--text-muted)", link = false }: any) => (
   <div className="info-row">
     <div style={{ width: 30, height: 30, borderRadius: 8, background: `var(--body-bg)`, border: "1px solid var(--card-border)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
       <Icon size={13} color={color} />
     </div>
     <div style={{ flex: 1, minWidth: 0 }}>
       <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", letterSpacing: ".05em", textTransform: "uppercase", margin: "0 0 2px" }}>{label}</p>
-      <p style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)", margin: 0, wordBreak: "break-word" }}>
-        {value || <span style={{ color: "var(--text-muted)", fontWeight: 400, fontStyle: "italic" }}>Not provided</span>}
-      </p>
+      {link && value ? (
+        <a href={value.startsWith('http') ? value : `https://${value}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, fontWeight: 600, color: C.blue, textDecoration: 'none', margin: 0, wordBreak: "break-word", display: "flex", alignItems: "center", gap: 4 }}>
+          {value} <Link2 size={12} />
+        </a>
+      ) : (
+        <p style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)", margin: 0, wordBreak: "break-word" }}>
+          {value || <span style={{ color: "var(--text-muted)", fontWeight: 400, fontStyle: "italic" }}>Not provided</span>}
+        </p>
+      )}
     </div>
   </div>
 );
@@ -246,7 +256,7 @@ const ProfileHero = ({ profile, onEdit }: any) => {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// EDIT MODAL
+// EDIT PROFILE MODAL
 // ─────────────────────────────────────────────────────────────────────────────
 const EditModal = ({ isOpen, editForm, setField, onSave, onCancel, isUpdating }: any) => (
   <AnimatePresence>
@@ -332,18 +342,88 @@ const EditModal = ({ isOpen, editForm, setField, onSave, onCancel, isUpdating }:
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
+// EDIT SOCIALS MODAL
+// ─────────────────────────────────────────────────────────────────────────────
+const EditSocialsModal = ({ isOpen, form, setField, onSave, onCancel, isUpdating }: any) => (
+  <AnimatePresence>
+    {isOpen && (
+      <div style={{ position: "fixed", inset: 0, background: "rgba(15,23,42,0.65)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center", padding: 20, backdropFilter: "blur(5px)" }}
+        onClick={onCancel}>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.94, y: 12 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.94, y: 12 }}
+          onClick={e => e.stopPropagation()}
+          style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", borderRadius: 20, width: "100%", maxWidth: 500, maxHeight: "92vh", overflowY: "auto", boxShadow: "0 24px 64px rgba(0,0,0,0.28)" }}
+        >
+          {/* Modal header */}
+          <div style={{ padding: "20px 24px 16px", borderBottom: "1px solid var(--divider)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div style={{ width: 36, height: 36, borderRadius: 10, background: `${C.indigo}16`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Globe size={16} color={C.indigo} />
+              </div>
+              <div>
+                <p style={{ fontSize: 14, fontWeight: 800, color: "var(--text-primary)", margin: 0 }}>Social Profiles</p>
+                <p style={{ fontSize: 11, color: "var(--text-muted)", margin: 0 }}>Add your online portfolios and links</p>
+              </div>
+            </div>
+            <button onClick={onCancel}
+              style={{ width: 30, height: 30, borderRadius: 8, border: "none", background: "var(--body-bg)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <X size={14} color="var(--text-muted)" />
+            </button>
+          </div>
+
+          {/* Form */}
+          <div style={{ padding: "20px 24px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
+            
+            <FormField label="LinkedIn URL">
+              <input className="edit-input" placeholder="https://linkedin.com/in/username" value={form.linkedin ?? ""} onChange={e => setField("linkedin", e.target.value)} />
+            </FormField>
+            <FormField label="GitHub URL">
+              <input className="edit-input" placeholder="https://github.com/username" value={form.github ?? ""} onChange={e => setField("github", e.target.value)} />
+            </FormField>
+            <FormField label="LeetCode URL">
+              <input className="edit-input" placeholder="https://leetcode.com/u/username" value={form.leetcode ?? ""} onChange={e => setField("leetcode", e.target.value)} />
+            </FormField>
+            <FormField label="CodeChef URL">
+              <input className="edit-input" placeholder="https://codechef.com/users/username" value={form.codechef ?? ""} onChange={e => setField("codechef", e.target.value)} />
+            </FormField>
+            <FormField label="Personal Portfolio URL">
+              <input className="edit-input" placeholder="https://username.dev" value={form.portfolio ?? ""} onChange={e => setField("portfolio", e.target.value)} />
+            </FormField>
+
+            {/* Actions */}
+            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", paddingTop: 6, borderTop: "1px solid var(--divider)", marginTop: 8 }}>
+              <button onClick={onCancel}
+                style={{ padding: "9px 22px", borderRadius: 10, border: "1.5px solid var(--card-border)", background: "transparent", color: "var(--text-secondary)", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                Cancel
+              </button>
+              <button onClick={onSave} disabled={isUpdating}
+                style={{ padding: "9px 26px", borderRadius: 10, border: "none", background: C.indigo, color: "#fff", fontSize: 13, fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", gap: 7, opacity: isUpdating ? 0.7 : 1, boxShadow: `0 4px 16px ${C.indigo}44` }}>
+                {isUpdating ? <Loader2 size={13} style={{ animation: "spin 1s linear infinite" }} /> : <Save size={13} />}
+                Save Links
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    )}
+  </AnimatePresence>
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
 // MAIN PAGE
 // ─────────────────────────────────────────────────────────────────────────────
 export default function ProfilePage() {
   const {
-    profile, isLoading, isUpdating, isEditMode, editForm,
+    profile, socials, isLoading, isUpdating, isEditMode, editForm, isSocialsEditMode, socialsForm,
     fetchProfile, updateProfile, setEditMode, setEditField, cancelEdit,
-  } = useProfileStore();
+    setSocialsEditMode, setSocialsField, updateSocials
+  } = useProfileStore() as any; // Cast as any to bypass temporary type issues if store was just updated
 
   useEffect(() => { fetchProfile(); }, []);
 
-  const handleSave = () => {
-    // Filter out empty strings to only send changed fields
+  const handleSaveProfile = () => {
     const payload: UpdateProfilePayload = {};
     (Object.keys(editForm) as (keyof UpdateProfilePayload)[]).forEach(key => {
       if (editForm[key] !== undefined && editForm[key] !== "") {
@@ -351,6 +431,10 @@ export default function ProfilePage() {
       }
     });
     updateProfile(payload);
+  };
+
+  const handleSaveSocials = () => {
+    updateSocials(socialsForm);
   };
 
   if (isLoading) return (
@@ -399,19 +483,43 @@ export default function ProfilePage() {
             </SectionCard>
 
             {/* ── Academic Info */}
-            <SectionCard title="Academic Information" icon={GraduationCap} color={C.violet} delay={0.09}>
-              <InfoRow icon={Building2}  label="Department"    value={ai.department}  color={C.violet} />
-              <InfoRow icon={BookOpen}   label="Current Year"  value={ai.year}        color={C.blue} />
-              <InfoRow icon={Calendar}   label="Academic Year" value={ai.academicYear} color={C.cyan} />
-              <InfoRow icon={Star}       label="Reward Points"
-                value={
-                  <span style={{ fontSize: 16, fontWeight: 900, background: `linear-gradient(135deg,${C.amber},${C.rose})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                    {ach.rewardPoints.toLocaleString()} pts
-                  </span>
-                }
-                color={C.amber}
-              />
-            </SectionCard>
+            <div>
+              <SectionCard title="Academic Information" icon={GraduationCap} color={C.violet} delay={0.09}>
+                <InfoRow icon={Building2}  label="Department"    value={ai.department}  color={C.violet} />
+                <InfoRow icon={BookOpen}   label="Current Year"  value={ai.year}        color={C.blue} />
+                <InfoRow icon={Calendar}   label="Academic Year" value={ai.academicYear} color={C.cyan} />
+                <InfoRow icon={Star}       label="Reward Points"
+                  value={
+                    <span style={{ fontSize: 16, fontWeight: 900, background: `linear-gradient(135deg,${C.amber},${C.rose})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                      {ach.rewardPoints.toLocaleString()} pts
+                    </span>
+                  }
+                  color={C.amber}
+                />
+              </SectionCard>
+
+              {/* ── Social Profiles */}
+              <div style={{ marginTop: 18 }}>
+                <SectionCard 
+                  title="Online Profiles" 
+                  icon={Globe} 
+                  color={C.indigo} 
+                  delay={0.11}
+                  action={
+                    <button onClick={() => setSocialsEditMode(true)}
+                      style={{ background: "transparent", border: "none", color: C.indigo, fontSize: 12, fontWeight: 800, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
+                      <Edit2 size={12} /> Edit
+                    </button>
+                  }
+                >
+                  <InfoRow icon={Linkedin} label="LinkedIn"  value={socials?.linkedin} color="#0A66C2" link />
+                  <InfoRow icon={Github}   label="GitHub"    value={socials?.github} color="#181717" link />
+                  <InfoRow icon={Code}     label="LeetCode"  value={socials?.leetcode} color="#FFA116" link />
+                  <InfoRow icon={Terminal} label="CodeChef"  value={socials?.codechef} color="#5B4638" link />
+                  <InfoRow icon={Link2}    label="Portfolio" value={socials?.portfolio} color={C.teal} link />
+                </SectionCard>
+              </div>
+            </div>
 
             {/* ── Family Info */}
             <SectionCard title="Family Information" icon={Heart} color={C.pink} delay={0.12}>
@@ -434,7 +542,7 @@ export default function ProfilePage() {
                 {/* Mentor hero row */}
                 <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 0 16px", borderBottom: "1px solid var(--divider)", marginBottom: 4 }}>
                   <div style={{ width: 56, height: 56, borderRadius: "50%", background: `linear-gradient(135deg,${C.emerald},${C.cyan})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, fontWeight: 900, color: "#fff", flexShrink: 0 }}>
-                    {mi.fullName?.split(" ").map(p => p[0]).join("").toUpperCase().slice(0, 2)}
+                    {mi.fullName?.split(" ").map((p: any) => p[0]).join("").toUpperCase().slice(0, 2)}
                   </div>
                   <div>
                     <p style={{ fontSize: 16, fontWeight: 800, color: "var(--text-primary)", margin: "0 0 3px" }}>{mi.fullName}</p>
@@ -461,13 +569,21 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Edit Modal */}
+      {/* Edit Modals */}
       <EditModal
         isOpen={isEditMode}
         editForm={editForm}
         setField={setEditField}
-        onSave={handleSave}
-        onCancel={cancelEdit}
+        onSave={handleSaveProfile}
+        onCancel={() => setEditMode(false)}
+        isUpdating={isUpdating}
+      />
+      <EditSocialsModal
+        isOpen={isSocialsEditMode}
+        form={socialsForm}
+        setField={setSocialsField}
+        onSave={handleSaveSocials}
+        onCancel={() => setSocialsEditMode(false)}
         isUpdating={isUpdating}
       />
     </>

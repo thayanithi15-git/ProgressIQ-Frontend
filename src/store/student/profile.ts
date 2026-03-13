@@ -49,6 +49,14 @@ export interface AccountInfo {
   lastUpdated: string;
 }
 
+export interface SocialLinks {
+  github?: string;
+  linkedin?: string;
+  leetcode?: string;
+  portfolio?: string;
+  codechef?: string;
+}
+
 export interface CompleteProfile {
   personalInfo: PersonalInfo;
   familyInfo: FamilyInfo;
@@ -73,37 +81,50 @@ export interface UpdateProfilePayload {
 
 interface ProfileState {
   profile: CompleteProfile | null;
+  socials: SocialLinks | null;
   isLoading: boolean;
   isUpdating: boolean;
   isEditMode: boolean;
+  isSocialsEditMode: boolean;
   editForm: UpdateProfilePayload;
+  socialsForm: SocialLinks;
 
   // Actions
   fetchProfile: () => Promise<void>;
   updateProfile: (payload: UpdateProfilePayload) => Promise<boolean>;
+  updateSocials: (payload: SocialLinks) => Promise<boolean>;
 
   // UI
   setEditMode: (v: boolean) => void;
+  setSocialsEditMode: (v: boolean) => void;
   setEditField: (key: keyof UpdateProfilePayload, value: string) => void;
+  setSocialsField: (key: keyof SocialLinks, value: string) => void;
   initEditForm: () => void;
+  initSocialsForm: () => void;
 }
 
 export const useProfileStore = create<ProfileState>((set, get) => ({
   profile: null,
+  socials: null,
   isLoading: false,
   isUpdating: false,
   isEditMode: false,
+  isSocialsEditMode: false,
   editForm: {},
+  socialsForm: {},
 
   // ─── FETCH PROFILE ────────────────────────────────────────
   fetchProfile: async () => {
     const { showNotification } = useNotificationStore.getState();
     try {
       set({ isLoading: true });
-      const res = await api.get('/api/student/profile/complete');
-      if (res.data.success) {
-        set({ profile: res.data.data });
-        setStoredMentorProfile(res.data.data?.mentorInfo || null);
+      const [profRes, socRes] = await Promise.all([
+        api.get('/api/student/profile/complete'),
+        api.get('/api/student/profile/socials')
+      ]);
+      if (profRes.data.success) {
+        set({ profile: profRes.data.data, socials: socRes.data?.data || null });
+        setStoredMentorProfile(profRes.data.data?.mentorInfo || null);
       }
     } catch (error: any) {
       showNotification(error.response?.data?.message || 'Failed to fetch profile', 'error');
@@ -133,14 +154,43 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
     }
   },
 
+  // ─── UPDATE SOCIALS ───────────────────────────────────────
+  updateSocials: async (payload) => {
+    const { showNotification } = useNotificationStore.getState();
+    try {
+      set({ isUpdating: true });
+      const res = await api.post('/api/student/profile/socials', payload);
+      if (res.data.success) {
+        showNotification('Social links updated successfully', 'success');
+        set({ socials: res.data.data, isSocialsEditMode: false });
+        return true;
+      }
+      return false;
+    } catch (error: any) {
+      showNotification(error.response?.data?.message || 'Failed to update social links', 'error');
+      return false;
+    } finally {
+      set({ isUpdating: false });
+    }
+  },
+
   // ─── UI ───────────────────────────────────────────────────
   setEditMode: (v) => {
     if (v) get().initEditForm();
     set({ isEditMode: v });
   },
 
+  setSocialsEditMode: (v) => {
+    if (v) get().initSocialsForm();
+    set({ isSocialsEditMode: v });
+  },
+
   setEditField: (key, value) => set(state => ({
     editForm: { ...state.editForm, [key]: value },
+  })),
+
+  setSocialsField: (key, value) => set(state => ({
+    socialsForm: { ...state.socialsForm, [key]: value },
   })),
 
   initEditForm: () => {
@@ -154,6 +204,19 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
         place:       profile.personalInfo.place ?? '',
         parentName:  profile.familyInfo.parentName ?? '',
         parentPhone: profile.familyInfo.parentPhone ?? '',
+      },
+    });
+  },
+
+  initSocialsForm: () => {
+    const { socials } = get();
+    set({
+      socialsForm: {
+        github:    socials?.github ?? '',
+        linkedin:  socials?.linkedin ?? '',
+        leetcode:  socials?.leetcode ?? '',
+        portfolio: socials?.portfolio ?? '',
+        codechef:  socials?.codechef ?? '',
       },
     });
   },

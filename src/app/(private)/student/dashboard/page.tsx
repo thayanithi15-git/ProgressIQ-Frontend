@@ -7,7 +7,7 @@ import {
   TrendingUp, Star, RefreshCw, Download, Activity,
   GraduationCap, MapPin, Mail, Phone, Calendar,
   Trophy, Target, AlertCircle, ChevronDown, BarChart2,
-  Flame, User,
+  Flame, User, Github, Linkedin, Link2, Terminal, Code, Globe,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +20,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useStudentDashboardStore } from "@/store/student/dashboard";
+import { useProfileStore } from "@/store/student/profile";
 import { useThemeStore } from "@/store/layoutStore";
 import Header from "@/components/layout/header";
 
@@ -608,6 +609,8 @@ export default function StudentDashboard() {
     refreshDashboard,
   } = useStudentDashboardStore();
 
+  const { socials, fetchProfile } = useProfileStore() as any;
+
   const { initializeTheme } = useThemeStore();
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -617,6 +620,7 @@ export default function StudentDashboard() {
     fetchHeatmap();
     fetchPointsTrend();
     fetchTaskCompletion();
+    fetchProfile();
   }, []);
 
   const handleRefresh = async () => {
@@ -737,7 +741,7 @@ export default function StudentDashboard() {
             </div>
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 w-full mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full mb-6">
 
             {/* ── STUDENT PROFILE ─────────────────────────── */}
             <motion.div
@@ -814,64 +818,66 @@ export default function StudentDashboard() {
               </div>
             </motion.div>
 
-            {/* ── MENTOR CARD ─────────────────────────── */}
+            {/* ── SOCIALS CARD ─────────────────────────── */}
             <motion.div
-              className="w-full hidden"
+              className="w-full"
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.45 }}
             >
               <div
                 style={{
-                  borderRadius: 18,
+                  borderRadius: 20,
                   background: "var(--card-bg)",
                   border: "1px solid var(--card-border)",
                   boxShadow: "var(--card-shadow)",
-                  padding: "18px"
+                  padding: "26px 26px 22px",
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
                 }}
               >
-
-                <div className="flex items-center gap-3 mb-3">
-                  <div
-                    style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: 10,
-                      background: `${C.cyan}18`,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center"
-                    }}
-                  >
-                    <GraduationCap size={16} color={C.cyan} />
-                  </div>
-
-                  <div>
-                    <p className="text-[13px] font-bold text-[var(--text-primary)]">
-                      Mentor
-                    </p>
-                    <p className="text-[11px] text-[var(--text-muted)]">
-                      Assigned mentor info
-                    </p>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div style={{ width: 34, height: 34, borderRadius: 10, background: `${C.indigo}16`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <Globe size={16} color={C.indigo} />
+                    </div>
+                    <div>
+                      <p style={{ fontSize: 15, fontWeight: 800, color: "var(--text-primary)", margin: 0 }}>Online Profiles</p>
+                      <p style={{ fontSize: 12, color: "var(--text-muted)", margin: 0 }}>Your linked social profiles</p>
+                    </div>
                   </div>
                 </div>
 
-                {mentor ? (
-                  <div className="flex flex-col gap-1 text-[12px]">
-                    <div className="font-bold text-[var(--text-primary)]">
-                      {mentor.name}
-                    </div>
-                    <div className="text-[var(--text-secondary)]">
-                      {mentor.department || "—"}
-                    </div>
-                    <div className="text-[var(--text-muted)]">
-                      {mentor.email || "—"}
-                    </div>
+                {!socials ? (
+                  <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: 140 }}>
+                    <Sk h={16} w="80%" style={{ marginBottom: 12 }} />
+                    <Sk h={16} w="60%" />
+                  </div>
+                ) : (!socials.github && !socials.linkedin && !socials.leetcode && !socials.codechef && !socials.portfolio) ? (
+                  <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: 140, background: "var(--body-bg)", borderRadius: 12, border: "1px dashed var(--card-border)" }}>
+                    <Link2 size={24} color="var(--text-muted)" style={{ marginBottom: 10 }} />
+                    <p style={{ fontSize: 13, fontWeight: 600, color: "var(--text-secondary)", margin: 0 }}>No social links added</p>
+                    <p style={{ fontSize: 11, color: "var(--text-muted)", margin: "4px 0 0" }}>Update your profile to stand out</p>
                   </div>
                 ) : (
-                  <p className="text-[12px] text-[var(--text-muted)]">
-                    No mentor assigned
-                  </p>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 12, flex: 1 }}>
+                    {[
+                      { icon: Linkedin, label: "LinkedIn", val: socials.linkedin, c: "#0A66C2" },
+                      { icon: Github, label: "GitHub", val: socials.github, c: "#181717" },
+                      { icon: Code, label: "LeetCode", val: socials.leetcode, c: "#FFA116" },
+                      { icon: Terminal, label: "CodeChef", val: socials.codechef, c: "#5B4638" },
+                      { icon: Link2, label: "Portfolio", val: socials.portfolio, c: C.teal },
+                    ].filter(i => !!i.val).map((item, idx) => (
+                      <a key={idx} href={item.val.startsWith('http') ? item.val : `https://${item.val}`} target="_blank" rel="noopener noreferrer"
+                        style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", borderRadius: 12, border: "1px solid var(--card-border)", background: "var(--body-bg)", textDecoration: "none", transition: "transform 0.15s, border-color 0.15s" }}
+                        onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.borderColor = C.blue; }}
+                        onMouseLeave={e => { e.currentTarget.style.transform = "none"; e.currentTarget.style.borderColor = "var(--card-border)"; }}>
+                        <item.icon size={18} color={item.c} />
+                        <span style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)" }}>{item.label}</span>
+                      </a>
+                    ))}
+                  </div>
                 )}
               </div>
             </motion.div>
@@ -960,6 +966,70 @@ export default function StudentDashboard() {
                 </div>
               )}
             </div>
+
+            {/* ── MENTOR CARD ─────────────────────────── */}
+            <motion.div
+              className="w-full hidden"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.45 }}
+            >
+              <div
+                style={{
+                  borderRadius: 18,
+                  background: "var(--card-bg)",
+                  border: "1px solid var(--card-border)",
+                  boxShadow: "var(--card-shadow)",
+                  padding: "18px"
+                }}
+              >
+
+                <div className="flex items-center gap-3 mb-3">
+                  <div
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 10,
+                      background: `${C.cyan}18`,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center"
+                    }}
+                  >
+                    <GraduationCap size={16} color={C.cyan} />
+                  </div>
+
+                  <div>
+                    <p className="text-[13px] font-bold text-[var(--text-primary)]">
+                      Mentor
+                    </p>
+                    <p className="text-[11px] text-[var(--text-muted)]">
+                      Assigned mentor info
+                    </p>
+                  </div>
+                </div>
+
+                {mentor ? (
+                  <div className="flex flex-col gap-1 text-[12px]">
+                    <div className="font-bold text-[var(--text-primary)]">
+                      {mentor.name}
+                    </div>
+                    <div className="text-[var(--text-secondary)]">
+                      {mentor.department || "—"}
+                    </div>
+                    <div className="text-[var(--text-muted)]">
+                      {mentor.email || "—"}
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-[12px] text-[var(--text-muted)]">
+                    No mentor assigned
+                  </p>
+                )}
+              </div>
+            </motion.div>
+
+
 
           </div>
 
