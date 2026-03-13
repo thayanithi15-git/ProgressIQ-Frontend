@@ -88,7 +88,7 @@ export default function SystemLogsPage() {
         subtitle="Admin · Audit Trail"
       />
 
-      <div className="px-6 py-6 max-w-7xl mx-auto space-y-6">
+      <div className="px-6 py-6 w-full mx-auto space-y-6">
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
@@ -105,7 +105,7 @@ export default function SystemLogsPage() {
                     <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
                       {card.label}
                     </p>
-                    <p className="text-3xl font-bold text-foreground">{card.value}</p>
+                    <p className="text-xl font-bold text-foreground">{card.value}</p>
                   </div>
                   <div className={`h-12 w-12 rounded-xl ${card.iconBg} flex items-center justify-center`}>
                     <card.icon className={`h-6 w-6 ${card.iconColor}`} />
@@ -121,8 +121,8 @@ export default function SystemLogsPage() {
           {/* Card Subheader with filter */}
           <div className="px-5 py-4 border-b border-border bg-muted/20 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <div>
-              <h2 className="text-sm font-bold text-foreground tracking-wide">Login Activity</h2>
-              <p className="text-xs text-muted-foreground mt-0.5">Most recent logins across all roles. Auto-trims to 50 logs.</p>
+              <h2 className="text-md font-bold text-foreground tracking-wide font-poppins">Login Activity</h2>
+              <p className="text-sm text-muted-foreground mt-0.5 font-poppins">Most recent logins across all roles. Auto-trims to 50 logs.</p>
             </div>
             <div className="flex items-center gap-3">
               <Select value={filters.role || "all"} onValueChange={handleRoleFilter}>
@@ -153,6 +153,7 @@ export default function SystemLogsPage() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/30 hover:bg-muted/30">
+                  <TableHead className="pl-6 text-xs font-bold uppercase tracking-wider text-muted-foreground w-[40px]">S.No</TableHead>
                   <TableHead className="pl-6 text-xs font-bold uppercase tracking-wider text-muted-foreground w-[200px]">Timestamp</TableHead>
                   <TableHead className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Name</TableHead>
                   <TableHead className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Email</TableHead>
@@ -164,6 +165,7 @@ export default function SystemLogsPage() {
                 {isLoading ? (
                   Array.from({ length: 6 }).map((_, i) => (
                     <TableRow key={i}>
+                      <TableCell className="pl-6"><Skeleton className="h-4 w-[30px]" /></TableCell>
                       <TableCell className="pl-6"><Skeleton className="h-4 w-[160px]" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-[140px]" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-[200px]" /></TableCell>
@@ -191,9 +193,12 @@ export default function SystemLogsPage() {
                           initial={{ opacity: 0, y: 6 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: idx * 0.04 }}
-                          className="border-b border-border/50 hover:bg-muted/20 transition-colors"
+                          className="border-b py-3 border-border/50 hover:bg-muted/20 transition-colors"
                         >
-                          <TableCell className="pl-6 text-sm font-medium text-foreground/80 tabular-nums">
+                          <TableCell className="pl-6 py-6 text-sm font-medium text-foreground/80 tabular-nums">
+                            {idx + 1}
+                          </TableCell>
+                          <TableCell className="pl-6 py-6 text-sm font-medium text-foreground/80 tabular-nums">
                             {format(new Date(log.createdAt), "dd MMM yyyy, HH:mm:ss")}
                           </TableCell>
                           <TableCell className="font-semibold text-foreground text-sm">{log.name}</TableCell>

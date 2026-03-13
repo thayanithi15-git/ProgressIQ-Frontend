@@ -46,7 +46,7 @@ export const useSystemLogStore = create<SystemLogState>((set, get) => ({
         ...(filters.role && filters.role !== "all" && { role: filters.role }),
       });
 
-      const response = await api.get(`/admin/system-logs?${params}`);
+      const response = await api.get(`/api/admin/system-logs?${params}`);
       
       set({
         logs: response.data.logs || [],
