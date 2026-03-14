@@ -247,7 +247,7 @@ export default function AssignedStudentsPage() {
         />
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+     <div className="h-[calc(100vh-80px)] bg-background p-6 flex flex-col gap-6 overflow-x-hidden">
         {/* Search and Filters */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -422,18 +422,21 @@ export default function AssignedStudentsPage() {
         >
           <Card>
             <CardContent className="p-0">
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-muted/50 border-b">
+              <div className="overflow-x-auto scrollbar-hide">
+                <table className="w-full min-w-[1200px]">
+                  <thead className="bg-muted/50 border-b text-[13px]">
                     <tr>
-                      <th className="px-6 py-3 text-left text-sm font-semibold font-poppins">Name</th>
-                      <th className="px-6 py-3 text-left text-sm font-semibold font-poppins">Email</th>
-                      <th className="px-6 py-3 text-left text-sm font-semibold font-poppins">Department</th>
-                      <th className="px-6 py-3 text-center text-sm font-semibold font-poppins">Year</th>
-                      <th className="px-6 py-3 text-right text-sm font-semibold font-poppins">Points</th>
-                      <th className="px-6 py-3 text-center text-sm font-semibold font-poppins">Status</th>
-                      <th className="px-6 py-3 text-center text-sm font-semibold font-poppins">Socials</th>
-                      <th className="px-6 py-3 text-center text-sm font-semibold font-poppins">Actions</th>
+                      <th className="px-6 py-3 text-left font-semibold font-poppins">Roll No</th>
+                      <th className="px-6 py-3 text-left font-semibold font-poppins">Name</th>
+                      <th className="px-6 py-3 text-left font-semibold font-poppins">Department</th>
+                      <th className="px-6 py-3 text-center font-semibold font-poppins">Year</th>
+                      <th className="px-6 py-3 text-center font-semibold font-poppins">CGPA</th>
+                      <th className="px-6 py-3 text-center font-semibold font-poppins">Arrears</th>
+                      <th className="px-6 py-3 text-right font-semibold font-poppins">Points</th>
+                      <th className="px-6 py-3 text-center font-semibold font-poppins">Status</th>
+                      <th className="px-6 py-3 text-center font-semibold font-poppins">Socials</th>
+                      <th className="px-6 py-3 text-center font-semibold font-poppins">Joined</th>
+                      <th className="px-6 py-3 text-center font-semibold font-poppins">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="text-[13px]">
@@ -462,25 +465,34 @@ export default function AssignedStudentsPage() {
                           transition={{ delay: idx * 0.02 }}
                           className="border-b hover:bg-muted/50 transition-colors"
                         >
+                           <td className="px-6 py-4 font-medium font-poppins text-blue-600 uppercase">
+                            {student.rollNo || 'N/A'}
+                          </td>
                           <td className="px-6 py-4">
                             <div className="flex items-center gap-3">
-                              <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-sm font-bold font-poppins">
+                              <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold font-poppins">
                                 {student.firstName.charAt(0)}{student.lastName.charAt(0)}
                               </div>
                               <div>
-                                <p className="font-medium font-poppins">
+                                <p className="font-semibold font-poppins">
                                   {student.firstName} {student.lastName}
                                 </p>
+                                <p className="text-[11px] text-muted-foreground font-poppins">{student.email}</p>
                               </div>
                             </div>
                           </td>
-                          <td className="px-6 py-4 text-muted-foreground font-poppins">
-                            {student.email}
-                          </td>
                           <td className="px-6 py-4 font-poppins">{student.department}</td>
-                          <td className="px-6 py-4 text-center font-poppins">{student.year}</td>
+                          <td className="px-6 py-4 text-center font-poppins whitespace-nowrap">{student.year}</td>
+                          <td className="px-6 py-4 text-center font-bold text-blue-600">
+                            {student.cgpa?.toFixed(2) || '0.00'}
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            <span className={`font-bold ${student.arrearCount > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
+                              {student.arrearCount || 0}
+                            </span>
+                          </td>
                           <td className="px-6 py-4 text-right font-semibold">
-                            <div className="flex items-center justify-end gap-1.5 text-amber-600 font-poppins">
+                            <div className="flex items-center justify-end gap-1.5 text-amber-600 font-poppins font-bold">
                               <Zap className="w-4 h-4 fill-amber-600" />
                               {student.points.toLocaleString()}
                             </div>
@@ -488,23 +500,24 @@ export default function AssignedStudentsPage() {
                           <td className="px-6 py-4 text-center">
                             <Badge
                               variant="outline"
-                              className={statusBadgeClass(student.status)}
+                              className={`text-[11px] px-2 py-0 h-5 ${statusBadgeClass(student.status)}`}
                             >
                               {student.status}
                             </Badge>
                           </td>
-                          <td className="px-6 py-4 text-center">
+                          <td className="px-6 py-4">
                             {student.socials && Object.values(student.socials).some(v => v) ? (
                               <div className="flex items-center justify-center gap-1.5 flex-wrap">
-                                {student.socials.linkedin && <a href={student.socials.linkedin.startsWith('http') ? student.socials.linkedin : `https://${student.socials.linkedin}`} target="_blank" rel="noopener noreferrer" title="LinkedIn" className="text-[#0A66C2] hover:opacity-80"><Linkedin size={15} /></a>}
-                                {student.socials.github && <a href={student.socials.github.startsWith('http') ? student.socials.github : `https://${student.socials.github}`} target="_blank" rel="noopener noreferrer" title="GitHub" className="text-foreground hover:opacity-80"><Github size={15} /></a>}
-                                {student.socials.leetcode && <a href={student.socials.leetcode.startsWith('http') ? student.socials.leetcode : `https://${student.socials.leetcode}`} target="_blank" rel="noopener noreferrer" title="LeetCode" className="text-[#FFA116] hover:opacity-80"><Code size={15} /></a>}
-                                {student.socials.codechef && <a href={student.socials.codechef.startsWith('http') ? student.socials.codechef : `https://${student.socials.codechef}`} target="_blank" rel="noopener noreferrer" title="CodeChef" className="text-[#5B4638] hover:opacity-80"><Terminal size={15} /></a>}
-                                {student.socials.portfolio && <a href={student.socials.portfolio.startsWith('http') ? student.socials.portfolio : `https://${student.socials.portfolio}`} target="_blank" rel="noopener noreferrer" title="Portfolio" className="text-teal-600 hover:opacity-80"><Link2 size={15} /></a>}
+                                {student.socials.linkedin && <a href={student.socials.linkedin.startsWith('http') ? student.socials.linkedin : `https://${student.socials.linkedin}`} target="_blank" rel="noopener noreferrer" title="LinkedIn" className="text-[#0A66C2] hover:opacity-80"><Linkedin size={14} /></a>}
+                                {student.socials.github && <a href={student.socials.github.startsWith('http') ? student.socials.github : `https://${student.socials.github}`} target="_blank" rel="noopener noreferrer" title="GitHub" className="text-foreground hover:opacity-80"><Github size={14} /></a>}
+                                {student.socials.leetcode && <a href={student.socials.leetcode.startsWith('http') ? student.socials.leetcode : `https://${student.socials.leetcode}`} target="_blank" rel="noopener noreferrer" title="LeetCode" className="text-[#FFA116] hover:opacity-80"><Code size={14} /></a>}
                               </div>
                             ) : (
-                              <span className="text-xs text-muted-foreground italic">No socials</span>
+                              <div className="text-center text-[10px] text-muted-foreground italic">None</div>
                             )}
+                          </td>
+                          <td className="px-6 py-4 text-center text-muted-foreground whitespace-nowrap">
+                            {student.createdAt ? new Date(student.createdAt).toLocaleDateString() : 'N/A'}
                           </td>
                           <td className="px-6 py-4 text-center">
                             <Button

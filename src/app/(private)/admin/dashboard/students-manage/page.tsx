@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   Search, Filter, Plus, Edit, Trash2, ArrowUpDown, MoreHorizontal, ChevronLeft, ChevronRight, X, UserPlus, Download, 
-  MapPin, Phone, Mail, Calendar, GraduationCap, Briefcase, Award, CheckSquare, Zap, AlertCircle, Linkedin, Github, Code, Terminal, Link2, Globe, Eye, Users
+  MapPin, Phone, Mail, Calendar, GraduationCap, Briefcase, Award, CheckSquare, Zap, AlertCircle, Linkedin, Github, Code, Terminal, Link2, Globe, Eye, Users, FileSpreadsheet, Upload, Info
 } from "lucide-react";
+import * as XLSX from "xlsx";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -71,6 +72,7 @@ export default function StudentListPage() {
   } = useStudentManagementStore();
 
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [isBulkUploadDialogOpen, setIsBulkUploadDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedStudentForDelete, setSelectedStudentForDelete] = useState<string | null>(null);
@@ -295,8 +297,8 @@ export default function StudentListPage() {
     <GlobalNotification />
 
     <Header title='Student Management' subtitle="Welcome back! Here's what's happening today." HeaderComp={
-
-      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+      <div className="flex items-center gap-3">
+        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
         <DialogTrigger asChild>
           <Button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold gap-2">
             <Plus className="w-4 h-4" />
@@ -590,8 +592,17 @@ export default function StudentListPage() {
           </div>
         </DialogContent>
       </Dialog>
+      <Button 
+        onClick={() => setIsBulkUploadDialogOpen(true)}
+        variant="outline"
+        className="border-blue-200 text-blue-600 hover:bg-blue-50 font-semibold gap-2"
+      >
+        <Upload className="w-4 h-4" />
+        Bulk Upload
+      </Button>
+      </div>
     } />
-    <div className="min-h-screen bg-background p-6">
+    <div className="h-[calc(100vh-80px)] bg-background p-6 flex flex-col gap-6 overflow-x-hidden">
 
       {/* Basic Filters Section */}
       <motion.div
@@ -887,16 +898,20 @@ export default function StudentListPage() {
                 <p className="text-muted-foreground font-semibold">No students found</p>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <Table className='border-1 shadow-none'>
+                <div className="overflow-x-auto horizontal-scroll">
+                <Table className="border shadow-none w-full">
                   <TableHeader>
                     <TableRow className="border-b border-border bg-muted/50">
                       <TableHead className="text-foreground font-bold pl-10">ID</TableHead>
                       <TableHead className="text-foreground font-bold">Roll No</TableHead>
                       <TableHead className="text-foreground font-bold">Name</TableHead>
                       <TableHead className="text-foreground font-bold">Email</TableHead>
-                      <TableHead className="text-foreground font-bold">Department</TableHead>
+                      <TableHead className="text-foreground font-bold">Phone</TableHead>
+                      <TableHead className="text-foreground font-bold">DOB</TableHead>
+                      <TableHead className="text-foreground font-bold">Dept</TableHead>
                       <TableHead className="text-foreground font-bold">Year</TableHead>
+                      <TableHead className="text-foreground font-bold">CGPA</TableHead>
+                      <TableHead className="text-foreground font-bold text-center">Arrears</TableHead>
                       <TableHead className="text-foreground font-bold">Points</TableHead>
                       <TableHead className="text-foreground font-bold">Status</TableHead>
                       <TableHead className="text-foreground font-bold">Socials</TableHead>
@@ -927,8 +942,22 @@ export default function StudentListPage() {
                         <TableCell className="text-foreground text-sm">
                           {student.userId?.email || "N/A"}
                         </TableCell>
+                        <TableCell className="text-foreground text-sm">
+                          {student.phone}
+                        </TableCell>
+                        <TableCell className="text-foreground text-sm">
+                          {student.dob ? new Date(student.dob).toLocaleDateString() : 'N/A'}
+                        </TableCell>
                         <TableCell className="text-foreground">{student.department}</TableCell>
                         <TableCell className="text-foreground">{student.year}</TableCell>
+                        <TableCell className="text-foreground font-bold text-blue-600">
+                          {student.cgpa?.toFixed(2) || "0.00"}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <span className={`font-bold ${student.arrearCount > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
+                            {student.arrearCount || 0}
+                          </span>
+                        </TableCell>
                         <TableCell className="text-foreground font-semibold">
                           <div className="flex items-center gap-1.5 text-amber-600">
                             <Zap className="w-4 h-4 fill-amber-600" />
@@ -1311,6 +1340,97 @@ export default function StudentListPage() {
         </div>
       </AlertDialogContent>
     </AlertDialog>
+
+    {/* Bulk Upload Dialog */}
+    <Dialog open={isBulkUploadDialogOpen} onOpenChange={setIsBulkUploadDialogOpen}>
+      <DialogContent className="sm:max-w-[600px]">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <FileSpreadsheet className="w-6 h-6 text-emerald-600" />
+            Bulk Student Upload
+          </DialogTitle>
+          <DialogDescription>
+            Upload an Excel file (.xlsx or .xls) to add multiple students at once.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-6 py-4">
+          <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 flex gap-3">
+            <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+            <div className="text-sm text-blue-800">
+              <p className="font-semibold mb-1">Required Format:</p>
+              <p>Your Excel file should have the following headers:</p>
+              <code className="bg-white/50 px-1 rounded text-blue-900 break-all block mt-2 p-2 text-xs">
+                email, firstName, lastName, phone, dob (YYYY-MM-DD), gender, department, year, academicYear, rollNo, cgpa, arrearCount, familyIncome
+              </code>
+            </div>
+          </div>
+
+          <div 
+            className="border-2 border-dashed border-border rounded-xl p-8 flex flex-col items-center justify-center bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer"
+            onClick={() => document.getElementById('bulk-upload-input')?.click()}
+          >
+            <Upload className="w-10 h-10 text-muted-foreground mb-4" />
+            <p className="text-sm font-medium text-foreground">Click to upload or drag and drop</p>
+            <p className="text-xs text-muted-foreground mt-1">Excel files up to 10MB</p>
+            <input 
+              id="bulk-upload-input" 
+              type="file" 
+              accept=".xlsx, .xls" 
+              className="hidden" 
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = async (evt) => {
+                  try {
+                    const bstr = evt.target?.result;
+                    const wb = XLSX.read(bstr, { type: 'binary' });
+                    const wsname = wb.SheetNames[0];
+                    const ws = wb.Sheets[wsname];
+                    const data = XLSX.utils.sheet_to_json(ws);
+                    
+                    const { bulkUpload } = useStudentManagementStore.getState();
+                    const results = await bulkUpload(data as any);
+                    
+                    if (results) {
+                      setIsBulkUploadDialogOpen(false);
+                    }
+                  } catch (err) {
+                    console.error("Error parsing Excel:", err);
+                  }
+                };
+                reader.readAsBinaryString(file);
+              }}
+            />
+          </div>
+
+          <div className="flex justify-between items-center text-xs text-muted-foreground">
+            <p>Download Template:</p>
+            <Button 
+              variant="link" 
+              className="h-auto p-0 text-blue-600 font-semibold"
+              onClick={() => {
+                const headers = ["email", "firstName", "lastName", "phone", "dob", "gender", "department", "year", "academicYear", "rollNo", "cgpa", "arrearCount", "familyIncome"];
+                const ws = XLSX.utils.aoa_to_sheet([headers]);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Students Template");
+                XLSX.writeFile(wb, "student_upload_template.xlsx");
+              }}
+            >
+              Download Excel Template
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex justify-end pt-2">
+          <Button variant="outline" onClick={() => setIsBulkUploadDialogOpen(false)}>
+            Close
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
   </>
   );
 }

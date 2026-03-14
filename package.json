@@ -56,6 +56,7 @@
     "tailwind-merge": "^3.3.1",
     "three": "^0.179.1",
     "three-globe": "^2.44.0",
+    "xlsx": "^0.18.5",
     "zustand": "^5.0.8"
   },
   "devDependencies": {

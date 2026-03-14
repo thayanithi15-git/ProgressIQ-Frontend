@@ -111,6 +111,7 @@ interface StudentManagementState {
   createStudent: (data: CreateStudentPayload) => Promise<Student | null>;
   updateStudent: (studentId: string, data: UpdateStudentPayload) => Promise<void>;
   deleteStudent: (studentId: string) => Promise<void>;
+  bulkUpload: (students: Partial<CreateStudentPayload>[]) => Promise<{ success: number; failed: number; errors: any[] } | null>;
 
   // State Management
   setCurrentPage: (page: number) => void;
@@ -287,6 +288,32 @@ export const useStudentManagementStore = create<StudentManagementState>(
         set({ isLoading: false });
         const errorMessage = error.response?.data?.message || 'Failed to delete student';
         showNotification(errorMessage, 'error');
+      }
+    },
+
+    bulkUpload: async (studentsArray: Partial<CreateStudentPayload>[]) => {
+      const { showNotification } = useNotificationStore.getState();
+      try {
+        set({ isLoading: true });
+        const response = await api.post('/api/admin/students/bulk', { students: studentsArray });
+        set({ isLoading: false });
+        
+        const { results } = response.data;
+        if (results.success > 0) {
+          showNotification(`Successfully uploaded ${results.success} students!`, 'success');
+        }
+        if (results.failed > 0) {
+          showNotification(`Failed to upload ${results.failed} students ${results.failed > 0 ? '(check errors)' : ''}.`, results.failed > 0 ? 'error' : 'success');
+        }
+        
+        const state = get();
+        state.fetchStudents(state.currentPage, state.pageSize, state.filters);
+        return results;
+      } catch (error: any) {
+        set({ isLoading: false });
+        const errorMessage = error.response?.data?.message || 'Failed to bulk upload students';
+        showNotification(errorMessage, 'error');
+        return null;
       }
     },
 
