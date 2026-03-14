@@ -80,6 +80,11 @@ export default function StudentListPage() {
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [rewardMinPoints, setRewardMinPoints] = useState("");
   const [rewardMaxPoints, setRewardMaxPoints] = useState("");
+  const [rollNoFilter, setRollNoFilter] = useState("");
+  const [familyIncomeFilter, setFamilyIncomeFilter] = useState("");
+  const [minCgpaFilter, setMinCgpaFilter] = useState("");
+  const [maxArrearsFilter, setMaxArrearsFilter] = useState("");
+  const [goodAtFilter, setGoodAtFilter] = useState("");
   const [sortBy, setSortBy] = useState<'name' | 'points' | 'created' | 'department'>('name');
 
   const [createFormData, setCreateFormData] = useState<Partial<CreateStudentPayload>>({
@@ -152,10 +157,17 @@ export default function StudentListPage() {
     }
     if (rewardMaxPoints) {
       newFilters.maxRewardPoints = parseInt(rewardMaxPoints);
+    } else {
+      newFilters.maxRewardPoints = undefined;
     }
-    if (sortBy) {
-      newFilters.sortBy = sortBy;
-    }
+
+    newFilters.rollNo = rollNoFilter || undefined;
+    newFilters.familyIncome = familyIncomeFilter || undefined;
+    newFilters.minCgpa = minCgpaFilter ? parseFloat(minCgpaFilter) : undefined;
+    newFilters.maxArrears = maxArrearsFilter ? parseInt(maxArrearsFilter) : undefined;
+    newFilters.goodAt = goodAtFilter || undefined;
+    newFilters.sortBy = sortBy;
+
     setFilters(newFilters);
   };
 
@@ -752,6 +764,64 @@ export default function StudentListPage() {
                         <SelectItem value="department">Department</SelectItem>
                       </SelectContent>
                     </Select>
+                  </div>
+
+                  {/* Roll No */}
+                  <div>
+                    <Label className="text-sm font-semibold text-foreground">Roll No</Label>
+                    <Input
+                      placeholder="e.g. 21CS001"
+                      className="mt-2 h-10 border-border"
+                      value={rollNoFilter}
+                      onChange={(e) => setRollNoFilter(e.target.value)}
+                    />
+                  </div>
+
+                  {/* CGPA */}
+                  <div>
+                    <Label className="text-sm font-semibold text-foreground">Min CGPA</Label>
+                    <Input
+                      type="number"
+                      step="0.01"
+                      placeholder="8.5"
+                      className="mt-2 h-10 border-border"
+                      value={minCgpaFilter}
+                      onChange={(e) => setMinCgpaFilter(e.target.value)}
+                    />
+                  </div>
+
+                  {/* Arrears */}
+                  <div>
+                    <Label className="text-sm font-semibold text-foreground">Max Arrears</Label>
+                    <Input
+                      type="number"
+                      placeholder="0"
+                      className="mt-2 h-10 border-border"
+                      value={maxArrearsFilter}
+                      onChange={(e) => setMaxArrearsFilter(e.target.value)}
+                    />
+                  </div>
+
+                  {/* Family Income */}
+                  <div>
+                    <Label className="text-sm font-semibold text-foreground">Family Income</Label>
+                    <Input
+                      placeholder="e.g. < 5L"
+                      className="mt-2 h-10 border-border"
+                      value={familyIncomeFilter}
+                      onChange={(e) => setFamilyIncomeFilter(e.target.value)}
+                    />
+                  </div>
+
+                  {/* Skills / Good At */}
+                  <div>
+                    <Label className="text-sm font-semibold text-foreground">Skills (Good At)</Label>
+                    <Input
+                      placeholder="e.g. Java, Python"
+                      className="mt-2 h-10 border-border"
+                      value={goodAtFilter}
+                      onChange={(e) => setGoodAtFilter(e.target.value)}
+                    />
                   </div>
 
                   {/* Page Size */}

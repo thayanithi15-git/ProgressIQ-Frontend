@@ -88,6 +88,11 @@ export interface StudentFilters {
   minRewardPoints?: number;
   maxRewardPoints?: number;
   sortBy?: 'name' | 'points' | 'created' | 'department';
+  rollNo?: string;
+  familyIncome?: string;
+  minCgpa?: number;
+  maxArrears?: number;
+  goodAt?: string;
 }
 
 interface StudentManagementState {
@@ -169,6 +174,21 @@ export const useStudentManagementStore = create<StudentManagementState>(
         }
         if (filters?.sortBy) {
           params.append('sortBy', filters.sortBy);
+        }
+        if (filters?.rollNo) {
+          params.append('rollNo', filters.rollNo);
+        }
+        if (filters?.familyIncome) {
+          params.append('familyIncome', filters.familyIncome);
+        }
+        if (filters?.minCgpa !== undefined) {
+          params.append('minCgpa', filters.minCgpa.toString());
+        }
+        if (filters?.maxArrears !== undefined) {
+          params.append('maxArrears', filters.maxArrears.toString());
+        }
+        if (filters?.goodAt) {
+          params.append('goodAt', filters.goodAt);
         }
 
         const response = await api.get(`/api/admin/students?${params.toString()}`);

@@ -202,16 +202,26 @@ export default function AssignedStudentsPage() {
     setPage,
     resetFilters,
     closeProfileModal,
+    rollNo,
+    familyIncome,
+    minCgpa,
+    maxArrears,
+    goodAt,
+    setRollNo,
+    setFamilyIncome,
+    setMinCgpa,
+    setMaxArrears,
+    setGoodAt,
   } = useAssignedStudentsStore();
 
   const [tempSearch, setTempSearch] = useState(searchQuery);
 
   useEffect(() => {
-  fetchStudents();
-}, [searchQuery, department, year, status, minPoints, maxPoints, page, sortBy, sortOrder]);
+    fetchStudents();
+  }, [searchQuery, department, year, status, minPoints, maxPoints, page, sortBy, sortOrder, rollNo, familyIncome, minCgpa, maxArrears, goodAt]);
 
   const hasActiveFilters =
-    searchQuery || department || year || status || minPoints !== null || maxPoints !== null;
+    searchQuery || department || year || status || minPoints !== null || maxPoints !== null || rollNo || familyIncome || minCgpa !== null || maxArrears !== null || goodAt;
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTempSearch(e.target.value);
@@ -319,13 +329,53 @@ export default function AssignedStudentsPage() {
                   className="font-poppins"
                 />
 
+                <Input
+                  placeholder="Roll No"
+                  value={rollNo}
+                  onChange={(e) => setRollNo(e.target.value)}
+                  className="font-poppins"
+                />
+
+                <Input
+                  type="number"
+                  step="0.01"
+                  placeholder="Min CGPA"
+                  value={minCgpa ?? ''}
+                  onChange={(e) => setMinCgpa(e.target.value ? Number(e.target.value) : null)}
+                  className="font-poppins"
+                />
+
+                <Input
+                  type="number"
+                  placeholder="Max Arrears"
+                  value={maxArrears ?? ''}
+                  onChange={(e) => setMaxArrears(e.target.value ? Number(e.target.value) : null)}
+                  className="font-poppins"
+                />
+
+                <Input
+                  placeholder="Family Income"
+                  value={familyIncome}
+                  onChange={(e) => setFamilyIncome(e.target.value)}
+                  className="font-poppins"
+                />
+
+                <Input
+                  placeholder="Skills (Good At)"
+                  value={goodAt}
+                  onChange={(e) => setGoodAt(e.target.value)}
+                  className="font-poppins"
+                />
+
                 {hasActiveFilters && (
-                  <Button variant="outline" onClick={resetFilters} className="gap-2 font-poppins">
-                    <X className="w-4 h-4" />
-                    Reset
-                  </Button>
+                  <div className="flex items-end">
+                    <Button variant="outline" onClick={resetFilters} className="gap-2 font-poppins w-full">
+                      <X className="w-4 h-4" />
+                      Reset
+                    </Button>
+                  </div>
                 )}
-              </div>
+               </div>
             </CardContent>
           </Card>
         </motion.div>

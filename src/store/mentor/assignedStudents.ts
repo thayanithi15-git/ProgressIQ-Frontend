@@ -80,6 +80,11 @@ interface AssignedStudentsState {
   maxPoints: number | null;
   sortBy: 'name' | 'points' | 'department' | 'year';
   sortOrder: 'asc' | 'desc';
+  rollNo: string;
+  familyIncome: string;
+  minCgpa: number | null;
+  maxArrears: number | null;
+  goodAt: string;
 
   // Pagination
   page: number;
@@ -102,6 +107,11 @@ interface AssignedStudentsState {
   setMaxPoints: (max: number | null) => void;
   setSortBy: (by: 'name' | 'points' | 'department' | 'year') => void;
   setSortOrder: (order: 'asc' | 'desc') => void;
+  setRollNo: (rollNo: string) => void;
+  setFamilyIncome: (income: string) => void;
+  setMinCgpa: (cgpa: number | null) => void;
+  setMaxArrears: (arrears: number | null) => void;
+  setGoodAt: (skills: string) => void;
   setPage: (page: number) => void;
   resetFilters: () => void;
   closeProfileModal: () => void;
@@ -120,6 +130,11 @@ export const useAssignedStudentsStore = create<AssignedStudentsState>((set, get)
   maxPoints: null,
   sortBy: 'name',
   sortOrder: 'asc',
+  rollNo: '',
+  familyIncome: '',
+  minCgpa: null,
+  maxArrears: null,
+  goodAt: '',
 
   page: 1,
   limit: 20,
@@ -150,6 +165,11 @@ export const useAssignedStudentsStore = create<AssignedStudentsState>((set, get)
         ...(state.maxPoints !== null && { maxPoints: state.maxPoints.toString() }),
         sortBy: state.sortBy,
         sortOrder: state.sortOrder,
+        ...(state.rollNo && { rollNo: state.rollNo }),
+        ...(state.familyIncome && { familyIncome: state.familyIncome }),
+        ...(state.minCgpa !== null && { minCgpa: state.minCgpa.toString() }),
+        ...(state.maxArrears !== null && { maxArrears: state.maxArrears.toString() }),
+        ...(state.goodAt && { goodAt: state.goodAt }),
       });
 
       const response = await api.get(`/api/mentor/assigned-students?${params}`);
@@ -236,6 +256,31 @@ export const useAssignedStudentsStore = create<AssignedStudentsState>((set, get)
     get().fetchStudents();
   },
 
+  setRollNo: (rollNo: string) => {
+    set({ rollNo, page: 1 });
+    get().fetchStudents();
+  },
+
+  setFamilyIncome: (familyIncome: string) => {
+    set({ familyIncome, page: 1 });
+    get().fetchStudents();
+  },
+
+  setMinCgpa: (minCgpa: number | null) => {
+    set({ minCgpa, page: 1 });
+    get().fetchStudents();
+  },
+
+  setMaxArrears: (maxArrears: number | null) => {
+    set({ maxArrears, page: 1 });
+    get().fetchStudents();
+  },
+
+  setGoodAt: (goodAt: string) => {
+    set({ goodAt, page: 1 });
+    get().fetchStudents();
+  },
+
   setPage: (page: number) => {
     set({ page });
     get().fetchStudents();
@@ -254,6 +299,11 @@ export const useAssignedStudentsStore = create<AssignedStudentsState>((set, get)
       maxPoints: null,
       sortBy: 'name',
       sortOrder: 'asc',
+      rollNo: '',
+      familyIncome: '',
+      minCgpa: null,
+      maxArrears: null,
+      goodAt: '',
       page: 1,
     });
     get().fetchStudents();
