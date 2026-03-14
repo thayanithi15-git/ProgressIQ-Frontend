@@ -22,12 +22,17 @@ export interface PersonalInfo {
 export interface FamilyInfo {
   parentName: string;
   parentPhone: string;
+  familyIncome: string;
 }
 
 export interface AcademicInfo {
   department: string;
   year: string;
   academicYear: string;
+  rollNo: string;
+  cgpa: number;
+  arrearCount: number;
+  goodAt: string[];
 }
 
 export interface AchievementInfo {
@@ -73,6 +78,11 @@ export interface UpdateProfilePayload {
   parentName?: string;
   parentPhone?: string;
   place?: string;
+  familyIncome?: string;
+  rollNo?: string;
+  cgpa?: number;
+  arrearCount?: number;
+  goodAt?: string[];
 }
 
 // ==========================================
@@ -204,6 +214,11 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
         place:       profile.personalInfo.place ?? '',
         parentName:  profile.familyInfo.parentName ?? '',
         parentPhone: profile.familyInfo.parentPhone ?? '',
+        familyIncome: profile.familyInfo.familyIncome ?? '',
+        rollNo:      profile.academicInfo.rollNo ?? '',
+        cgpa:        profile.academicInfo.cgpa ?? 0,
+        arrearCount: profile.academicInfo.arrearCount ?? 0,
+        goodAt:      profile.academicInfo.goodAt ?? [],
       },
     });
   },

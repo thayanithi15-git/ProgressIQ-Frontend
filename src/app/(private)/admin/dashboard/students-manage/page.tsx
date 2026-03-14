@@ -4,23 +4,8 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
-  Users,
-  Plus,
-  Edit,
-  Trash2,
-  Search,
-  Eye,
-  ChevronLeft,
-  ChevronRight,
-  AlertCircle,
-  Filter,
-  X,
-  Github,
-  Linkedin,
-  Code,
-  Terminal,
-  Link2,
-  Globe,
+  Search, Filter, Plus, Edit, Trash2, ArrowUpDown, MoreHorizontal, ChevronLeft, ChevronRight, X, UserPlus, Download, 
+  MapPin, Phone, Mail, Calendar, GraduationCap, Briefcase, Award, CheckSquare, Zap, AlertCircle, Linkedin, Github, Code, Terminal, Link2, Globe, Eye, Users
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -111,6 +96,11 @@ export default function StudentListPage() {
     parentName: "",
     parentPhone: "",
     academicYear: "",
+    rollNo: "",
+    cgpa: 0,
+    arrearCount: 0,
+    familyIncome: "",
+    goodAt: [],
   });
 
   const [editFormData, setEditFormData] = useState<UpdateStudentPayload>({});
@@ -196,6 +186,11 @@ export default function StudentListPage() {
         parentName: createFormData.parentName || "",
         parentPhone: createFormData.parentPhone || "",
         academicYear: createFormData.academicYear || "",
+        rollNo: createFormData.rollNo || "",
+        cgpa: createFormData.cgpa || 0,
+        arrearCount: createFormData.arrearCount || 0,
+        familyIncome: createFormData.familyIncome || "",
+        goodAt: createFormData.goodAt || [],
       };
       await createStudent(payload);
       resetCreateForm();
@@ -218,6 +213,12 @@ export default function StudentListPage() {
         place: student.place,
         department: student.department,
         year: student.year,
+        academicYear: student.academicYear,
+        rollNo: student.rollNo,
+        cgpa: student.cgpa,
+        arrearCount: student.arrearCount,
+        familyIncome: student.familyIncome,
+        goodAt: student.goodAt,
         status: student.status,
         rewardPoints: student.rewardPoints,
       });
@@ -260,6 +261,11 @@ export default function StudentListPage() {
       parentName: "",
       parentPhone: "",
       academicYear: "",
+      rollNo: "",
+      cgpa: 0,
+      arrearCount: 0,
+      familyIncome: "",
+      goodAt: [],
     });
   };
 
@@ -479,6 +485,74 @@ export default function StudentListPage() {
                   }
                 />
               </div>
+            </div>
+
+            {/* Roll No & Family Income */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm font-semibold text-foreground">Roll No *</Label>
+                <Input
+                  placeholder="21CS001"
+                  className="mt-2 border-border"
+                  value={createFormData.rollNo || ""}
+                  onChange={(e) =>
+                    setCreateFormData({ ...createFormData, rollNo: e.target.value })
+                  }
+                />
+              </div>
+              <div>
+                <Label className="text-sm font-semibold text-foreground">Family Income</Label>
+                <Input
+                  placeholder="e.g. 5,00,000"
+                  className="mt-2 border-border"
+                  value={createFormData.familyIncome || ""}
+                  onChange={(e) =>
+                    setCreateFormData({ ...createFormData, familyIncome: e.target.value })
+                  }
+                />
+              </div>
+            </div>
+
+            {/* CGPA & Arrear Count */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm font-semibold text-foreground">Current CGPA</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  placeholder="8.5"
+                  className="mt-2 border-border"
+                  value={createFormData.cgpa || ""}
+                  onChange={(e) =>
+                    setCreateFormData({ ...createFormData, cgpa: parseFloat(e.target.value) || 0 })
+                  }
+                />
+              </div>
+              <div>
+                <Label className="text-sm font-semibold text-foreground">Arrear Count</Label>
+                <Input
+                  type="number"
+                  placeholder="0"
+                  className="mt-2 border-border"
+                  value={createFormData.arrearCount || ""}
+                  onChange={(e) =>
+                    setCreateFormData({ ...createFormData, arrearCount: parseInt(e.target.value) || 0 })
+                  }
+                />
+              </div>
+            </div>
+
+            {/* Good At */}
+            <div>
+              <Label className="text-sm font-semibold text-foreground">Good At (comma separated)</Label>
+              <Input
+                placeholder="Fullstack, AI/ML, DSA"
+                className="mt-2 border-border"
+                value={createFormData.goodAt?.join(", ") || ""}
+                onChange={(e) =>
+                  setCreateFormData({ ...createFormData, goodAt: e.target.value.split(",").map(s => s.trim()).filter(s => s) })
+                }
+              />
             </div>
 
             {/* Action Buttons */}
@@ -748,6 +822,7 @@ export default function StudentListPage() {
                   <TableHeader>
                     <TableRow className="border-b border-border bg-muted/50">
                       <TableHead className="text-foreground font-bold pl-10">ID</TableHead>
+                      <TableHead className="text-foreground font-bold">Roll No</TableHead>
                       <TableHead className="text-foreground font-bold">Name</TableHead>
                       <TableHead className="text-foreground font-bold">Email</TableHead>
                       <TableHead className="text-foreground font-bold">Department</TableHead>
@@ -773,6 +848,9 @@ export default function StudentListPage() {
                         <TableCell className="text-foreground font-medium pl-10">
                           {index + 1}
                         </TableCell>
+                        <TableCell className="text-foreground font-medium pr-4">
+                          {student.rollNo}
+                        </TableCell>
                         <TableCell className="text-foreground font-medium">
                           {student.firstName} {student.lastName}
                         </TableCell>
@@ -781,8 +859,11 @@ export default function StudentListPage() {
                         </TableCell>
                         <TableCell className="text-foreground">{student.department}</TableCell>
                         <TableCell className="text-foreground">{student.year}</TableCell>
-                        <TableCell className="text-foreground font-semibold text-blue-600">
-                          {student.rewardPoints}
+                        <TableCell className="text-foreground font-semibold">
+                          <div className="flex items-center gap-1.5 text-amber-600">
+                            <Zap className="w-4 h-4 fill-amber-600" />
+                            {student.rewardPoints}
+                          </div>
                         </TableCell>
                         <TableCell>
                           <span
@@ -1040,6 +1121,66 @@ export default function StudentListPage() {
                   }
                 />
               </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm font-semibold text-foreground">Roll No</Label>
+                <Input
+                  className="mt-2 border-border"
+                  value={(editFormData as any).rollNo || ""}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, rollNo: e.target.value })
+                  }
+                />
+              </div>
+              <div>
+                <Label className="text-sm font-semibold text-foreground">Family Income</Label>
+                <Input
+                  className="mt-2 border-border"
+                  value={(editFormData as any).familyIncome || ""}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, familyIncome: e.target.value })
+                  }
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm font-semibold text-foreground">CGPA</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  className="mt-2 border-border"
+                  value={(editFormData as any).cgpa || 0}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, cgpa: parseFloat(e.target.value) || 0 })
+                  }
+                />
+              </div>
+              <div>
+                <Label className="text-sm font-semibold text-foreground">Arrear Count</Label>
+                <Input
+                  type="number"
+                  className="mt-2 border-border"
+                  value={(editFormData as any).arrearCount || 0}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, arrearCount: parseInt(e.target.value) || 0 })
+                  }
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label className="text-sm font-semibold text-foreground">Good At (comma separated)</Label>
+              <Input
+                className="mt-2 border-border"
+                value={(editFormData as any).goodAt?.join(", ") || ""}
+                onChange={(e) =>
+                  setEditFormData({ ...editFormData, goodAt: e.target.value.split(",").map(s => s.trim()).filter(s => s) })
+                }
+              />
             </div>
 
             <div>

@@ -18,6 +18,19 @@ export interface Student {
   place: string;
   department: string;
   year: string;
+  academicYear: string;
+  rollNo: string;
+  cgpa: number;
+  arrearCount: number;
+  familyIncome: string;
+  goodAt: string[];
+  socials?: {
+    github?: string;
+    linkedin?: string;
+    leetcode?: string;
+    codechef?: string;
+    portfolio?: string;
+  };
   rewardPoints: number;
   status: string;
   createdAt: string;
@@ -37,6 +50,11 @@ export interface CreateStudentPayload {
   department: string;
   year: string;
   academicYear: string;
+  rollNo: string;
+  cgpa: number;
+  arrearCount: number;
+  familyIncome: string;
+  goodAt: string[];
 }
 
 export interface UpdateStudentPayload {
@@ -51,6 +69,12 @@ export interface UpdateStudentPayload {
   place?: string;
   department?: string;
   year?: string;
+  academicYear?: string;
+  rollNo?: string;
+  cgpa?: number;
+  arrearCount?: number;
+  familyIncome?: string;
+  goodAt?: string[];
   status?: string;
   rewardPoints?: number;
 }

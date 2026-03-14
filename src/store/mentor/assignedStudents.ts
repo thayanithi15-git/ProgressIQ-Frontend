@@ -17,6 +17,18 @@ export interface StudentListItem {
   tasksCompleted: number;
   certificationsCompleted: number;
   internshipsCompleted: number;
+  rollNo: string;
+  cgpa: number;
+  arrearCount: number;
+  familyIncome: string;
+  goodAt: string[];
+  socials?: {
+    github?: string;
+    linkedin?: string;
+    leetcode?: string;
+    codechef?: string;
+    portfolio?: string;
+  };
   lastActive: string;
   status: 'Active' | 'Inactive';
 }
@@ -31,6 +43,18 @@ export interface StudentProfile {
   academicYear: string;
   phone: string;
   place: string;
+  rollNo: string;
+  cgpa: number;
+  arrearCount: number;
+  familyIncome: string;
+  goodAt: string[];
+  socials?: {
+    github?: string;
+    linkedin?: string;
+    leetcode?: string;
+    codechef?: string;
+    portfolio?: string;
+  };
   status: string;
 }
 

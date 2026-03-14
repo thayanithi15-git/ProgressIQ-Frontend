@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Search, Filter, ChevronLeft, ChevronRight, Eye, ArrowUpDown, X, Download, Github, Linkedin, Code, Terminal, Link2, Globe } from 'lucide-react';
+import { Search, Filter, ChevronLeft, ChevronRight, Eye, ArrowUpDown, X, Download, Github, Linkedin, Code, Terminal, Link2, Globe, Zap, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -67,7 +67,10 @@ const StudentProfileModal = ({ student, onClose }: any) => {
               </div>
             </div>
             <div className="text-right">
-              <p className="text-3xl font-bold text-blue-600 font-poppins">{stats.totalPoints}</p>
+              <p className="text-3xl font-bold text-amber-600 font-poppins flex items-center justify-end gap-2">
+                <Zap className="w-6 h-6 fill-amber-600" />
+                {stats.totalPoints}
+              </p>
               <p className="text-sm text-muted-foreground font-poppins">Total Points</p>
             </div>
           </div>
@@ -132,7 +135,35 @@ const StudentProfileModal = ({ student, onClose }: any) => {
                 <p className="text-sm text-muted-foreground mb-1 font-poppins">Academic Year</p>
                 <p className="font-medium font-poppins">{profile.academicYear || 'Not provided'}</p>
               </div>
+              <div>
+                <p className="text-sm text-muted-foreground mb-1 font-poppins">Roll No</p>
+                <p className="font-medium font-poppins uppercase">{profile.rollNo || 'N/A'}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground mb-1 font-poppins">CGPA</p>
+                <p className="font-bold font-poppins text-blue-600">{profile.cgpa || '0.00'}</p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground mb-1 font-poppins">Arrears</p>
+                <p className={`font-bold font-poppins ${profile.arrearCount > 0 ? 'text-rose-600' : 'text-emerald-600'}`}>
+                  {profile.arrearCount || '0'}
+                </p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground mb-1 font-poppins">Family Income</p>
+                <p className="font-medium font-poppins">{profile.familyIncome || 'Not specified'}</p>
+              </div>
             </div>
+            {profile.goodAt && profile.goodAt.length > 0 && (
+              <div className="mt-4 pt-4 border-t border-border">
+                <p className="text-sm text-muted-foreground mb-2 font-poppins">Good At</p>
+                <div className="flex flex-wrap gap-2">
+                  {profile.goodAt.map((skill: string, i: number) => (
+                    <Badge key={i} variant="secondary" className="font-poppins">{skill}</Badge>
+                  ))}
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </DialogContent>
@@ -398,8 +429,11 @@ export default function AssignedStudentsPage() {
                           </td>
                           <td className="px-6 py-4 font-poppins">{student.department}</td>
                           <td className="px-6 py-4 text-center font-poppins">{student.year}</td>
-                          <td className="px-6 py-4 text-right font-semibold text-blue-600 font-poppins">
-                            {student.points.toLocaleString()}
+                          <td className="px-6 py-4 text-right font-semibold">
+                            <div className="flex items-center justify-end gap-1.5 text-amber-600 font-poppins">
+                              <Zap className="w-4 h-4 fill-amber-600" />
+                              {student.points.toLocaleString()}
+                            </div>
                           </td>
                           <td className="px-6 py-4 text-center">
                             <Badge

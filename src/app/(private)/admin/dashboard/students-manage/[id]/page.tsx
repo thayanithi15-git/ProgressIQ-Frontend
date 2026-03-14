@@ -15,6 +15,7 @@ import {
   Calendar,
   User,
   AlertCircle,
+  Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -58,6 +59,12 @@ export default function StudentProfilePage() {
         place: currentStudent.place,
         department: currentStudent.department,
         year: currentStudent.year,
+        academicYear: currentStudent.academicYear,
+        rollNo: currentStudent.rollNo,
+        cgpa: currentStudent.cgpa,
+        arrearCount: currentStudent.arrearCount,
+        familyIncome: currentStudent.familyIncome,
+        goodAt: currentStudent.goodAt,
         status: currentStudent.status,
         rewardPoints: currentStudent.rewardPoints,
       });
@@ -176,8 +183,8 @@ export default function StudentProfilePage() {
                       >
                         {currentStudent.status}
                       </span>
-                      <span className="flex items-center gap-2 text-amber-600 font-bold text-lg">
-                        <Award className="w-5 h-5" />
+                      <span className="flex items-center gap-2 text-amber-600 font-bold text-xl">
+                        <Zap className="w-6 h-6 fill-amber-600" />
                         {currentStudent.rewardPoints} Points
                       </span>
                     </div>
@@ -262,8 +269,46 @@ export default function StudentProfilePage() {
                 {/* Year */}
                 <div>
                   <p className="text-muted-foreground text-sm font-semibold">Year</p>
-                  <p className="text-foreground font-medium mt-1">{currentStudent.year}</p>
+                  <p className="text-foreground font-medium mt-1">{currentStudent.year} Year</p>
                 </div>
+
+                {/* Roll No */}
+                <div>
+                  <p className="text-muted-foreground text-sm font-semibold">Roll Number</p>
+                  <p className="text-foreground font-medium mt-1 uppercase">
+                    {currentStudent.rollNo || "N/A"}
+                  </p>
+                </div>
+
+                {/* CGPA & Arrears */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-muted-foreground text-sm font-semibold">CGPA</p>
+                    <p className="text-foreground font-bold text-lg mt-1 text-blue-600">
+                      {currentStudent.cgpa || "0.00"}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground text-sm font-semibold">Arrears</p>
+                    <p className={`font-bold text-lg mt-1 ${currentStudent.arrearCount > 0 ? "text-rose-600" : "text-emerald-600"}`}>
+                      {currentStudent.arrearCount || "0"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Good At */}
+                {currentStudent.goodAt && currentStudent.goodAt.length > 0 && (
+                  <div>
+                    <p className="text-muted-foreground text-sm font-semibold mb-2">Areas of Expertise</p>
+                    <div className="flex flex-wrap gap-2">
+                      {currentStudent.goodAt.map((skill, idx) => (
+                        <span key={idx} className="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-semibold border border-slate-200">
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Student ID */}
                 <div>
@@ -314,6 +359,14 @@ export default function StudentProfilePage() {
                   <p className="text-muted-foreground text-sm font-semibold">Parent Phone</p>
                   <p className="text-foreground font-medium mt-1">
                     {currentStudent.parentPhone}
+                  </p>
+                </div>
+
+                {/* Family Income */}
+                <div>
+                  <p className="text-muted-foreground text-sm font-semibold">Family Income</p>
+                  <p className="text-foreground font-medium mt-1">
+                    {currentStudent.familyIncome || "Not specified"}
                   </p>
                 </div>
 
@@ -450,6 +503,66 @@ export default function StudentProfilePage() {
                   }
                 />
               </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm font-semibold text-foreground">Roll No</Label>
+                <Input
+                  className="mt-2 border-border"
+                  value={(editFormData as any).rollNo || ""}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, rollNo: e.target.value })
+                  }
+                />
+              </div>
+              <div>
+                <Label className="text-sm font-semibold text-foreground">Family Income</Label>
+                <Input
+                  className="mt-2 border-border"
+                  value={(editFormData as any).familyIncome || ""}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, familyIncome: e.target.value })
+                  }
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-sm font-semibold text-foreground">CGPA</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  className="mt-2 border-border"
+                  value={(editFormData as any).cgpa || 0}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, cgpa: parseFloat(e.target.value) || 0 })
+                  }
+                />
+              </div>
+              <div>
+                <Label className="text-sm font-semibold text-foreground">Arrear Count</Label>
+                <Input
+                  type="number"
+                  className="mt-2 border-border"
+                  value={(editFormData as any).arrearCount || 0}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, arrearCount: parseInt(e.target.value) || 0 })
+                  }
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label className="text-sm font-semibold text-foreground">Good At (comma separated)</Label>
+              <Input
+                className="mt-2 border-border"
+                value={(editFormData as any).goodAt?.join(", ") || ""}
+                onChange={(e) =>
+                  setEditFormData({ ...editFormData, goodAt: e.target.value.split(",").map(s => s.trim()).filter(s => s) })
+                }
+              />
             </div>
 
             {/* Parent Fields */}

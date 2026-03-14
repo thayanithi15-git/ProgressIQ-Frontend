@@ -5,9 +5,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   User, Mail, Phone, MapPin, Calendar, BookOpen, Award,
   Building2, Edit2, Save, X, Loader2, CheckCircle,
-  Star, GraduationCap, UserCheck, Heart, Shield,
+  Star, GraduationCap, UserCheck, Heart, Shield, AlertCircle,
   Briefcase, Clock, Hash, ChevronRight,
-  Github, Linkedin, Link2, Code, Terminal, Globe
+  Github, Linkedin, Link2, Code, Terminal, Globe, Zap
 } from "lucide-react";
 import { useProfileStore, UpdateProfilePayload, SocialLinks } from "@/store/student/profile";
 import Header from "@/components/layout/header";
@@ -236,7 +236,7 @@ const ProfileHero = ({ profile, onEdit }: any) => {
         {/* Stats bar */}
         <div className="stats-row-p" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12, marginTop: 24 }}>
           {[
-            { label: "Reward Points", value: ach.rewardPoints.toLocaleString(), icon: "⭐", color: C.amber },
+            { label: "Reward Points", value: ach.rewardPoints.toLocaleString(), icon: <Zap size={14} fill={C.amber} />, color: C.amber },
             { label: "Department",    value: ai.department,                      icon: "🏛️", color: C.cyan },
             { label: "Year",          value: ai.year + " Year",                  icon: "📅", color: C.violet },
             { label: "Academic Year", value: ai.academicYear,                    icon: "🎓", color: C.emerald },
@@ -320,7 +320,28 @@ const EditModal = ({ isOpen, editForm, setField, onSave, onCancel, isUpdating }:
               <FormField label="Parent Phone">
                 <input className="edit-input" placeholder="e.g. 9876543210" value={editForm.parentPhone ?? ""} onChange={e => setField("parentPhone", e.target.value)} />
               </FormField>
+              <FormField label="Family Income">
+                <input className="edit-input" placeholder="e.g. 5,00,000 PA" value={editForm.familyIncome ?? ""} onChange={e => setField("familyIncome", e.target.value)} />
+              </FormField>
             </div>
+
+            {/* Academic Extras */}
+            <p style={{ fontSize: 11, fontWeight: 800, color: "var(--text-muted)", letterSpacing: ".06em", textTransform: "uppercase", margin: "4px 0 0" }}>Academic Details</p>
+            <div className="edit-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
+              <FormField label="Roll Number">
+                <input className="edit-input" placeholder="Roll No" value={editForm.rollNo ?? ""} onChange={e => setField("rollNo", e.target.value)} />
+              </FormField>
+              <FormField label="CGPA">
+                <input className="edit-input" type="number" step="0.01" value={editForm.cgpa ?? 0} onChange={e => setField("cgpa", parseFloat(e.target.value) || 0)} />
+              </FormField>
+              <FormField label="Arrear Count">
+                <input className="edit-input" type="number" value={editForm.arrearCount ?? 0} onChange={e => setField("arrearCount", parseInt(e.target.value) || 0)} />
+              </FormField>
+            </div>
+
+            <FormField label="Good At (comma separated)">
+              <input className="edit-input" placeholder="e.g. Fullstack, AI, DSA" value={editForm.goodAt?.join(", ") || ""} onChange={e => setField("goodAt", e.target.value.split(",").map(sh => sh.trim()).filter(sh => sh))} />
+            </FormField>
 
             {/* Actions */}
             <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", paddingTop: 6, borderTop: "1px solid var(--divider)" }}>
@@ -488,7 +509,12 @@ export default function ProfilePage() {
                 <InfoRow icon={Building2}  label="Department"    value={ai.department}  color={C.violet} />
                 <InfoRow icon={BookOpen}   label="Current Year"  value={ai.year}        color={C.blue} />
                 <InfoRow icon={Calendar}   label="Academic Year" value={ai.academicYear} color={C.cyan} />
-                <InfoRow icon={Star}       label="Reward Points"
+                <InfoRow icon={Hash}       label="Roll Number"   value={ai.rollNo}      color={C.slate} />
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                  <InfoRow icon={Star}       label="CGPA"          value={ai.cgpa || "0.00"} color={C.blue} />
+                  <InfoRow icon={AlertCircle} label="Arrears"      value={ai.arrearCount || "0"} color={ai.arrearCount > 0 ? C.rose : C.emerald} />
+                </div>
+                <InfoRow icon={Zap}        label="Reward Points"
                   value={
                     <span style={{ fontSize: 16, fontWeight: 900, background: `linear-gradient(135deg,${C.amber},${C.rose})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
                       {ach.rewardPoints.toLocaleString()} pts
@@ -497,6 +523,21 @@ export default function ProfilePage() {
                   color={C.amber}
                 />
               </SectionCard>
+
+              {/* ── Good At */}
+              {ai.goodAt && ai.goodAt.length > 0 && (
+                <div style={{ marginTop: 18 }}>
+                  <SectionCard title="Areas of Expertise" icon={CheckCircle} color={C.emerald} delay={0.10}>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8, paddingTop: 10 }}>
+                      {ai.goodAt.map((skill: string, idx: number) => (
+                        <span key={idx} style={{ fontSize: 11, fontWeight: 700, padding: "5px 12px", borderRadius: 20, background: "var(--body-bg)", border: "1px solid var(--card-border)", color: "var(--text-primary)" }}>
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
+                  </SectionCard>
+                </div>
+              )}
 
               {/* ── Social Profiles */}
               <div style={{ marginTop: 18 }}>
@@ -525,6 +566,7 @@ export default function ProfilePage() {
             <SectionCard title="Family Information" icon={Heart} color={C.pink} delay={0.12}>
               <InfoRow icon={User}  label="Parent / Guardian" value={fi.parentName}  color={C.pink} />
               <InfoRow icon={Phone} label="Parent Phone"      value={fi.parentPhone} color={C.rose} />
+              <InfoRow icon={Award} label="Family Income"     value={fi.familyIncome} color={C.amber} />
             </SectionCard>
 
             {/* ── Account Info */}
