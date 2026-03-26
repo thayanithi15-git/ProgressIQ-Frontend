@@ -97,9 +97,9 @@ export default function AdminLoginPage() {
                   <Image
                     src={"/progress_iq.png"}
                     alt="Progress IQ Logo"
-                    width={48}
-                    height={48}
-                    className="w-12 h-12 brightness invert"
+                    width={60}
+                    height={60}
+                    className="w-20 h-20"
                   />
                   <div>
                     <h1 className="text-2xl font-black tracking-tight font-poppins">Progress IQ</h1>
@@ -108,7 +108,7 @@ export default function AdminLoginPage() {
                 </div>
 
                 <div className="flex justify-center mb-2 mt-3 py-2">
-                 <div className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-green-50 border border-blue-100">
+                  <div className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-green-50 border border-blue-100">
                     {/* <Sparkles className="h-3.5 w-3.5 text-blue-600 mr-1.5" /> */}
                     <span className="text-xs font-bold text-green-700 uppercase tracking-wider">Admin Access</span>
                   </div>
@@ -254,9 +254,9 @@ export default function AdminLoginPage() {
                 <Image
                   src={"/progress_iq.png"}
                   alt="Progress IQ Logo"
-                  width={48}
-                  height={48}
-                  className="w-12 h-12 brightness-0 invert"
+                  width={60}
+                  height={60}
+                  className="w-17 h-17 rounded-xl"
                 />
                 <div>
                   <h1 className="text-2xl font-black tracking-tight font-medium font-poppins">Progress IQ</h1>

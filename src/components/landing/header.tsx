@@ -31,13 +31,13 @@ export default function HeaderSection() {
     >
       <nav className="container mx-auto px-6">
         <div className="flex items-center justify-between h-20">
-          <div className="flex items-center space-x-3 group cursor-pointer">
+          <div className="flex items-center space-x-6 group cursor-pointer">
             <Image
-              src="/progress_iq.png"
+              src={"/progress_iq.png"}
               alt="Progress IQ Logo"
-              width={40}
-              height={40}
-              className="w-10 h-10"
+              width={60}
+              height={60}
+              className="w-15 h-15 rounded-xl"
             />
             <div>
               <span className="text-2xl font-bold bg-gradient-to-r from-primary via-primary/70 to-primary bg-clip-text text-transparent">

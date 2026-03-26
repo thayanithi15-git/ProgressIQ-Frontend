@@ -356,9 +356,9 @@ export default function LandingPage() {
                 <Image
                   src={"/progress_iq.png"}
                   alt="Progress IQ Logo"
-                  width={40}
-                  height={40}
-                  className="w-10 h-10"
+                  width={60}
+                  height={60}
+                  className="w-17 h-17 rounded-xl"
                 />
                 <span className="font-bold text-foreground">Progress IQ</span>
               </div>

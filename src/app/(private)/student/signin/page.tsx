@@ -98,9 +98,9 @@ export default function StudentLoginPage() {
                   <Image
                     src={"/progress_iq.png"}
                     alt="Progress IQ Logo"
-                    width={48}
-                    height={48}
-                    className="w-12 h-12 brightness invert"
+                    width={60}
+                    height={60}
+                    className="w-20 h-20"
                   />
                   <div>
                     <h1 className="text-2xl font-black tracking-tight">Progress IQ</h1>
@@ -254,9 +254,9 @@ export default function StudentLoginPage() {
                 <Image
                   src={"/progress_iq.png"}
                   alt="Progress IQ Logo"
-                  width={48}
-                  height={48}
-                  className="w-12 h-12 brightness-0 invert"
+                  width={60}
+                  height={60}
+                  className="w-17 h-17 rounded-xl"
                 />
                 <div>
                   <h1 className="text-2xl font-black tracking-tight">Progress IQ</h1>

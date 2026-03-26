@@ -76,7 +76,7 @@ const Sidebar: React.FC = () => {
     const handleLogout = () => {
         // Show logout notification
         showNotification('You have been successfully logged out', 'success');
-        
+
         // Clear all auth and app-related localStorage items
         // localStorage.removeItem('credxUser');
         // localStorage.removeItem('role');
@@ -85,10 +85,10 @@ const Sidebar: React.FC = () => {
         // localStorage.removeItem('user-data');
 
         localStorage.clear();
-        
+
         // Clear session state
         setSessionData(null);
-        
+
         // Navigate to landing page after a brief delay
         setTimeout(() => {
             router.push('/');
@@ -247,18 +247,18 @@ const Sidebar: React.FC = () => {
                     <div
                         className="flex-shrink-0 rounded-lg overflow-hidden flex items-center justify-center"
                         style={{
-                            width: 38,
-                            height: 38,
+                            width: 42,
+                            height: 42,
                             background: 'var(--college-gold)',
                             boxShadow: '0 2px 8px var(--college-gold-dark)/40',
                         }}
                     >
                         <Image
-                            src="/progress_iq.png"
+                            src={"/progress_iq.png"}
                             alt="Progress IQ Logo"
-                            width={28}
-                            height={28}
-                            className="object-contain"
+                            width={60}
+                            height={60}
+                            className="w-13 h-13 rounded-xl"
                         />
                     </div>
 
@@ -286,7 +286,7 @@ const Sidebar: React.FC = () => {
                                         <span className="flex-1 text-gray-300 text-[11px] tracking-wide uppercase font-poppins">
                                             {/* // className="text-[9.5px] font-bold  tracking-wide  uppercase  font-poppins" */}
                                             {/* // style={{ color: 'var(--college-gold-dark)' }} */}
-                                        {/* > */}
+                                            {/* > */}
                                             {section.title}
                                         </span>
                                         <div
@@ -363,7 +363,7 @@ const Sidebar: React.FC = () => {
                                             <div
                                                 // variant="outline"
                                                 className={cn('text-[13px] text-white mt-1 px-0.5 py-0 rounded-sm font-semibold')}
-                                                // style={roleBadgeStyle}
+                                            // style={roleBadgeStyle}
                                             >
                                                 {displayRole}
                                             </div>
