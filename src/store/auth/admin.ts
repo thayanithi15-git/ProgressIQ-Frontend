@@ -15,6 +15,7 @@ interface AdminAuthState {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
+  googleLogin: (credential: string) => Promise<void>;
   logout: () => void;
   checkAuth: () => void;
 }
@@ -36,7 +37,7 @@ export const useAdminAuthStore = create<AdminAuthState>((set) => ({
         password,
       });
 
-      const { token, role, userId } = response.data;
+      const { token, role, userId, picture } = response.data;
 
       if (role !== 'ADMIN') {
         throw new Error('Unauthorized: Admin access only');
@@ -56,6 +57,7 @@ export const useAdminAuthStore = create<AdminAuthState>((set) => ({
             username: nameFromEmail,
             email,
             role,
+            picture,
             signedInAt: new Date().toISOString(),
           })
         );
@@ -81,6 +83,62 @@ export const useAdminAuthStore = create<AdminAuthState>((set) => ({
       const errorMessage = error.response?.data?.message || error.message || 'Login failed. Please try again.';
       showNotification(errorMessage, 'error');
       
+      throw error;
+    }
+  },
+
+  googleLogin: async (credential: string) => {
+    const { showNotification } = useNotificationStore.getState();
+    
+    try {
+      set({ isLoading: true });
+      showNotification('Signing in with Google...', 'pending');
+
+      const response = await api.post('/api/auth/google', {
+        credential
+      });
+
+      const { token, role, userId, picture, email, username } = response.data;
+
+      if (role !== 'ADMIN') {
+        throw new Error('Unauthorized: Admin access only');
+      }
+
+      setEncryptedItem('token', token);
+      setEncryptedItem('role', role);
+      setEncryptedItem('userId', userId);
+
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(
+          'credxUser',
+          JSON.stringify({
+            username,
+            email,
+            role,
+            picture,
+            signedInAt: new Date().toISOString(),
+          })
+        );
+      }
+
+      const adminUser: AdminUser = {
+        userId,
+        email,
+        role: 'ADMIN',
+        token,
+      };
+
+      set({
+        user: adminUser,
+        isAuthenticated: true,
+        isLoading: false,
+      });
+
+      showNotification('Google sign-in successful!', 'success');
+    } catch (error: any) {
+      set({ isLoading: false, user: null, isAuthenticated: false });
+      const errorMessage = error.response?.data?.message || error.message || 'Google sign-in failed.';
+      showNotification(errorMessage, 'error');
       throw error;
     }
   },

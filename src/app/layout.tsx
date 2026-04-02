@@ -8,6 +8,7 @@ import "./globals.css";
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Toaster } from "@/components/ui/sonner";
 import { cn } from "@/lib/utils";
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,22 +46,25 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "";
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
         className={cn(poppins.className, "antialiased min-h-screen bg-background")}
       >
-        {/* <GlobalNotification /> */}
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <ThemeInitializer />
-          <SearchProvider>{children}</SearchProvider>
-          <Toaster />
-        </ThemeProvider>
+        <GoogleOAuthProvider clientId={googleClientId}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <ThemeInitializer />
+            <SearchProvider>{children}</SearchProvider>
+            <Toaster />
+          </ThemeProvider>
+        </GoogleOAuthProvider>
       </body>
     </html>
   );

@@ -13,10 +13,11 @@ import { useAdminAuthStore } from "@/store/auth/admin";
 import { useThemeStore } from "@/store/layoutStore";
 import GlobalNotification from "@/components/notify/notification";
 import Banner from "@/assets/loginBanner.jpg";
+import { GoogleLogin } from "@react-oauth/google";
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const { login, isLoading, isAuthenticated, checkAuth } = useAdminAuthStore();
+  const { login, googleLogin, isLoading, isAuthenticated, checkAuth } = useAdminAuthStore();
   const { initializeTheme } = useThemeStore();
 
   const [form, setForm] = useState({
@@ -201,6 +202,32 @@ export default function AdminLoginPage() {
                     </span>
                     <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-12" />
                   </Button>
+
+                  <div className="relative my-6">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-slate-200"></div>
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-white px-2 text-slate-500 font-bold tracking-widest">Or continue with</span>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-center">
+                    <GoogleLogin
+                      onSuccess={(credentialResponse) => {
+                        if (credentialResponse.credential) {
+                          googleLogin(credentialResponse.credential);
+                        }
+                      }}
+                      onError={() => {
+                        console.log('Login Failed');
+                      }}
+                      useOneTap
+                      theme="outline"
+                      shape="pill"
+                      width="fit-content"
+                    />
+                  </div>
 
                   <div className="text-center pt-4">
                     <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest flex items-center justify-center gap-1.5">

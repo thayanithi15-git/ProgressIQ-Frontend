@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Button } from '../ui/button';
 import { PanelLeftIcon, Bell, Moon, Sun } from 'lucide-react';
 import { Separator } from '../ui/separator';
-import { Avatar, AvatarFallback } from '../ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { useSidebarStore } from '@/store/layoutStore';
 import { useThemeStore } from '@/store/layoutStore';
 import { cn } from '@/lib/utils';
@@ -42,6 +42,8 @@ const Header: React.FC<HeaderProps> = ({
             // router.push("/");
         }
     }, []);
+
+    // console.log("Data " , sessionData);
 
     const sections =
         sessionData?.role?.toLowerCase();
@@ -125,6 +127,7 @@ const Header: React.FC<HeaderProps> = ({
                             </div>
                         </div>
                         <Avatar className="h-11 w-11 border-2 border-sidebar-border shadow-sm">
+                            <AvatarImage src={sessionData?.picture} alt={displayName} />
                             <AvatarFallback className={cn(
                                 "text-sm font-bold text-white",
                                 sessionData?.role === "recruiter"

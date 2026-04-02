@@ -8,6 +8,12 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { motion } from "framer-motion";
 import { Lock, User, ArrowRight } from "lucide-react";
+import { GoogleLogin } from "@react-oauth/google";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { useNotificationStore } from "@/utils/notification";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
 
 export default function LoginPage() {
   const [form, setForm] = useState({
@@ -17,9 +23,29 @@ export default function LoginPage() {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const { showNotification } = useNotificationStore();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleLoginSuccess = (data: any) => {
+    // Store in localStorage as expected by Header/Sidebar
+    localStorage.setItem("credxUser", JSON.stringify(data));
+    localStorage.setItem("role", data.role);
+    localStorage.setItem("auth-token", data.token);
+
+    // Set cookie or encrypted item if needed (the app seems to use getEncryptedItem)
+    // For now, let's stick to what's used in Header/Sidebar
+    
+    showNotification("Login successful!", "success");
+
+    // Redirect based on role
+    const role = data.role.toLowerCase();
+    if (role === "admin") router.push("/admin/dashboard");
+    else if (role === "mentor") router.push("/mentor/dashboard");
+    else router.push("/student/dashboard");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,10 +59,27 @@ export default function LoginPage() {
 
     try {
       setLoading(true);
-      await new Promise((res) => setTimeout(res, 1000));
-      alert("Login successful (demo)");
-    } catch (err) {
-      setError("Invalid credentials");
+      const res = await axios.post(`${API_BASE_URL}/auth/login`, {
+        email: form.identifier,
+        password: form.password
+      });
+      handleLoginSuccess(res.data);
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Invalid credentials");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse: any) => {
+    try {
+      setLoading(true);
+      const res = await axios.post(`${API_BASE_URL}/auth/google`, {
+        credential: credentialResponse.credential
+      });
+      handleLoginSuccess(res.data);
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Google authentication failed");
     } finally {
       setLoading(false);
     }
@@ -79,61 +122,81 @@ export default function LoginPage() {
             </CardHeader>
 
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="space-y-5">
                 {error && (
                   <Alert variant="destructive">
                     <AlertDescription>{error}</AlertDescription>
                   </Alert>
                 )}
 
-                <div className="space-y-2">
-                  <Label>Email or Username</Label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      name="identifier"
-                      placeholder="Enter email or username"
-                      className="pl-9"
-                      value={form.identifier}
-                      onChange={handleChange}
-                    />
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div className="space-y-2">
+                    <Label>Email or Username</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        name="identifier"
+                        placeholder="Enter email or username"
+                        className="pl-9"
+                        value={form.identifier}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Password</Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        name="password"
+                        type="password"
+                        placeholder="Enter password"
+                        className="pl-9"
+                        value={form.password}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between text-sm">
+                    <a className="text-[#1854bf] hover:underline cursor-pointer">
+                      Forgot password?
+                    </a>
+                  </div>
+
+                  <Button
+                    type="submit"
+                    className="w-full bg-[#0c9ced] hover:bg-[#1854bf]"
+                    disabled={loading}
+                  >
+                    {loading ? "Signing in..." : "Login"}
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </form>
+
+                <div className="relative my-4">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-muted" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label>Password</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      name="password"
-                      type="password"
-                      placeholder="Enter password"
-                      className="pl-9"
-                      value={form.password}
-                      onChange={handleChange}
-                    />
-                  </div>
+                <div className="flex justify-center">
+                  <GoogleLogin
+                    onSuccess={handleGoogleSuccess}
+                    onError={() => setError("Google Login Failed")}
+                    theme="outline"
+                    width="100%"
+                  />
                 </div>
-
-                <div className="flex items-center justify-between text-sm">
-                  <a className="text-[#1854bf] hover:underline cursor-pointer">
-                    Forgot password?
-                  </a>
-                </div>
-
-                <Button
-                  type="submit"
-                  className="w-full bg-[#0c9ced] hover:bg-[#1854bf]"
-                  disabled={loading}
-                >
-                  {loading ? "Signing in..." : "Login"}
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
 
                 <div className="text-center text-xs text-muted-foreground">
                   Secure access powered by Progress IQ
                 </div>
-              </form>
+              </div>
             </CardContent>
           </Card>
         </motion.div>

@@ -9,7 +9,7 @@ import {
     LogOut,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -337,6 +337,7 @@ const Sidebar: React.FC = () => {
                                             boxShadow: '0 0 0 1px white',
                                         }}
                                     >
+                                        <AvatarImage src={sessionData?.picture} alt={displayName} />
                                         <AvatarFallback
                                             className="flex-1 text-white text-[13px] tracking-wide uppercase font-poppins font-semibold"
                                             style={{
@@ -397,6 +398,7 @@ const Sidebar: React.FC = () => {
                                         className="h-14 w-14 flex-shrink-0"
                                         style={{ boxShadow: '0 0 0 1.5px ' }}
                                     >
+                                        <AvatarImage src={sessionData?.picture} alt={displayName} />
                                         <AvatarFallback
                                             className="flex-1 text-foreground text-[18px] tracking-wide uppercase font-poppins font-semibold"
                                             style={{
