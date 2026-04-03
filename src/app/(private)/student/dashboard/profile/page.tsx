@@ -103,7 +103,7 @@ const SectionCard = ({ title, icon: Icon, color, children, delay = 0, action }: 
         <div style={{ width: 34, height: 34, borderRadius: 9, background: `${color}16`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
           <Icon size={16} color={color} />
         </div>
-        <p style={{ fontSize: 13, fontWeight: 800, color: "var(--text-primary)", margin: 0 }}>{title}</p>
+        <p className="font-display" style={{ fontSize: 13, fontWeight: 800, color: "var(--text-primary)", margin: 0 }}>{title}</p>
       </div>
       {action && <div>{action}</div>}
     </div>
@@ -120,7 +120,7 @@ const InfoRow = ({ icon: Icon, label, value, color = "var(--text-muted)", link =
       <Icon size={13} color={color} />
     </div>
     <div style={{ flex: 1, minWidth: 0 }}>
-      <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", letterSpacing: ".05em", textTransform: "uppercase", margin: "0 0 2px" }}>{label}</p>
+      <p className="font-mono" style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", letterSpacing: ".05em", textTransform: "uppercase", margin: "0 0 2px" }}>{label}</p>
       {link && value ? (
         <a href={value.startsWith('http') ? value : `https://${value}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: 13, fontWeight: 600, color: C.blue, textDecoration: 'none', margin: 0, wordBreak: "break-word", display: "flex", alignItems: "center", gap: 4 }}>
           {value} <Link2 size={12} />
@@ -139,7 +139,7 @@ const InfoRow = ({ icon: Icon, label, value, color = "var(--text-muted)", link =
 // ─────────────────────────────────────────────────────────────────────────────
 const FormField = ({ label, required, children }: any) => (
   <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
-    <label style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", letterSpacing: ".04em", textTransform: "uppercase" }}>
+    <label className="font-mono" style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", letterSpacing: ".04em", textTransform: "uppercase" }}>
       {label}{required && <span style={{ color: C.rose }}> *</span>}
     </label>
     {children}
@@ -202,7 +202,7 @@ const ProfileHero = ({ profile, onEdit }: any) => {
         <div className="hero-inner" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 22, position: "relative" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
             {/* Avatar */}
-            <div style={{
+            <div className="font-display" style={{
               width: 76, height: 76, borderRadius: "50%", flexShrink: 0,
               background: `linear-gradient(135deg,${C.blue},${C.violet})`,
               display: "flex", alignItems: "center", justifyContent: "center",
@@ -213,10 +213,10 @@ const ProfileHero = ({ profile, onEdit }: any) => {
             </div>
             <div>
               <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", marginBottom: 4 }}>
-                <h1 style={{ fontSize: 24, fontWeight: 900, color: "#fff", margin: 0, letterSpacing: "-0.02em" }}>
+                <h1 className="font-display" style={{ fontSize: 24, fontWeight: 900, color: "#fff", margin: 0, letterSpacing: "-0.02em" }}>
                   {pi.firstName} {pi.lastName}
                 </h1>
-                <span style={{ fontSize: 11, fontWeight: 800, padding: "3px 10px", borderRadius: 20, background: st.bg, color: st.color }}>
+                <span className="font-mono" style={{ fontSize: 11, fontWeight: 800, padding: "3px 10px", borderRadius: 20, background: st.bg, color: st.color, textTransform: "uppercase", letterSpacing: "0.05em" }}>
                   {pi.status || "Active"}
                 </span>
               </div>
@@ -244,9 +244,9 @@ const ProfileHero = ({ profile, onEdit }: any) => {
             <div key={label} style={{ padding: "12px 14px", borderRadius: 13, background: "rgba(255,255,255,0.07)", backdropFilter: "blur(6px)", border: "1px solid rgba(255,255,255,0.08)" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 5 }}>
                 <span style={{ fontSize: 14 }}>{icon}</span>
-                <p style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.38)", letterSpacing: ".06em", textTransform: "uppercase", margin: 0 }}>{label}</p>
+                <p className="font-mono" style={{ fontSize: 9, fontWeight: 700, color: "rgba(255,255,255,0.38)", letterSpacing: ".06em", textTransform: "uppercase", margin: 0 }}>{label}</p>
               </div>
-              <p style={{ fontSize: 17, fontWeight: 900, color, margin: 0, lineHeight: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{value || "—"}</p>
+              <p className="font-display" style={{ fontSize: 17, fontWeight: 900, color, margin: 0, lineHeight: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{value || "—"}</p>
             </div>
           ))}
         </div>
@@ -495,7 +495,7 @@ export default function ProfilePage() {
               <InfoRow icon={User}     label="Gender"        value={pi.gender} color={C.indigo} />
               <InfoRow icon={Shield}   label="Account Status"
                 value={
-                  <span style={{ fontSize: 12, fontWeight: 700, padding: "3px 10px", borderRadius: 20, background: pi.status === "ACTIVE" ? `${C.emerald}18` : `${C.rose}18`, color: pi.status === "ACTIVE" ? C.emerald : C.rose }}>
+                  <span className="font-mono" style={{ fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 20, background: pi.status === "ACTIVE" ? `${C.emerald}18` : `${C.rose}18`, color: pi.status === "ACTIVE" ? C.emerald : C.rose, textTransform: "uppercase", letterSpacing: "0.05em" }}>
                     {pi.status || "Active"}
                   </span>
                 }
@@ -516,7 +516,7 @@ export default function ProfilePage() {
                 </div>
                 <InfoRow icon={Zap}        label="Reward Points"
                   value={
-                    <span style={{ fontSize: 16, fontWeight: 900, background: `linear-gradient(135deg,${C.amber},${C.rose})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                    <span className="font-display" style={{ fontSize: 18, fontWeight: 900, background: `linear-gradient(135deg,${C.amber},${C.rose})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
                       {ach.rewardPoints.toLocaleString()} pts
                     </span>
                   }
@@ -530,7 +530,7 @@ export default function ProfilePage() {
                   <SectionCard title="Areas of Expertise" icon={CheckCircle} color={C.emerald} delay={0.10}>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 8, paddingTop: 10 }}>
                       {ai.goodAt.map((skill: string, idx: number) => (
-                        <span key={idx} style={{ fontSize: 11, fontWeight: 700, padding: "5px 12px", borderRadius: 20, background: "var(--body-bg)", border: "1px solid var(--card-border)", color: "var(--text-primary)" }}>
+                        <span key={idx} className="font-mono" style={{ fontSize: 11, fontWeight: 700, padding: "5px 12px", borderRadius: 20, background: "var(--body-bg)", border: "1px solid var(--card-border)", color: "var(--text-primary)", letterSpacing: "0.02em", textTransform: "uppercase" }}>
                           {skill}
                         </span>
                       ))}
@@ -583,16 +583,16 @@ export default function ProfilePage() {
               <div style={{ paddingTop: 6 }}>
                 {/* Mentor hero row */}
                 <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 0 16px", borderBottom: "1px solid var(--divider)", marginBottom: 4 }}>
-                  <div style={{ width: 56, height: 56, borderRadius: "50%", background: `linear-gradient(135deg,${C.emerald},${C.cyan})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, fontWeight: 900, color: "#fff", flexShrink: 0 }}>
+                  <div className="font-display" style={{ width: 56, height: 56, borderRadius: "50%", background: `linear-gradient(135deg,${C.emerald},${C.cyan})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, fontWeight: 900, color: "#fff", flexShrink: 0 }}>
                     {mi.fullName?.split(" ").map((p: any) => p[0]).join("").toUpperCase().slice(0, 2)}
                   </div>
                   <div>
-                    <p style={{ fontSize: 16, fontWeight: 800, color: "var(--text-primary)", margin: "0 0 3px" }}>{mi.fullName}</p>
+                    <p className="font-display" style={{ fontSize: 16, fontWeight: 800, color: "var(--text-primary)", margin: "0 0 3px" }}>{mi.fullName}</p>
                     <p style={{ fontSize: 12, color: "var(--text-muted)", margin: "0 0 8px" }}>{mi.email}</p>
                     {/* Expertise tags */}
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                       {(mi.expertise ?? []).map((tag: string) => (
-                        <span key={tag} style={{ fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 20, background: `${C.emerald}14`, color: C.emerald }}>
+                        <span key={tag} className="font-mono" style={{ fontSize: 9, fontWeight: 700, padding: "3px 9px", borderRadius: 20, background: `${C.emerald}14`, color: C.emerald, textTransform: "uppercase", letterSpacing: "0.05em" }}>
                           {tag}
                         </span>
                       ))}

@@ -92,8 +92,8 @@ const Header: React.FC<HeaderProps> = ({
                     </Button>
 
                     <div>
-                        <span className="text-xl font-bold text-primary">{title}</span>
-                        <div className="text-xs text-muted-foreground">{subtitle}</div>
+                        <span className="font-display text-md font-bold text-primary tracking-tight">{title}</span>
+                        <div className="font-mono text-[11px] text-muted-foreground uppercase tracking-wider">{subtitle}</div>
                     </div>
                 </div>
 
@@ -105,13 +105,13 @@ const Header: React.FC<HeaderProps> = ({
                         variant="ghost"
                         size="sm"
                         onClick={toggleTheme}
-                        className="h-9 w-9 p-0 cursor-pointer"
+                        className="h-9 w-9 p-0 cursor-pointer border"
                         aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
                     >
                         {isDark ? (
-                            <Sun className="h-4 w-4 transition-all" />
+                            <Sun className="h-5 w-5 transition-all" />
                         ) : (
-                            <Moon className="h-4 w-4 transition-all" />
+                            <Moon className="h-5 w-5 transition-all" />
                         )}
                     </Button>
 
@@ -121,9 +121,11 @@ const Header: React.FC<HeaderProps> = ({
 
                     <div className="flex items-center gap-3">
                         <div className="hidden text-right sm:block">
-                            <div className="text-sm font-semibold">{displayName}</div>
-                            <div className="text-xs text-muted-foreground">
-                                {displayRole}{displayEmail ? ` • ${displayEmail}` : ''}
+                            <div className="text-m font-semibold">{displayName}
+                                <p className='font-mono text-[13px] text-muted-foreground uppercase tracking-wider'>{displayRole}</p>
+                            </div>
+                            <div className="text-[10px] text-muted-foreground">
+                                {/* {displayEmail ? `${displayEmail}` : ''} */}
                             </div>
                         </div>
                         <Avatar className="h-11 w-11 border-2 border-sidebar-border shadow-sm">

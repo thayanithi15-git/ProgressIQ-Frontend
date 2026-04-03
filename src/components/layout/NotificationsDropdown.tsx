@@ -5,16 +5,17 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, Check, CheckCircle2, ChevronRight, Info, AlertTriangle, PlayCircle, Briefcase, FileText, Award, X } from 'lucide-react';
 import { useAppNotificationsStore } from '@/store/notificationsStore';
 import { useRouter } from 'next/navigation';
+import { Button } from '../ui/button';
 
 const ICONS: Record<string, { icon: any; color: string; bg: string }> = {
-  INFO:    { icon: Info, color: '#3B82F6', bg: 'rgba(59,130,246,0.1)' },
+  INFO: { icon: Info, color: '#3B82F6', bg: 'rgba(59,130,246,0.1)' },
   SUCCESS: { icon: CheckCircle2, color: '#10B981', bg: 'rgba(16,185,129,0.1)' },
   WARNING: { icon: AlertTriangle, color: '#F59E0B', bg: 'rgba(245,158,11,0.1)' },
-  ERROR:   { icon: X, color: '#EF4444', bg: 'rgba(239,68,68,0.1)' },
-  TASK:    { icon: PlayCircle, color: '#6366F1', bg: 'rgba(99,102,241,0.1)' },
+  ERROR: { icon: X, color: '#EF4444', bg: 'rgba(239,68,68,0.1)' },
+  TASK: { icon: PlayCircle, color: '#6366F1', bg: 'rgba(99,102,241,0.1)' },
   PROJECT: { icon: Briefcase, color: '#8B5CF6', bg: 'rgba(139,92,246,0.1)' },
-  SURVEY:  { icon: FileText, color: '#EC4899', bg: 'rgba(236,72,153,0.1)' },
-  POINTS:  { icon: Award, color: '#F59E0B', bg: 'rgba(245,158,11,0.1)' },
+  SURVEY: { icon: FileText, color: '#EC4899', bg: 'rgba(236,72,153,0.1)' },
+  POINTS: { icon: Award, color: '#F59E0B', bg: 'rgba(245,158,11,0.1)' },
 };
 
 const formatTime = (dateStr: string) => {
@@ -63,18 +64,20 @@ export const NotificationsDropdown = () => {
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <button
+      <Button
+        variant="ghost"
+        size="sm"
         onClick={() => setIsOpen(!isOpen)}
-        className="relative flex h-9 w-9 items-center justify-center rounded-md hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+        className="h-9 w-9 p-0 cursor-pointer border"
       >
-        <Bell className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+        <Bell className="h-5 w-5 transition-all" />
         {unreadCount > 0 && (
           <span className="absolute right-1.5 top-1.5 flex h-2 w-2">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
             <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500"></span>
           </span>
         )}
-      </button>
+      </Button>
 
       <AnimatePresence>
         {isOpen && (
@@ -161,7 +164,7 @@ export const NotificationsDropdown = () => {
                 </div>
               )}
             </div>
-            
+
             {notifications.length > 0 && (
               <div className="border-t border-gray-100 dark:border-gray-800/60 p-3 bg-gray-50/80 dark:bg-white/[0.01]">
                 <button

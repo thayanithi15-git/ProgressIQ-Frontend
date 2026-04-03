@@ -258,9 +258,9 @@ const ChartTooltip = ({ active, payload, label }: any) => {
 // PILL FILTER
 // ─────────────────────────────────────────────────────────────────────────────
 const Pill = ({ label, active, onClick }: any) => (
-  <button onClick={onClick} style={{
+  <button className="font-mono" onClick={onClick} style={{
     padding: "4px 13px", borderRadius: 20, border: "none", cursor: "pointer",
-    fontSize: 12, fontWeight: 600, letterSpacing: "0.02em", transition: "all 0.18s ease",
+    fontSize: 10, fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", transition: "all 0.18s ease",
     background: active ? C.blue : "var(--pill-inactive-bg)",
     color: active ? "#fff" : "var(--pill-inactive-text)",
     boxShadow: active ? `0 2px 10px ${C.blue}55` : "none",
@@ -287,7 +287,7 @@ const ChartCard = ({ title, desc, children, actions, loading, minH = 330 }: any)
     <div style={{ background: "var(--card-bg)", borderRadius: 18, border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)", overflow: "hidden", height: "100%", display: "flex", flexDirection: "column" }}>
       <div style={{ padding: "18px 22px 0", display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, flexWrap: "wrap" }}>
         <div>
-          <p style={{ fontSize: 14, fontWeight: 700, color: "var(--text-primary)", marginBottom: 2 }}>{title}</p>
+          <p className="font-display" style={{ fontSize: 14, fontWeight: 700, color: "var(--text-primary)", marginBottom: 2 }}>{title}</p>
           {desc && <p style={{ fontSize: 12, color: "var(--text-muted)", fontWeight: 500 }}>{desc}</p>}
         </div>
         {actions && <div style={{ display: "flex", gap: 6, flexWrap: "wrap", alignItems: "center" }}>{actions}</div>}
@@ -317,11 +317,11 @@ const ProgressRing = ({ value, max, color, size = 80, stroke = 7, label, sub }: 
             strokeDasharray={`${dash} ${circ}`} strokeLinecap="round" style={{ transition: "stroke-dasharray 0.8s ease" }} />
         </svg>
         <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-          <span style={{ fontSize: 14, fontWeight: 800, color: "var(--text-primary)", lineHeight: 1 }}>{value}</span>
-          <span style={{ fontSize: 9, color: "var(--text-muted)", fontWeight: 600 }}>/{max}</span>
+          <span className="font-display" style={{ fontSize: 16, fontWeight: 800, color: "var(--text-primary)", lineHeight: 1 }}>{value}</span>
+          <span className="font-mono" style={{ fontSize: 9, color: "var(--text-muted)", fontWeight: 600 }}>/{max}</span>
         </div>
       </div>
-      <p style={{ fontSize: 11, fontWeight: 700, color: "var(--text-primary)", textAlign: "center", margin: 0 }}>{label}</p>
+      <p className="font-display" style={{ fontSize: 11, fontWeight: 700, color: "var(--text-primary)", textAlign: "center", margin: 0 }}>{label}</p>
       {sub && <p style={{ fontSize: 10, color: "var(--text-muted)", textAlign: "center", margin: 0, lineHeight: 1.3 }}>{sub}</p>}
     </div>
   );
@@ -556,11 +556,13 @@ const ActivityRow = ({ item, index }: any) => (
         <Activity size={14} color={C.emerald} />
       </div>
       <div>
-        <p style={{ fontSize: 12, fontWeight: 600, color: "var(--text-primary)", margin: 0, lineHeight: 1.2 }}>{item.activity}</p>
-        <p style={{ fontSize: 10, color: "var(--text-muted)", margin: 0 }}>{fmtDate(item.date)}</p>
+        <p className="font-display" style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary)", margin: 0, lineHeight: 1.2 }}>{item.activity}</p>
+        <p className="font-mono" style={{ fontSize: 10, color: "var(--text-muted)", margin: 0, textTransform: "uppercase", letterSpacing: "0.02em" }}>{fmtDate(item.date)}</p>
       </div>
     </div>
-    <span style={{ fontSize: 12, fontWeight: 700, color: C.blue, background: `${C.blue}14`, padding: "3px 9px", borderRadius: 20 }}>{item.hoursSpent}h</span>
+    {item.hoursSpent > 0 && (
+      <span className="font-display" style={{ fontSize: 12, fontWeight: 800, color: C.blue, background: `${C.blue}14`, padding: "3px 9px", borderRadius: 20 }}>{item.hoursSpent}h</span>
+    )}
   </motion.div>
 );
 
@@ -639,20 +641,8 @@ export default function StudentDashboard() {
 
         {/* ── HEADER ─────────────────────────────────────────────── */}
         <Header
+          title="Student Dashboard"
           subtitle={student ? `Welcome back, ${student.name.split(" ")[0]}! Keep up the great work.` : "Welcome back!"}
-          HeaderComp={
-            <div style={{ display: "flex", gap: 10 }}>
-              <Button variant="outline" onClick={handleRefresh} disabled={isRefreshing}
-                style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
-                <RefreshCw size={14} style={{ animation: isRefreshing ? "spin 1s linear infinite" : "none" }} />
-                Refresh
-              </Button>
-              <Button style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, background: "var(--primary)", color: "var(--primary-foreground)" }}>
-                <Download size={14} />
-                Export
-              </Button>
-            </div>
-          }
         />
 
         <div style={{ padding: "24px 24px 48px" }}>
@@ -692,7 +682,7 @@ export default function StudentDashboard() {
                     <Flame size={17} color={C.emerald} />
                   </div>
                   <div>
-                    <p style={{ fontSize: 14, fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>Points Heatmap</p>
+                    <p className="font-display" style={{ fontSize: 14, fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>Points Heatmap</p>
                     <p style={{ fontSize: 12, color: "var(--text-muted)", margin: 0 }}>Your contribution streak — points earned per day</p>
                   </div>
                 </div>
@@ -829,7 +819,7 @@ export default function StudentDashboard() {
                       <Globe size={16} color={C.indigo} />
                     </div>
                     <div>
-                      <p style={{ fontSize: 15, fontWeight: 800, color: "var(--text-primary)", margin: 0 }}>Online Profiles</p>
+                      <p className="font-display" style={{ fontSize: 15, fontWeight: 800, color: "var(--text-primary)", margin: 0 }}>Online Profiles</p>
                       <p style={{ fontSize: 12, color: "var(--text-muted)", margin: 0 }}>Your linked social profiles</p>
                     </div>
                   </div>
@@ -886,7 +876,7 @@ export default function StudentDashboard() {
                 </div>
 
                 <div>
-                  <p className="text-[13px] font-bold text-[var(--text-primary)]">
+                  <p className="font-display text-[13px] font-bold text-[var(--text-primary)]">
                     Rankings
                   </p>
                   <p className="text-[11px] text-[var(--text-muted)]">
@@ -986,7 +976,7 @@ export default function StudentDashboard() {
                   </div>
 
                   <div>
-                    <p className="text-[13px] font-bold text-[var(--text-primary)]">
+                    <p className="font-display text-[13px] font-bold text-[var(--text-primary)]">
                       Mentor
                     </p>
                     <p className="text-[11px] text-[var(--text-muted)]">
@@ -1193,12 +1183,12 @@ export default function StudentDashboard() {
                   )}
                 </ChartCard>
 
-                <ChartCard title="Recent Activity" desc="Your latest logged hours" loading={isLoadingProfile} minH={0}>
+                <ChartCard title="Recent Activity" desc="Your 5 most recent actions" loading={isLoadingProfile} minH={0}>
                   {!recentActivities?.length ? (
                     <EmptyState label="No recent activity" />
                   ) : (
                     <div style={{ display: "flex", flexDirection: "column" }}>
-                      {recentActivities.slice(0, 8).map((item: any, i: number) => (
+                      {recentActivities.slice(0, 5).map((item: any, i: number) => (
                         <ActivityRow key={i} item={item} index={i} />
                       ))}
                     </div>

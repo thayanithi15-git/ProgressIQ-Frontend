@@ -245,29 +245,27 @@ const Sidebar: React.FC = () => {
                     )}
                 >
                     <div
-                        className="flex-shrink-0 rounded-lg overflow-hidden flex items-center justify-center"
+                        className="flex-shrink-0 overflow-hidden flex items-center justify-center"
                         style={{
-                            width: 42,
-                            height: 42,
-                            background: 'var(--college-gold)',
-                            boxShadow: '0 2px 8px var(--college-gold-dark)/40',
+                            // width: 32,
+                            // height: 38,
                         }}
                     >
                         <Image
-                            src={"/progress_iq.png"}
+                            src={"/progress_white.png"}
                             alt="Progress IQ Logo"
-                            width={60}
-                            height={60}
-                            className="w-13 h-13 rounded-xl"
+                            width={40}
+                            height={40}
+                            className="w-9 h-9 rounded-xl"
                         />
                     </div>
 
                     {isOpen && (
                         <div className="min-w-0">
-                            <span className="flex-1 text-gray-300 text-[18px] font-bold tracking-wide uppercase font-poppins">
+                            <span className="font-display flex-1 text-gray-300 text-[18px] font-bold tracking-wide uppercase">
                                 Progress IQ
                             </span>
-                            <p className="text-[10px] mt-0.5 tracking-widest uppercase font-poppins text-sidebar-foreground/50">
+                            <p className="font-mono text-[10px] mt-0.5 tracking-widest uppercase text-sidebar-foreground/50">
                                 Smart Activity Reporting
                             </p>
                         </div>
@@ -282,11 +280,7 @@ const Sidebar: React.FC = () => {
                                 {/* Section label */}
                                 {isOpen && (
                                     <div className="flex items-center px-2 mb-1 relative w-full justify-start gap-3 h-10 my-0.5 rounded-lg transition-all duration-200">
-                                        {/* <span */}
-                                        <span className="flex-1 text-gray-300 text-[11px] tracking-wide uppercase font-poppins">
-                                            {/* // className="text-[9.5px] font-bold  tracking-wide  uppercase  font-poppins" */}
-                                            {/* // style={{ color: 'var(--college-gold-dark)' }} */}
-                                            {/* > */}
+                                        <span className="font-display flex-1 text-gray-300 text-[12px] font-bold tracking-wider uppercase">
                                             {section.title}
                                         </span>
                                         <div
@@ -361,13 +355,7 @@ const Sidebar: React.FC = () => {
                                             <p className="text-[10px] text-sidebar-foreground/50 truncate leading-tight mt-0.5">
                                                 {displayEmail}
                                             </p>
-                                            <div
-                                                // variant="outline"
-                                                className={cn('text-[13px] text-white mt-1 px-0.5 py-0 rounded-sm font-semibold')}
-                                            // style={roleBadgeStyle}
-                                            >
-                                                {displayRole}
-                                            </div>
+                                            <p className='font-mono text-[13px] text-muted-foreground uppercase tracking-wider mt-1'>{displayRole}</p>
                                         </div>
                                     )}
                                 </div>
