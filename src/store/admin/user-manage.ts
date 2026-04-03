@@ -144,7 +144,7 @@ export const useUserManagementStore = create<UserManagementState>((set, get) => 
       set({
         users: response.data.users || [],
         total: response.data.total || 0,
-        totalPages: Math.ceil((response.data.total || 0) / limit),
+        totalPages: response.data.totalPages || 0,
         currentPage: page,
         isLoading: false,
       });

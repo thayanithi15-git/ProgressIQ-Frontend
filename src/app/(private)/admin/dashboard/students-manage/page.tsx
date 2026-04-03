@@ -246,16 +246,15 @@ export default function StudentListPage() {
         {/* Student Table */}
         <div className="bg-card border border-border shadow-sm rounded-2xl overflow-hidden">
           <div className="overflow-x-auto scrollbar-hide">
-            <table className="w-full border-collapse min-w-[1200px]">
+            <table className="w-full border-collapse min-w-[1600px]">
               <thead>
                 <tr className="bg-foreground/[0.02] border-b border-border/40">
                   <th className="px-6 py-4 text-left text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Student Profile</th>
-                  <th className="px-6 py-4 text-left text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Roll Number</th>
-                  <th className="px-6 py-4 text-left text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Academic Info</th>
-                  <th className="px-6 py-4 text-left text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Contact</th>
-                  <th className="px-6 py-4 text-left text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center">Performance</th>
-                  <th className="px-6 py-4 text-left text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center">Arrears</th>
-                  <th className="px-6 py-4 text-left text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Status</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Academic Context</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Performance Metrics</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Family & Origin</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Skills & Socials</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-bold text-muted-foreground uppercase tracking-widest text-center">Status</th>
                   <th className="px-6 py-4 text-right text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Actions</th>
                 </tr>
               </thead>
@@ -263,7 +262,7 @@ export default function StudentListPage() {
                 {isLoading ? (
                   Array.from({ length: 5 }).map((_, i) => (
                     <tr key={i} className="border-b border-border/40">
-                      <td colSpan={6} className="px-6 py-5"><Skeleton className="h-12 w-full rounded-xl" /></td>
+                      <td colSpan={7} className="px-6 py-5"><Skeleton className="h-12 w-full rounded-xl" /></td>
                     </tr>
                   ))
                 ) : (
@@ -276,46 +275,120 @@ export default function StudentListPage() {
                       className="group border-b border-border/40 hover:bg-foreground/[0.01] transition-colors cursor-pointer"
                       onClick={() => router.push(`/admin/dashboard/students-manage/${student._id}`)}
                     >
+                      {/* 1. STUDENT PROFILE */}
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center border border-primary/10 group-hover:bg-primary/10 transition-colors">
                             <GraduationCap className="text-primary w-5 h-5" />
                           </div>
-                          <div className="min-w-0">
+                          <div className="min-w-0 max-w-[180px]">
                             <p className="text-sm font-semibold truncate text-foreground">{student.firstName} {student.lastName}</p>
-                            <p className="text-[11px] text-muted-foreground truncate">{student.email}</p>
+                            <p className="text-[10px] text-muted-foreground truncate mb-1">{student.userId?.email || "No Email"}</p>
+                            <div className="flex items-center gap-2">
+                               <Badge variant="outline" className={`h-4 text-[8px] px-1.5 uppercase tracking-tighter ${student.gender?.toUpperCase() === 'MALE' ? 'border-blue-500/20 text-blue-500 bg-blue-500/5' : 'border-pink-500/20 text-pink-500 bg-pink-500/5'}`}>
+                                 {student.gender || "—"}
+                               </Badge>
+                               <span className="text-[9px] text-muted-foreground font-medium italic">
+                                 {student.dob ? new Date(student.dob).toLocaleDateString('en-GB') : "—"}
+                               </span>
+                            </div>
                           </div>
                         </div>
                       </td>
+
+                      {/* 2. ACADEMIC CONTEXT */}
                       <td className="px-6 py-4">
-                        <span className="text-[11px] font-bold text-foreground font-mono">{student.rollNo || "N/A"}</span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div>
-                          <p className="text-[11px] font-bold text-foreground">{student.department}</p>
-                          <p className="text-[10px] text-muted-foreground uppercase font-semibold tracking-wider">{student.year} • {student.academicYear}</p>
+                        <div className="min-w-[120px]">
+                          <p className="text-[11px] font-black text-foreground font-mono mb-0.5 tracking-tight">{student.rollNo || "N/A"}</p>
+                          <p className="text-[10px] font-bold text-primary/80 uppercase">{student.department}</p>
+                          <p className="text-[9px] text-muted-foreground font-medium uppercase tracking-widest">{student.year} • {student.academicYear}</p>
                         </div>
                       </td>
+
+                      {/* 3. PERFORMANCE METRICS */}
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-2">
-                           <Smartphone size={12} className="text-muted-foreground" />
-                           <span className="text-[11px] font-medium text-muted-foreground">{student.phone || "—"}</span>
+                        <div className="flex items-center gap-4">
+                          <div className="flex flex-col items-center p-1.5 rounded-lg bg-muted/30 border border-border/40 min-w-[50px]">
+                            <span className="text-[10px] font-black text-primary leading-none">{student.cgpa || "0.0"}</span>
+                            <span className="text-[7px] text-muted-foreground uppercase font-black tracking-tighter mt-1">GPA</span>
+                          </div>
+                          <div className="flex flex-col gap-1.5">
+                            <Badge variant="outline" className={`h-4 rounded-md text-[8px] font-black px-1.5 ${student.arrearCount > 0 ? "border-destructive/20 text-destructive bg-destructive/5" : "border-emerald-500/20 text-emerald-500 bg-emerald-500/5 shadow-none"}`}>
+                              {student.arrearCount || 0} ARREARS
+                            </Badge>
+                            <div className="flex items-center gap-1">
+                               <Zap size={10} className="text-amber-500 fill-amber-500" />
+                               <span className="text-[10px] font-black text-foreground">{student.rewardPoints || 0}</span>
+                            </div>
+                          </div>
                         </div>
                       </td>
+
+                      {/* 4. FAMILY & ORIGIN */}
+                      <td className="px-6 py-4">
+                        <div className="min-w-[160px] space-y-1">
+                           <div className="flex items-center gap-2">
+                             <Heart size={10} className="text-muted-foreground" />
+                             <span className="text-[10px] font-bold text-foreground truncate">{student.parentName || "—"}</span>
+                           </div>
+                           <div className="flex items-center gap-2">
+                             <Smartphone size={10} className="text-muted-foreground" />
+                             <span className="text-[9px] font-medium text-muted-foreground font-mono">{student.parentPhone || "—"}</span>
+                           </div>
+                           <div className="flex items-center gap-3 pt-0.5">
+                              <span className="text-[9px] font-black text-primary flex items-center gap-1 uppercase tracking-tighter">
+                                <MapPin size={8} /> {student.place || "—"}
+                              </span>
+                              <span className="text-[9px] font-black text-muted-foreground flex items-center gap-1 uppercase tracking-tighter">
+                                <Database size={8} /> ₹{student.familyIncome || "—"}
+                              </span>
+                           </div>
+                        </div>
+                      </td>
+
+                      {/* 5. SKILLS & SOCIALS */}
+                      <td className="px-6 py-4">
+                        <div className="min-w-[140px] space-y-2">
+                           <div className="flex flex-wrap gap-1">
+                              {student.goodAt && student.goodAt.length > 0 ? (
+                                student.goodAt.map((skill, i) => (
+                                  <Badge key={i} variant="secondary" className="h-4 text-[7px] font-black uppercase tracking-tight bg-primary/5 text-primary border-none">
+                                    {skill}
+                                  </Badge>
+                                ))
+                              ) : (
+                                <span className="text-[8px] text-muted-foreground italic uppercase">No Skills Listed</span>
+                              )}
+                           </div>
+                           <div className="flex items-center gap-2 pt-1 border-t border-border/20">
+                              {student.socials?.github && (
+                                <a href={student.socials.github} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className="p-1 hover:bg-muted rounded-md transition-colors">
+                                  <Globe size={11} className="text-foreground/70" />
+                                </a>
+                              )}
+                              {student.socials?.linkedin && (
+                                <a href={student.socials.linkedin} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className="p-1 hover:bg-muted rounded-md transition-colors">
+                                  <Shield size={11} className="text-blue-500" />
+                                </a>
+                              )}
+                              {student.socials?.leetcode && (
+                                <a href={student.socials.leetcode} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className="p-1 hover:bg-muted rounded-md transition-colors">
+                                  <Zap size={11} className="text-amber-600" />
+                                </a>
+                              )}
+                              {student.socials?.portfolio && (
+                                <a href={student.socials.portfolio} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()} className="p-1 hover:bg-muted rounded-md transition-colors">
+                                  <Eye size={11} className="text-primary" />
+                                </a>
+                              )}
+                           </div>
+                        </div>
+                      </td>
+
                       <td className="px-6 py-4 text-center">
-                        <div className="inline-flex flex-col items-center p-2 rounded-lg bg-muted/20 border border-border/40 min-w-[70px]">
-                          <span className="text-[10px] font-bold text-primary mb-0.5">{student.cgpa || "—"}</span>
-                          <span className="text-[8px] text-muted-foreground uppercase font-bold tracking-tight">CGPA</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        <Badge variant="outline" className={`h-6 rounded-lg text-[10px] font-black tracking-wider ${student.arrearCount > 0 ? "border-destructive/20 text-destructive bg-destructive/5" : "border-emerald-500/20 text-emerald-500 bg-emerald-500/5 shadow-none"}`}>
-                          {student.arrearCount || 0}
-                        </Badge>
-                      </td>
-                      <td className="px-6 py-4">
                         <StatusBadge status={student.status} />
                       </td>
+
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2">
                           <button

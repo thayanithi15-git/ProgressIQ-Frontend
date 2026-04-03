@@ -138,16 +138,10 @@ export const useMentorManagementStore = create<MentorManagementState>(
 
         const response = await api.get(`/api/admin/mentors?${params.toString()}`);
 
-        // Handle pagination for client-side filtering
-        const allMentors = response.data.mentors || [];
-        const startIndex = (page - 1) * limit;
-        const endIndex = startIndex + limit;
-        const paginatedMentors = allMentors.slice(startIndex, endIndex);
-
         set({
-          mentors: paginatedMentors,
-          total: allMentors.length,
-          totalPages: Math.ceil(allMentors.length / limit),
+          mentors: response.data.mentors || [],
+          total: response.data.total || 0,
+          totalPages: response.data.totalPages || 0,
           currentPage: page,
           pageSize: limit,
           isLoading: false,

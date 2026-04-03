@@ -114,9 +114,9 @@ export default function SystemLogsPage() {
                     </SelectTrigger>
                     <SelectContent>
                        <SelectItem value="all">All Roles</SelectItem>
-                       <SelectItem value="Admin">Administrators</SelectItem>
-                       <SelectItem value="Mentor">Academic Mentors</SelectItem>
-                       <SelectItem value="Student">Student Base</SelectItem>
+                       <SelectItem value="ADMIN">Administrators</SelectItem>
+                       <SelectItem value="MENTOR">Academic Mentors</SelectItem>
+                       <SelectItem value="STUDENT">Student Base</SelectItem>
                     </SelectContent>
                  </Select>
                  

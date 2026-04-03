@@ -102,6 +102,7 @@ interface StudentManagementState {
   isLoading: boolean;
   currentPage: number;
   pageSize: number;
+  totalPages: number;
   filters: StudentFilters;
   viewMode: 'list' | 'profile';
 
@@ -138,6 +139,7 @@ export const useStudentManagementStore = create<StudentManagementState>(
     isLoading: false,
     currentPage: 1,
     pageSize: 10,
+    totalPages: 0,
     filters: initialFilters,
     viewMode: 'list',
 
@@ -197,6 +199,7 @@ export const useStudentManagementStore = create<StudentManagementState>(
         set({
           students: response.data.students || [],
           total: response.data.total || 0,
+          totalPages: response.data.totalPages || 0,
           currentPage: page,
           isLoading: false,
         });
