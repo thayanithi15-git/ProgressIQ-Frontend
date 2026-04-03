@@ -1,22 +1,19 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  Award, Globe, Search, Filter, RefreshCw, 
+  ChevronLeft, ChevronRight, ExternalLink, 
+  ShieldCheck, Clock, XCircle, GraduationCap, 
+  Building2, Calendar, Medal
+} from "lucide-react";
+import Link from "next/link";
 import Header from "@/components/layout/header";
 import GlobalNotification from "@/components/notify/notification";
-
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-  CardFooter,
-  CardDescription,
-} from "@/components/ui/card";
-
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -24,249 +21,262 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-import { Globe, Award } from "lucide-react";
-
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useAdminCertsStore } from "@/store/admin/certifications";
-import Link from "next/link";
+
+// ─── TOKENS ─────────────────────────────────────────────────────────────────
+const STATUS_META: Record<string, { label: string; color: string; bg: string; icon: any }> = {
+  "VERIFIED": {
+    label: "Verified",
+    color: "#059669",
+    bg: "rgba(16, 185, 129, 0.12)",
+    icon: ShieldCheck
+  },
+  "COMPLETED": {
+    label: "Completed",
+    color: "#059669",
+    bg: "rgba(16, 185, 129, 0.12)",
+    icon: ShieldCheck
+  },
+  "PENDING": {
+    label: "Pending Audit",
+    color: "#d97706",
+    bg: "rgba(217, 119, 6, 0.12)",
+    icon: Clock
+  },
+  "REJECTED": {
+    label: "Rejected",
+    color: "#dc2626",
+    bg: "rgba(220, 38, 38, 0.12)",
+    icon: XCircle
+  }
+};
+
+// ─── COMPONENTS ──────────────────────────────────────────────────────────────
+const CertStatusBadge = ({ status }: { status: string }) => {
+  const meta = STATUS_META[status?.toUpperCase()] || { label: status, color: "#6b7280", bg: "rgba(107, 114, 128, 0.12)", icon: Award };
+  const Icon = meta.icon;
+  return (
+    <span
+      className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider transition-all"
+      style={{ backgroundColor: meta.bg, color: meta.color }}
+    >
+      <Icon size={10} className="stroke-[3]" />
+      {meta.label}
+    </span>
+  );
+};
 
 export default function CertificationsPage() {
   const {
-    certs,
-    total,
-    page,
-    limit,
-    isLoading,
-    fetchCerts,
-    setPage,
-    setFilters,
+    certs, total, page, limit, isLoading, fetchCerts, setPage, setFilters,
   } = useAdminCertsStore();
 
   const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState("all");
 
   useEffect(() => {
     fetchCerts();
-  }, []);
+  }, [fetchCerts]);
 
   const handleSearch = () => {
-    setFilters({ search });
-    fetchCerts({ page: 1, filters: { search } });
+    setFilters({ search: search === "" ? undefined : search });
+    fetchCerts({ page: 1 });
   };
 
   const handleStatus = (s: string) => {
     setStatus(s);
-    setFilters({ status: s });
-    fetchCerts({ page: 1, filters: { status: s } });
-  };
-
-  const getStatusClass = (status?: string) => {
-    switch (status) {
-      case "Verified":
-      case "Completed":
-        return "bg-emerald-100 text-emerald-700 border border-emerald-200";
-      case "Pending":
-        return "bg-amber-100 text-amber-700 border border-amber-200";
-      case "Rejected":
-        return "bg-red-100 text-red-700 border border-red-200";
-      default:
-        return "bg-gray-100 text-gray-600 border border-gray-200";
-    }
+    setFilters({ status: s === "all" ? undefined : s });
+    fetchCerts({ page: 1 });
   };
 
   const totalPages = Math.max(1, Math.ceil((total || 0) / limit));
 
   return (
-    <>
+    <div className="min-h-screen bg-background pb-20">
       <GlobalNotification />
-
       <Header
-        title="Certifications"
-        subtitle="Student certifications across various platforms"
+        title="Certification Ledger"
+        subtitle="Verification and management of professional student credentials"
       />
 
-      <div className="min-h-screen bg-background p-6">
-        <div className="space-y-6">
+      <div className="p-4 lg:p-8 max-w-[1600px] mx-auto space-y-8">
+        {/* Advanced Control Bar */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="relative w-full md:w-[450px]">
+             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+             <Input
+               placeholder="Search by certificate title or platform..."
+               value={search}
+               onChange={(e) => setSearch(e.target.value)}
+               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+               className="pl-11 h-12 rounded-2xl bg-muted/20 border-border/60 focus-visible:ring-primary/20 transition-all font-medium text-sm"
+             />
+             <Button 
+                onClick={handleSearch}
+                className="absolute right-1.5 top-1.5 h-9 rounded-xl bg-primary text-primary-foreground font-semibold uppercase tracking-widest text-[10px] px-4"
+             >
+                Filter
+             </Button>
+          </div>
 
-          {/* SEARCH + FILTER */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:items-center justify-between">
-            <div className="flex gap-2 w-full sm:w-1/2">
-              <Input
-                placeholder="Search certifications..."
-                className="py-5 shadow-sm focus-visible:ring-primary"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-              />
-
-              <Button onClick={handleSearch} className="py-5 shadow-sm">
-                Search
-              </Button>
-            </div>
-
-            <div className="flex gap-2 items-center">
-              <Select
-                value={status}
-                onValueChange={(value) => handleStatus(value)}
-              >
-                <SelectTrigger className="w-[160px] py-5 shadow-sm">
-                  <SelectValue placeholder="All statuses" />
+          <div className="flex items-center gap-3 w-full md:w-auto">
+             <Select value={status} onValueChange={handleStatus}>
+                <SelectTrigger className="h-12 w-full md:w-48 rounded-2xl bg-muted/20 border-border/60 text-[11px] font-semibold uppercase tracking-widest">
+                   <div className="flex items-center gap-2">
+                     <Filter size={14} className="text-muted-foreground" />
+                     <SelectValue placeholder="Status Context" />
+                   </div>
                 </SelectTrigger>
-
-                <SelectContent>
-                  <SelectItem value="all">All statuses</SelectItem>
-                  <SelectItem value="Verified">Verified</SelectItem>
-                  <SelectItem value="Pending">Pending</SelectItem>
-                  <SelectItem value="Rejected">Rejected</SelectItem>
+                <SelectContent className="rounded-xl">
+                   <SelectItem value="all">Global Catalog</SelectItem>
+                   <SelectItem value="Verified">Verified Only</SelectItem>
+                   <SelectItem value="Pending">Pending Audit</SelectItem>
+                   <SelectItem value="Rejected">Rejected Credentials</SelectItem>
                 </SelectContent>
-              </Select>
+             </Select>
 
-              <Button
-                variant="outline"
-                className="py-4"
+             <Button 
+                variant="outline" 
                 onClick={() => fetchCerts()}
-              >
-                Refresh
-              </Button>
-            </div>
+                className="h-12 w-12 p-0 rounded-2xl border-border/60 hover:bg-muted/50 transition-all"
+             >
+                <RefreshCw size={18} className={isLoading ? "animate-spin" : ""} />
+             </Button>
           </div>
-
-          {/* CARDS GRID */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
-            {isLoading && <div>Loading...</div>}
-
-            {!isLoading && certs.length === 0 && (
-              <div className="text-muted-foreground">
-                No certifications found
-              </div>
-            )}
-
-            {certs.map((c) => (
-              <Card
-                key={c._id}
-                className="group relative overflow-hidden border border-border/60 bg-card/70 backdrop-blur-sm hover:border-primary/30 hover:shadow-lg transition-all duration-300 cursor-pointer flex flex-col min-h-[230px]"
-              >
-                {/* TOP HOVER BAR */}
-                <div className="absolute inset-x-0 top-0 h-[2px] bg-transparent group-hover:bg-primary transition" />
-
-                {/* HEADER */}
-                <CardHeader className="pb-2">
-
-                  <div className="flex justify-between items-start">
-
-                    <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                      <Award className="w-4 h-4 text-primary group-hover:scale-110 transition" />
-                      {c.title || "Untitled"}
-                    </CardTitle>
-
-                    <div
-                      className={`px-2.5 py-1 text-xs font-semibold rounded-md ${getStatusClass(
-                        c.status
-                      )}`}
-                    >
-                      {c.status || "Unknown"}
-                    </div>
-
-                  </div>
-
-                  <CardDescription>
-                    {c.platform || "Unknown Platform"}
-                  </CardDescription>
-
-                </CardHeader>
-
-                {/* BODY */}
-                <CardContent className="flex-1">
-                  {c.from || c.to ? (
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <span className="px-2 py-1 rounded-md bg-muted">
-                        {c.from ? new Date(c.from).toLocaleDateString() : "—"}
-                      </span>
-
-                      <span className="text-muted-foreground">→</span>
-
-                      <span className="px-2 py-1 rounded-md bg-muted">
-                        {c.to ? new Date(c.to).toLocaleDateString() : "Present"}
-                      </span>
-                    </div>
-                  ) : (
-                    <span className="text-xs text-muted-foreground">No date information</span>
-                  )}
-                </CardContent>
-
-                {/* FOOTER */}
-                <CardFooter className="border-t pt-2.5 pb-2.5 flex justify-between items-center">
-
-                  <div className="text-xs text-muted-foreground">
-                    Platform: {c.platform || "—"}
-                  </div>
-
-                  {c.platformLink ? (
-                    <Link href={c.platformLink} target="_blank">
-                      <Button
-                        size="sm"
-                        className="gap-2 bg-blue-600 text-white hover:bg-blue-700 hover:text-white shadow-sm"
-                      >
-                        <Globe className="w-4 h-4" />
-                        Open
-                      </Button>
-                    </Link>
-                  ) : (
-                    <Button
-                      size="sm"
-                      disabled
-                      className="gap-2 bg-gray-100 text-gray-400 cursor-not-allowed shadow-none"
-                    >
-                      No Link
-                    </Button>
-                  )}
-
-                </CardFooter>
-
-              </Card>
-            ))}
-          </div>
-
-          {/* PAGINATION */}
-          <div className="flex items-center justify-between">
-
-            <div className="text-sm text-muted-foreground">
-              {`Showing ${certs.length} of ${total}`}
-            </div>
-
-            <div className="flex gap-2 items-center">
-
-              <Button
-                variant="outline"
-                disabled={page <= 1}
-                onClick={() => {
-                  setPage(page - 1);
-                  fetchCerts({ page: page - 1 });
-                }}
-              >
-                Prev
-              </Button>
-
-              <div className="px-3 py-2 rounded-md border border-input bg-transparent">
-                {`${page} / ${totalPages}`}
-              </div>
-
-              <Button
-                variant="outline"
-                disabled={page >= totalPages}
-                onClick={() => {
-                  setPage(page + 1);
-                  fetchCerts({ page: page + 1 });
-                }}
-              >
-                Next
-              </Button>
-
-            </div>
-          </div>
-
         </div>
+
+        {/* Certificate Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <AnimatePresence mode="popLayout">
+            {isLoading ? (
+              Array.from({ length: 6 }).map((_, i) => (
+                <Card key={i} className="rounded-2xl border border-border/40 p-6 space-y-4 shadow-sm">
+                   <div className="flex justify-between">
+                      <Skeleton className="h-6 w-1/2 rounded-lg" />
+                      <Skeleton className="h-6 w-1/4 rounded-lg" />
+                   </div>
+                   <Skeleton className="h-4 w-1/3 rounded-lg" />
+                   <Skeleton className="h-12 w-full rounded-xl" />
+                   <div className="flex justify-between items-center pt-2">
+                      <Skeleton className="h-4 w-24 rounded-lg" />
+                      <Skeleton className="h-9 w-20 rounded-lg" />
+                   </div>
+                </Card>
+              ))
+            ) : certs.length === 0 ? (
+              <div className="col-span-full py-40 border-2 border-dashed border-border/40 rounded-[32px] flex flex-col items-center justify-center text-center">
+                 <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
+                    <Medal size={32} className="text-muted-foreground/40" />
+                 </div>
+                 <h3 className="text-base font-semibold text-foreground">Registry Empty</h3>
+                 <p className="text-xs text-muted-foreground mt-1 uppercase font-semibold tracking-widest px-8 max-w-sm">No certifications match your current administrative filter context.</p>
+              </div>
+            ) : (
+              certs.map((cert, idx) => (
+                <motion.div
+                  key={cert._id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.05 }}
+                >
+                   <Card className="group relative bg-card border-border border-1 shadow-sm rounded-[24px] overflow-hidden hover:border-primary/40 hover:shadow-xl transition-all duration-500 flex flex-col h-full">
+                      <div className="p-6 flex-1 space-y-4">
+                         <div className="flex justify-between items-start gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center border border-primary/10 group-hover:bg-primary/10 transition-colors shrink-0">
+                               <Award size={20} className="text-primary" />
+                            </div>
+                            <CertStatusBadge status={cert.status} />
+                         </div>
+
+                         <div>
+                            <h3 className="text-base font-semibold text-foreground leading-tight group-hover:text-primary transition-colors line-clamp-2">
+                               {cert.title || "Provisional Certification"}
+                            </h3>
+                            <div className="flex items-center gap-1.5 mt-1.5">
+                               <Building2 size={12} className="text-muted-foreground" />
+                               <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">{cert.platform || "Independent Source"}</span>
+                            </div>
+                         </div>
+
+                         <div className="bg-foreground/[0.02] rounded-2xl p-4 border border-border/40 space-y-2">
+                            <div className="flex items-center justify-between text-[10px] font-semibold uppercase tracking-tight">
+                               <span className="text-muted-foreground">Issuance Window</span>
+                               <Calendar size={12} className="text-primary/60" />
+                            </div>
+                            <div className="flex items-center gap-2">
+                               <span className="text-[11px] font-gray-600 font-semibold text-foreground tabular-nums">
+                                  {cert.from ? new Date(cert.from).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : "—"}
+                               </span>
+                               <div className="h-[1px] flex-1 bg-border/60" />
+                               <span className="text-[11px] font-gray-600 font-semibold  text-foreground tabular-nums">
+                                  {cert.to ? new Date(cert.to).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : "Permanent"}
+                               </span>
+                            </div>
+                         </div>
+                      </div>
+
+                      <div className="px-6 py-4 border-t border-border/20 bg-foreground/[0.01] flex items-center justify-between mt-auto">
+                         <div className="flex flex-col">
+                            <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-widest">Digital Credential</span>
+                            <span className="text-[11px] font-gray-600 font-semibold text-foreground max-w-[120px] truncate">{cert.platform || "N/A"}</span>
+                         </div>
+                         
+                         {cert.platformLink ? (
+                            <Link href={cert.platformLink} target="_blank">
+                               <Button size="sm" className="h-9 rounded-xl px-4 bg-blue-700 hover:bg-blue-800 text-white font-semibold uppercase tracking-widest text-[9px] gap-2 shadow-sm flex items-center">
+                                  <Globe size={14} /> Open URL
+                               </Button>
+                            </Link>
+                         ) : (
+                           <Button disabled size="sm" variant="ghost" className="h-9 rounded-xl px-4 text-[9px] font-semibold uppercase tracking-widest gap-2 opacity-40">
+                             <XCircle size={14} /> No Link
+                           </Button>
+                         )}
+                      </div>
+                   </Card>
+                </motion.div>
+              ))
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Pagination Footer */}
+        {totalPages > 1 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between pt-10 border-t border-border/40 gap-4">
+             <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
+                Ledger focus: <span className="text-foreground font-black">{certs.length}</span> / {total} entries
+             </p>
+             
+             <div className="flex items-center gap-3 bg-muted/20 p-1.5 rounded-2xl border border-border/40">
+                <Button
+                   variant="ghost"
+                   size="sm"
+                   disabled={page <= 1}
+                   onClick={() => { setPage(page - 1); fetchCerts({ page: page - 1 }); }}
+                   className="h-9 px-4 rounded-xl text-[10px] font-semibold uppercase tracking-widest hover:bg-background"
+                >
+                  <ChevronLeft size={16} />
+                </Button>
+                
+                <div className="w-[1px] h-4 bg-border/60 mx-1" />
+                <span className="text-xs font-black text-foreground px-2 tabular-nums">{page} / {totalPages}</span>
+                <div className="w-[1px] h-4 bg-border/60 mx-1" />
+
+                <Button
+                   variant="ghost"
+                   size="sm"
+                   disabled={page >= totalPages}
+                   onClick={() => { setPage(page + 1); fetchCerts({ page: page + 1 }); }}
+                   className="h-9 px-4 rounded-xl text-[10px] font-semibold uppercase tracking-widest hover:bg-background"
+                >
+                  <ChevronRight size={16} />
+                </Button>
+             </div>
+          </div>
+        )}
       </div>
-    </>
+    </div>
   );
 }

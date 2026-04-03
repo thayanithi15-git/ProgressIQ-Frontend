@@ -83,6 +83,7 @@ interface UserManagementState {
   isLoading: boolean;
   currentPage: number;
   pageSize: number;
+  totalPages: number;
   filters: UserFilters;
   editingUserId: string | null;
 
@@ -113,6 +114,7 @@ export const useUserManagementStore = create<UserManagementState>((set, get) => 
   isLoading: false,
   currentPage: 1,
   pageSize: 10,
+  totalPages: 0,
   filters: initialFilters,
   editingUserId: null,
 
@@ -142,6 +144,7 @@ export const useUserManagementStore = create<UserManagementState>((set, get) => 
       set({
         users: response.data.users || [],
         total: response.data.total || 0,
+        totalPages: Math.ceil((response.data.total || 0) / limit),
         currentPage: page,
         isLoading: false,
       });

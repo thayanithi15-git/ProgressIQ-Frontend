@@ -100,6 +100,18 @@ export const adminSections = (base: string): SidebarSection[] => [
         description: "All Tasks",
       },
       {
+        icon: Briefcase,
+        label: "Internships",
+        href: `${base}/internships`,
+        description: "All Internships",
+      },
+      {
+        icon: FileText,
+        label: "Surveys",
+        href: `${base}/surveys`,
+        description: "All Surveys",
+      },
+      {
         icon: BarChart3,
         label: "Reporting",
         href: `${base}/reports`,

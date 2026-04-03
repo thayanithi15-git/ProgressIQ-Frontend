@@ -72,6 +72,19 @@ const Header: React.FC<HeaderProps> = ({
             .replace(/_/g, " ")
             .replace(/\b\w/g, (c) => c.toUpperCase());
 
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => { setMounted(true); }, []);
+
+    if (!mounted) {
+        return (
+            <header className="sticky top-0 z-50 w-full border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
+                <div className="container flex h-16 items-center px-4">
+                    <div className="h-8 w-32 bg-muted/20 animate-pulse rounded-lg" />
+                </div>
+            </header>
+        );
+    }
+
     const displayName = sessionData?.username || formatRole(role);
     const displayRole = formatRole(sessionData?.role || role);
     const displayEmail = sessionData?.email || "";
@@ -105,7 +118,7 @@ const Header: React.FC<HeaderProps> = ({
                         variant="ghost"
                         size="sm"
                         onClick={toggleTheme}
-                        className="h-9 w-9 p-0 cursor-pointer border"
+                        className={cn("h-9 w-9 p-0 cursor-pointer border", isDark ? "bg-primary/5" : "")}
                         aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
                     >
                         {isDark ? (

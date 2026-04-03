@@ -61,6 +61,7 @@ interface MentorManagementState {
   isLoading: boolean;
   currentPage: number;
   pageSize: number;
+  totalPages: number;
   filters: MentorFilters;
   viewMode: 'list' | 'profile';
   students: Student[];
@@ -100,6 +101,7 @@ export const useMentorManagementStore = create<MentorManagementState>(
     isLoading: false,
     currentPage: 1,
     pageSize: 10,
+    totalPages: 0,
     filters: initialFilters,
     viewMode: 'list',
     students: [],
@@ -145,6 +147,7 @@ export const useMentorManagementStore = create<MentorManagementState>(
         set({
           mentors: paginatedMentors,
           total: allMentors.length,
+          totalPages: Math.ceil(allMentors.length / limit),
           currentPage: page,
           pageSize: limit,
           isLoading: false,
