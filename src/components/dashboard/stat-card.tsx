@@ -43,7 +43,7 @@ export const StatCard = ({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05, duration: 0.4 }}
       whileHover={{ y: -4, transition: { duration: 0.2 } }}
-      className="bg-card-glass/60 backdrop-blur-xl p-6 rounded-[1.5rem] border border-border/40 shadow-sm relative overflow-hidden group h-[140px] flex flex-col justify-between"
+      className="bg-white backdrop-blur-xl p-6 rounded-[1.5rem] border border-border/40 shadow-sm relative overflow-hidden group h-[140px] flex flex-col justify-between"
     >
       <div className="flex justify-between items-start relative z-10">
         <p className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-[0.15em] leading-none opacity-80">
