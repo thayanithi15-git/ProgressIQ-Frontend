@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import { useEffect, useState } from "react";
 import LayoutWrapper from "@/components/layout/layout";
-import { Playfair_Display, Source_Serif_4, JetBrains_Mono } from 'next/font/google';
 
 interface Props {
   children: React.ReactNode;
@@ -21,51 +20,23 @@ const poppins = Poppins({
   weight: ["400", "500", "600", "700"],
 });
 
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  variable: '--font-serif',
-  weight: ['400', '500', '600', '700', '800', '900'],
-});
-
-const sourceSerif = Source_Serif_4({
-  subsets: ['latin'],
-  variable: '--font-sans',
-  weight: ['300', '400', '500', '600', '700'],
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  variable: '--font-mono',
-  weight: ['400', '500', '700'],
-});
-
 export default function PrivateLayout({ children }: Props) {
   const router = useRouter();
 
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) return null;
-
   return (
-    <div className={cn(poppins.className, `${playfair.variable} ${sourceSerif.variable} ${jetbrainsMono.variable} antialiased min-h-screen bg-background`)}>
-      {/* <html className={`${playfair.variable} ${sourceSerif.variable} ${jetbrainsMono.variable}`}> */}
-
+    <div className={cn(poppins.className, "antialiased min-h-screen bg-background")}>
       {/* <SidebarProvider defaultOpen>
         <AppSidebar /> */}
       {/* <LayoutWrapper> */}
-      <div
-      // id="content"
-      // className={cn(
-      //   "flex-1 flex flex-col",
-      //   "min-h-screen relative"
-      // )}
-      >
-        {children}
-      </div>
+        <div
+          // id="content"
+          // className={cn(
+          //   "flex-1 flex flex-col",
+          //   "min-h-screen relative"
+          // )}
+        >
+          {children}
+        </div>
       {/* </LayoutWrapper> */}
       {/* </SidebarProvider> */}
     </div>

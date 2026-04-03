@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
-  Search, Filter, Plus, Edit, Trash2, ArrowUpDown, MoreHorizontal, ChevronLeft, ChevronRight, X, UserPlus, Download, 
+  Search, Filter, Plus, Edit, Trash2, ArrowUpDown, MoreHorizontal, ChevronLeft, ChevronRight, X, UserPlus, Download,
   MapPin, Phone, Mail, Calendar, GraduationCap, Briefcase, Award, CheckSquare, Zap, AlertCircle, Linkedin, Github, Code, Terminal, Link2, Globe, Eye, Users, FileSpreadsheet, Upload, Info
 } from "lucide-react";
 import * as XLSX from "xlsx";
@@ -299,307 +299,307 @@ export default function StudentListPage() {
     <Header title='Student Management' subtitle="Welcome back! Here's what's happening today." HeaderComp={
       <div className="flex items-center gap-3">
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogTrigger asChild>
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold gap-2">
-            <Plus className="w-4 h-4" />
-            Add Student
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="w-3xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-foreground">Create New Student</DialogTitle>
-            <DialogDescription>Add a new student to the system</DialogDescription>
-          </DialogHeader>
+          <DialogTrigger asChild>
+            <Button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold gap-2">
+              <Plus className="w-4 h-4" />
+              Add Student
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="w-3xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-foreground">Create New Student</DialogTitle>
+              <DialogDescription>Add a new student to the system</DialogDescription>
+            </DialogHeader>
 
-          <div className="space-y-4">
-            {/* Email */}
+            <div className="space-y-4">
+              {/* Email */}
 
-            <div>
-              <Label className="text-sm font-semibold text-foreground">Email *</Label>
-              <Input
-                placeholder="student@college.edu"
-                className="mt-2 border-border"
-                value={createFormData.email || ""}
-                onChange={(e) =>
-                  setCreateFormData({ ...createFormData, email: e.target.value })
-                }
-              />
-            </div>
-
-            <div>
-              <Label className="text-sm font-semibold text-foreground">Password *</Label>
-              <Input
-                placeholder="********"
-                className="mt-2 border-border"
-                value={createFormData.password || ""}
-                // type='password'
-                onChange={(e) =>
-                  setCreateFormData({ ...createFormData, password: e.target.value })
-                }
-              />
-            </div>
-
-            {/* Name Fields */}
-            <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-sm font-semibold text-foreground">First Name *</Label>
+                <Label className="text-sm font-semibold text-foreground">Email *</Label>
                 <Input
-                  placeholder="John"
+                  placeholder="student@college.edu"
                   className="mt-2 border-border"
-                  value={createFormData.firstName || ""}
+                  value={createFormData.email || ""}
                   onChange={(e) =>
-                    setCreateFormData({ ...createFormData, firstName: e.target.value })
+                    setCreateFormData({ ...createFormData, email: e.target.value })
                   }
                 />
               </div>
-              <div>
-                <Label className="text-sm font-semibold text-foreground">Last Name *</Label>
-                <Input
-                  placeholder="Doe"
-                  className="mt-2 border-border"
-                  value={createFormData.lastName || ""}
-                  onChange={(e) =>
-                    setCreateFormData({ ...createFormData, lastName: e.target.value })
-                  }
-                />
-              </div>
-            </div>
 
-            {/* Phone & DOB */}
-            <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label className="text-sm font-semibold text-foreground">Phone *</Label>
+                <Label className="text-sm font-semibold text-foreground">Password *</Label>
                 <Input
-                  placeholder="9876543210"
+                  placeholder="********"
                   className="mt-2 border-border"
-                  value={createFormData.phone || ""}
+                  value={createFormData.password || ""}
+                  // type='password'
                   onChange={(e) =>
-                    setCreateFormData({ ...createFormData, phone: e.target.value })
+                    setCreateFormData({ ...createFormData, password: e.target.value })
                   }
                 />
               </div>
-              <div>
-                <Label className="text-sm font-semibold text-foreground">
-                  Date of Birth *
-                </Label>
-                <Input
-                  type="date"
-                  className="mt-2 border-border"
-                  value={createFormData.dob || ""}
-                  onChange={(e) =>
-                    setCreateFormData({ ...createFormData, dob: e.target.value })
-                  }
-                />
-              </div>
-            </div>
 
-            {/* Gender & Place */}
-            <div className="grid grid-cols-2 gap-4">
+              {/* Name Fields */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-semibold text-foreground">First Name *</Label>
+                  <Input
+                    placeholder="John"
+                    className="mt-2 border-border"
+                    value={createFormData.firstName || ""}
+                    onChange={(e) =>
+                      setCreateFormData({ ...createFormData, firstName: e.target.value })
+                    }
+                  />
+                </div>
+                <div>
+                  <Label className="text-sm font-semibold text-foreground">Last Name *</Label>
+                  <Input
+                    placeholder="Doe"
+                    className="mt-2 border-border"
+                    value={createFormData.lastName || ""}
+                    onChange={(e) =>
+                      setCreateFormData({ ...createFormData, lastName: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+
+              {/* Phone & DOB */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-semibold text-foreground">Phone *</Label>
+                  <Input
+                    placeholder="9876543210"
+                    className="mt-2 border-border"
+                    value={createFormData.phone || ""}
+                    onChange={(e) =>
+                      setCreateFormData({ ...createFormData, phone: e.target.value })
+                    }
+                  />
+                </div>
+                <div>
+                  <Label className="text-sm font-semibold text-foreground">
+                    Date of Birth *
+                  </Label>
+                  <Input
+                    type="date"
+                    className="mt-2 border-border"
+                    value={createFormData.dob || ""}
+                    onChange={(e) =>
+                      setCreateFormData({ ...createFormData, dob: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+
+              {/* Gender & Place */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-semibold text-foreground">Gender</Label>
+                  <Select
+                    value={createFormData.gender || "Male"}
+                    onValueChange={(value) =>
+                      setCreateFormData({ ...createFormData, gender: value })
+                    }
+                  >
+                    <SelectTrigger className="mt-2 border-border">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Male">Male</SelectItem>
+                      <SelectItem value="Female">Female</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label className="text-sm font-semibold text-foreground">Place *</Label>
+                  <Input
+                    placeholder="Chennai"
+                    className="mt-2 border-border"
+                    value={createFormData.place || ""}
+                    onChange={(e) =>
+                      setCreateFormData({ ...createFormData, place: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+
+              {/* Department & Year */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-semibold text-foreground">Department *</Label>
+                  <Input
+                    placeholder="CSE"
+                    className="mt-2 border-border"
+                    value={createFormData.department || ""}
+                    onChange={(e) =>
+                      setCreateFormData({ ...createFormData, department: e.target.value })
+                    }
+                  />
+                </div>
+                <div>
+                  <Label className="text-sm font-semibold text-foreground">Year *</Label>
+                  <Select
+                    value={createFormData.year || "1"}
+                    onValueChange={(value) =>
+                      setCreateFormData({ ...createFormData, year: value })
+                    }
+                  >
+                    <SelectTrigger className="mt-2 border-border">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">1st Year</SelectItem>
+                      <SelectItem value="2">2nd Year</SelectItem>
+                      <SelectItem value="3">3rd Year</SelectItem>
+                      <SelectItem value="4">4th Year</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Academic Year */}
               <div>
-                <Label className="text-sm font-semibold text-foreground">Gender</Label>
-                <Select
-                  value={createFormData.gender || "Male"}
-                  onValueChange={(value) =>
-                    setCreateFormData({ ...createFormData, gender: value })
+                <Label className="text-sm font-semibold text-foreground">Academic Year *</Label>
+                <Input
+                  placeholder="2026-2025"
+                  className="mt-2 border-border"
+                  value={createFormData.academicYear || ""}
+                  onChange={(e) =>
+                    setCreateFormData({ ...createFormData, academicYear: e.target.value })
                   }
+                />
+              </div>
+
+              {/* Parent Info */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-semibold text-foreground">Parent Name *</Label>
+                  <Input
+                    placeholder="Parent Name"
+                    className="mt-2 border-border"
+                    value={createFormData.parentName || ""}
+                    onChange={(e) =>
+                      setCreateFormData({ ...createFormData, parentName: e.target.value })
+                    }
+                  />
+                </div>
+                <div>
+                  <Label className="text-sm font-semibold text-foreground">
+                    Parent Phone *
+                  </Label>
+                  <Input
+                    placeholder="9123456789"
+                    className="mt-2 border-border"
+                    value={createFormData.parentPhone || ""}
+                    onChange={(e) =>
+                      setCreateFormData({ ...createFormData, parentPhone: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+
+              {/* Roll No & Family Income */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-semibold text-foreground">Roll No *</Label>
+                  <Input
+                    placeholder="21CS001"
+                    className="mt-2 border-border"
+                    value={createFormData.rollNo || ""}
+                    onChange={(e) =>
+                      setCreateFormData({ ...createFormData, rollNo: e.target.value })
+                    }
+                  />
+                </div>
+                <div>
+                  <Label className="text-sm font-semibold text-foreground">Family Income</Label>
+                  <Input
+                    placeholder="e.g. 5,00,000"
+                    className="mt-2 border-border"
+                    value={createFormData.familyIncome || ""}
+                    onChange={(e) =>
+                      setCreateFormData({ ...createFormData, familyIncome: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+
+              {/* CGPA & Arrear Count */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-sm font-semibold text-foreground">Current CGPA</Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    placeholder="8.5"
+                    className="mt-2 border-border"
+                    value={createFormData.cgpa || ""}
+                    onChange={(e) =>
+                      setCreateFormData({ ...createFormData, cgpa: parseFloat(e.target.value) || 0 })
+                    }
+                  />
+                </div>
+                <div>
+                  <Label className="text-sm font-semibold text-foreground">Arrear Count</Label>
+                  <Input
+                    type="number"
+                    placeholder="0"
+                    className="mt-2 border-border"
+                    value={createFormData.arrearCount || ""}
+                    onChange={(e) =>
+                      setCreateFormData({ ...createFormData, arrearCount: parseInt(e.target.value) || 0 })
+                    }
+                  />
+                </div>
+              </div>
+
+              {/* Good At */}
+              <div>
+                <Label className="text-sm font-semibold text-foreground">Good At (comma separated)</Label>
+                <Input
+                  placeholder="Fullstack, AI/ML, DSA"
+                  className="mt-2 border-border"
+                  value={createFormData.goodAt?.join(", ") || ""}
+                  onChange={(e) =>
+                    setCreateFormData({ ...createFormData, goodAt: e.target.value.split(",").map(s => s.trim()).filter(s => s) })
+                  }
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-4">
+                <Button
+                  onClick={handleCreateStudent}
+                  disabled={isLoading}
+                  className="flex-1 bg-blue-600 text-white font-semibold hover:bg-blue-700"
                 >
-                  <SelectTrigger className="mt-2 border-border">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Male">Male</SelectItem>
-                    <SelectItem value="Female">Female</SelectItem>
-                    <SelectItem value="Other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label className="text-sm font-semibold text-foreground">Place *</Label>
-                <Input
-                  placeholder="Chennai"
-                  className="mt-2 border-border"
-                  value={createFormData.place || ""}
-                  onChange={(e) =>
-                    setCreateFormData({ ...createFormData, place: e.target.value })
-                  }
-                />
-              </div>
-            </div>
-
-            {/* Department & Year */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label className="text-sm font-semibold text-foreground">Department *</Label>
-                <Input
-                  placeholder="CSE"
-                  className="mt-2 border-border"
-                  value={createFormData.department || ""}
-                  onChange={(e) =>
-                    setCreateFormData({ ...createFormData, department: e.target.value })
-                  }
-                />
-              </div>
-              <div>
-                <Label className="text-sm font-semibold text-foreground">Year *</Label>
-                <Select
-                  value={createFormData.year || "1"}
-                  onValueChange={(value) =>
-                    setCreateFormData({ ...createFormData, year: value })
-                  }
+                  {isLoading ? "Creating..." : "Create Student"}
+                </Button>
+                <Button
+                  onClick={() => {
+                    setIsCreateDialogOpen(false);
+                    resetCreateForm();
+                  }}
+                  variant="outline"
+                  className="flex-1 border-border"
                 >
-                  <SelectTrigger className="mt-2 border-border">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="1">1st Year</SelectItem>
-                    <SelectItem value="2">2nd Year</SelectItem>
-                    <SelectItem value="3">3rd Year</SelectItem>
-                    <SelectItem value="4">4th Year</SelectItem>
-                  </SelectContent>
-                </Select>
+                  Cancel
+                </Button>
               </div>
             </div>
-
-            {/* Academic Year */}
-            <div>
-              <Label className="text-sm font-semibold text-foreground">Academic Year *</Label>
-              <Input
-                placeholder="2024-2025"
-                className="mt-2 border-border"
-                value={createFormData.academicYear || ""}
-                onChange={(e) =>
-                  setCreateFormData({ ...createFormData, academicYear: e.target.value })
-                }
-              />
-            </div>
-
-            {/* Parent Info */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label className="text-sm font-semibold text-foreground">Parent Name *</Label>
-                <Input
-                  placeholder="Parent Name"
-                  className="mt-2 border-border"
-                  value={createFormData.parentName || ""}
-                  onChange={(e) =>
-                    setCreateFormData({ ...createFormData, parentName: e.target.value })
-                  }
-                />
-              </div>
-              <div>
-                <Label className="text-sm font-semibold text-foreground">
-                  Parent Phone *
-                </Label>
-                <Input
-                  placeholder="9123456789"
-                  className="mt-2 border-border"
-                  value={createFormData.parentPhone || ""}
-                  onChange={(e) =>
-                    setCreateFormData({ ...createFormData, parentPhone: e.target.value })
-                  }
-                />
-              </div>
-            </div>
-
-            {/* Roll No & Family Income */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label className="text-sm font-semibold text-foreground">Roll No *</Label>
-                <Input
-                  placeholder="21CS001"
-                  className="mt-2 border-border"
-                  value={createFormData.rollNo || ""}
-                  onChange={(e) =>
-                    setCreateFormData({ ...createFormData, rollNo: e.target.value })
-                  }
-                />
-              </div>
-              <div>
-                <Label className="text-sm font-semibold text-foreground">Family Income</Label>
-                <Input
-                  placeholder="e.g. 5,00,000"
-                  className="mt-2 border-border"
-                  value={createFormData.familyIncome || ""}
-                  onChange={(e) =>
-                    setCreateFormData({ ...createFormData, familyIncome: e.target.value })
-                  }
-                />
-              </div>
-            </div>
-
-            {/* CGPA & Arrear Count */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label className="text-sm font-semibold text-foreground">Current CGPA</Label>
-                <Input
-                  type="number"
-                  step="0.01"
-                  placeholder="8.5"
-                  className="mt-2 border-border"
-                  value={createFormData.cgpa || ""}
-                  onChange={(e) =>
-                    setCreateFormData({ ...createFormData, cgpa: parseFloat(e.target.value) || 0 })
-                  }
-                />
-              </div>
-              <div>
-                <Label className="text-sm font-semibold text-foreground">Arrear Count</Label>
-                <Input
-                  type="number"
-                  placeholder="0"
-                  className="mt-2 border-border"
-                  value={createFormData.arrearCount || ""}
-                  onChange={(e) =>
-                    setCreateFormData({ ...createFormData, arrearCount: parseInt(e.target.value) || 0 })
-                  }
-                />
-              </div>
-            </div>
-
-            {/* Good At */}
-            <div>
-              <Label className="text-sm font-semibold text-foreground">Good At (comma separated)</Label>
-              <Input
-                placeholder="Fullstack, AI/ML, DSA"
-                className="mt-2 border-border"
-                value={createFormData.goodAt?.join(", ") || ""}
-                onChange={(e) =>
-                  setCreateFormData({ ...createFormData, goodAt: e.target.value.split(",").map(s => s.trim()).filter(s => s) })
-                }
-              />
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex gap-3 pt-4">
-              <Button
-                onClick={handleCreateStudent}
-                disabled={isLoading}
-                className="flex-1 bg-blue-600 text-white font-semibold hover:bg-blue-700"
-              >
-                {isLoading ? "Creating..." : "Create Student"}
-              </Button>
-              <Button
-                onClick={() => {
-                  setIsCreateDialogOpen(false);
-                  resetCreateForm();
-                }}
-                variant="outline"
-                className="flex-1 border-border"
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-      <Button 
-        onClick={() => setIsBulkUploadDialogOpen(true)}
-        variant="outline"
-        className="border-blue-200 text-blue-600 hover:bg-blue-50 font-semibold gap-2"
-      >
-        <Upload className="w-4 h-4" />
-        Bulk Upload
-      </Button>
+          </DialogContent>
+        </Dialog>
+        <Button
+          onClick={() => setIsBulkUploadDialogOpen(true)}
+          variant="outline"
+          className="border-blue-200 text-blue-600 hover:bg-blue-50 font-semibold gap-2"
+        >
+          <Upload className="w-4 h-4" />
+          Bulk Upload
+        </Button>
       </div>
     } />
     <div className="h-[calc(100vh-80px)] bg-background p-6 flex flex-col gap-6 overflow-x-hidden">
@@ -898,7 +898,7 @@ export default function StudentListPage() {
                 <p className="text-muted-foreground font-semibold">No students found</p>
               </div>
             ) : (
-                <div className="overflow-x-auto horizontal-scroll">
+              <div className="overflow-x-auto horizontal-scroll">
                 <Table className="border shadow-none w-full">
                   <TableHeader>
                     <TableRow className="border-b border-border bg-muted/50">
@@ -1366,18 +1366,18 @@ export default function StudentListPage() {
             </div>
           </div>
 
-          <div 
+          <div
             className="border-2 border-dashed border-border rounded-xl p-8 flex flex-col items-center justify-center bg-muted/30 hover:bg-muted/50 transition-colors cursor-pointer"
             onClick={() => document.getElementById('bulk-upload-input')?.click()}
           >
             <Upload className="w-10 h-10 text-muted-foreground mb-4" />
             <p className="text-sm font-medium text-foreground">Click to upload or drag and drop</p>
             <p className="text-xs text-muted-foreground mt-1">Excel files up to 10MB</p>
-            <input 
-              id="bulk-upload-input" 
-              type="file" 
-              accept=".xlsx, .xls" 
-              className="hidden" 
+            <input
+              id="bulk-upload-input"
+              type="file"
+              accept=".xlsx, .xls"
+              className="hidden"
               onChange={async (e) => {
                 const file = e.target.files?.[0];
                 if (!file) return;
@@ -1390,10 +1390,10 @@ export default function StudentListPage() {
                     const wsname = wb.SheetNames[0];
                     const ws = wb.Sheets[wsname];
                     const data = XLSX.utils.sheet_to_json(ws);
-                    
+
                     const { bulkUpload } = useStudentManagementStore.getState();
                     const results = await bulkUpload(data as any);
-                    
+
                     if (results) {
                       setIsBulkUploadDialogOpen(false);
                     }
@@ -1408,8 +1408,8 @@ export default function StudentListPage() {
 
           <div className="flex justify-between items-center text-xs text-muted-foreground">
             <p>Download Template:</p>
-            <Button 
-              variant="link" 
+            <Button
+              variant="link"
               className="h-auto p-0 text-blue-600 font-semibold"
               onClick={() => {
                 const headers = ["email", "firstName", "lastName", "phone", "dob", "gender", "department", "year", "academicYear", "rollNo", "cgpa", "arrearCount", "familyIncome"];

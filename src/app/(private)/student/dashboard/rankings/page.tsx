@@ -16,7 +16,7 @@ import Header from "@/components/layout/header";
 // TOKENS
 // ─────────────────────────────────────────────────────────────────────────────
 const C = {
-  blue:    "#3B6FD4",
+  blue:    "var(--piq-blue)",
   violet:  "#7C3AED",
   emerald: "#059669",
   amber:   "#D97706",
@@ -34,56 +34,19 @@ const RANK_COLORS = [
   { bg: "linear-gradient(135deg,#FFF7ED,#FED7AA)", color: "#92400E", border: "#FDBA74", icon: "🥉" },
 ];
 
-// ─────────────────────────────────────────────────────────────────────────────
-// GLOBAL CSS
-// ─────────────────────────────────────────────────────────────────────────────
-const GLOBAL_CSS = `
-  @keyframes shimmer  { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-  @keyframes spin     { to{transform:rotate(360deg)} }
-  @keyframes pulse-glow { 0%,100%{box-shadow:0 0 0 0 rgba(59,111,212,0)} 50%{box-shadow:0 0 0 6px rgba(59,111,212,0.18)} }
-
-  :root {
-    --card-bg:#fff; --card-border:#E8EDF4; --card-shadow:0 2px 12px rgba(0,0,0,0.06);
-    --body-bg:#F7F9FC; --text-primary:#1E293B; --text-secondary:#64748B; --text-muted:#94A3B8;
-    --input-bg:#F8FAFC; --input-border:#E2E8F0;
-    --sk-from:#EEF2F7; --sk-via:#E2E8F0;
-    --table-hover:#F0F5FF; --table-border:#F1F5F9;
-    --pill-inactive-bg:#F1F5F9; --pill-inactive-text:#64748B;
-    --me-bg:#EEF2FF; --me-border:#C7D2FE;
-  }
-  .dark {
-    --card-bg:#1E2432; --card-border:#2A3349; --card-shadow:0 2px 12px rgba(0,0,0,0.30);
-    --body-bg:#141921; --text-primary:#E8EDF8; --text-secondary:#94A3B8; --text-muted:#64748B;
-    --input-bg:#252E42; --input-border:#2A3349;
-    --sk-from:#1E2432; --sk-via:#252E42;
-    --table-hover:#1A2540; --table-border:#1E2432;
-    --pill-inactive-bg:#1E2432; --pill-inactive-text:#94A3B8;
-    --me-bg:#1E2A50; --me-border:#3B5080;
-  }
-  .sk { background:linear-gradient(90deg,var(--sk-from) 25%,var(--sk-via) 50%,var(--sk-from) 75%); background-size:200% 100%; animation:shimmer 1.6s infinite linear; border-radius:10px; }
-  .form-input { width:100%; padding:9px 13px; border-radius:10px; font-size:13px; font-family:inherit; background:var(--input-bg); border:1.5px solid var(--input-border); color:var(--text-primary); outline:none; transition:border-color 0.18s; }
-  .form-input:focus { border-color:${C.blue}; box-shadow:0 0 0 3px ${C.blue}20; }
-  .form-input::placeholder { color:var(--text-muted); }
-  .rank-row { transition:background 0.14s; }
-  .rank-row:hover { background:var(--table-hover)!important; }
-  .rank-row.me { background:var(--me-bg)!important; animation:pulse-glow 2s ease-in-out 2; }
-
-  @media(max-width:900px){ .rank-cols-hide{display:none!important;} }
-  @media(max-width:768px){ .top3-grid{grid-template-columns:1fr!important;} .pos-grid{grid-template-columns:repeat(2,1fr)!important;} }
-  @media(max-width:580px){ .pos-grid{grid-template-columns:1fr!important;} .filter-rank{flex-wrap:wrap!important;} }
-`;
+const PIE_COLORS = ["var(--piq-blue)", "#7C3AED", "#059669", "#D97706"];
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HELPERS
 // ─────────────────────────────────────────────────────────────────────────────
-const Sk = ({ w = "100%", h = 16, style = {} }: any) => <div className="sk" style={{ width: w, height: h, ...style }} />;
-
-const PIE_COLORS = [C.blue, C.violet, C.emerald, C.amber];
+const Sk = ({ h = 16, className = "" }: { h?: number; className?: string }) => (
+  <div className={`animate-pulse bg-foreground/5 rounded-lg ${className}`} style={{ height: h }} />
+);
 
 const getInitials = (name: string) => name.split(" ").map(p => p[0]).join("").toUpperCase().slice(0, 2);
 
-const Pill = ({ label, active, onClick, color = C.blue }: any) => (
-  <button onClick={onClick} style={{ padding: "5px 14px", borderRadius: 20, border: "none", cursor: "pointer", fontSize: 12, fontWeight: 600, transition: "all 0.18s", background: active ? color : "var(--pill-inactive-bg)", color: active ? "#fff" : "var(--pill-inactive-text)", boxShadow: active ? `0 2px 10px ${color}44` : "none" }}>
+const Pill = ({ label, active, onClick, color = "var(--piq-blue)" }: any) => (
+  <button onClick={onClick} className={`px-4 py-1.5 rounded-full border text-[11px] font-bold uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-all duration-300 ${active ? 'text-white shadow-md border-transparent' : 'bg-card/50 text-muted-foreground border-transparent hover:bg-foreground/5'}`} style={{ backgroundColor: active ? color : undefined }}>
     {label}
   </button>
 );
@@ -92,11 +55,11 @@ const Pill = ({ label, active, onClick, color = C.blue }: any) => (
 // RANK MEDAL
 // ─────────────────────────────────────────────────────────────────────────────
 const RankCell = ({ rank, isMe }: { rank: number; isMe: boolean }) => {
-  if (rank === 1) return <span style={{ fontSize: 20 }}>🥇</span>;
-  if (rank === 2) return <span style={{ fontSize: 20 }}>🥈</span>;
-  if (rank === 3) return <span style={{ fontSize: 20 }}>🥉</span>;
+  if (rank === 1) return <span className="text-2xl drop-shadow-sm">🥇</span>;
+  if (rank === 2) return <span className="text-2xl drop-shadow-sm">🥈</span>;
+  if (rank === 3) return <span className="text-2xl drop-shadow-sm">🥉</span>;
   return (
-    <span style={{ fontSize: 12, fontWeight: 800, color: isMe ? C.blue : "var(--text-secondary)", background: isMe ? `${C.blue}18` : "var(--pill-inactive-bg)", borderRadius: 8, padding: "3px 9px", letterSpacing: "0.02em" }}>
+    <span className={`inline-flex items-center justify-center px-3 py-1 font-mono font-bold text-[11px] tracking-widest rounded-lg ${isMe ? 'bg-primary/10 text-primary' : 'bg-foreground/5 text-muted-foreground'}`}>
       #{rank}
     </span>
   );
@@ -107,10 +70,8 @@ const RankCell = ({ rank, isMe }: { rank: number; isMe: boolean }) => {
 // ─────────────────────────────────────────────────────────────────────────────
 const MyPositionBanner = ({ myPosition, loading }: any) => {
   if (loading) return (
-    <div style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", borderRadius: 18, padding: "20px 24px", boxShadow: "var(--card-shadow)" }}>
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-        <Sk h={18} w="40%" /><Sk h={60} /><Sk h={14} w="60%" />
-      </div>
+    <div className="bg-card-glass/60 backdrop-blur-xl border border-border/40 shadow-sm rounded-2xl p-6 flex flex-col gap-3">
+      <Sk h={18} className="w-[40%]" /><Sk h={60} /><Sk h={14} className="w-[60%]" />
     </div>
   );
   if (!myPosition) return null;
@@ -120,41 +81,41 @@ const MyPositionBanner = ({ myPosition, loading }: any) => {
 
   return (
     <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-      <div style={{ background: "linear-gradient(135deg,#1E2432 0%,#0F172A 100%)", borderRadius: 20, padding: "24px 28px", position: "relative", overflow: "hidden", boxShadow: "0 12px 40px rgba(0,0,0,0.25)" }}>
+      <div className="bg-gradient-to-br from-slate-900 to-slate-950 rounded-3xl p-6 lg:p-8 relative overflow-hidden shadow-2xl shadow-blue-900/10 border border-slate-800">
         {/* Decorative */}
-        <div style={{ position: "absolute", right: -30, top: -30, width: 140, height: 140, borderRadius: "50%", background: "rgba(255,255,255,0.04)", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", right: 40, bottom: -50, width: 110, height: 110, borderRadius: "50%", background: "rgba(255,255,255,0.03)", pointerEvents: "none" }} />
+        <div className="absolute -top-[30px] -right-[30px] w-[140px] h-[140px] rounded-full bg-white/[0.03] pointer-events-none" />
+        <div className="absolute -bottom-[50px] right-[40px] w-[110px] h-[110px] rounded-full bg-white/[0.02] pointer-events-none" />
 
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: 18 }}>
+        <div className="flex flex-col lg:flex-row items-start justify-between gap-6 lg:gap-10">
           <div>
-            <p style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.45)", letterSpacing: "0.08em", textTransform: "uppercase", margin: "0 0 6px" }}>Your Standing</p>
-            <h2 className="font-poppins" style={{ fontSize: 22, fontWeight: 800, color: "#fff", margin: "0 0 4px" }}>{studentInfo.name}</h2>
-            <p style={{ fontSize: 12, color: "rgba(255,255,255,0.55)", margin: 0 }}>{studentInfo.department} • {studentInfo.year}</p>
+            <p className="text-[10px] font-mono font-bold text-white/40 tracking-[0.15em] uppercase mb-2">Your Standing</p>
+            <h2 className="font-display text-2xl lg:text-3xl font-bold text-white mb-1.5">{studentInfo.name}</h2>
+            <p className="text-sm font-mono text-white/50">{studentInfo.department} • {studentInfo.year}</p>
           </div>
 
           {/* Percentile ring */}
-          <div style={{ textAlign: "center" }}>
-            <div style={{ width: 72, height: 72, borderRadius: "50%", background: `conic-gradient(${C.blue} ${percentile * 3.6}deg, rgba(255,255,255,0.1) 0deg)`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 6px" }}>
-              <div style={{ width: 56, height: 56, borderRadius: "50%", background: "#1E2432", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-                <span style={{ fontSize: 16, fontWeight: 900, color: C.blue, lineHeight: 1 }}>{percentile}</span>
-                <span style={{ fontSize: 8, color: "rgba(255,255,255,0.4)", fontWeight: 700 }}>%ile</span>
+          <div className="text-center lg:ml-auto">
+            <div className="w-[76px] h-[76px] rounded-full flex items-center justify-center mx-auto mb-2" style={{ background: `conic-gradient(var(--piq-blue) ${percentile * 3.6}deg, rgba(255,255,255,0.1) 0deg)` }}>
+              <div className="w-[58px] h-[58px] rounded-full bg-slate-900 flex flex-col items-center justify-center">
+                <span className="text-lg font-display font-bold text-white leading-none">{percentile}</span>
+                <span className="text-[8px] font-mono font-bold text-white">PERCENTILE</span>
               </div>
             </div>
-            <p style={{ fontSize: 10, color: "rgba(255,255,255,0.4)", fontWeight: 600, margin: 0 }}>Percentile</p>
+            <p className="text-[10px] font-mono font-bold text-white/40 uppercase tracking-widest m-0">Top Performing</p>
           </div>
         </div>
 
         {/* Stats row */}
-        <div className="pos-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12, marginTop: 20 }}>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mt-6 lg:mt-8">
           {[
             { label: "Overall Rank",   val: `#${ranking.overallRank}`,     color: C.gold },
             { label: "Dept Rank",      val: `#${ranking.departmentRank}`,  color: C.cyan },
             { label: "Total Points",   val: studentInfo.totalPoints.toLocaleString(), color: C.violet },
             { label: "Total Students", val: stats.totalStudents,            color: C.emerald },
           ].map(({ label, val, color }) => (
-            <div key={label} style={{ padding: "12px 14px", borderRadius: 12, background: "rgba(255,255,255,0.06)", backdropFilter: "blur(4px)" }}>
-              <p style={{ fontSize: 10, fontWeight: 700, color: "rgba(255,255,255,0.40)", letterSpacing: "0.05em", textTransform: "uppercase", margin: "0 0 4px" }}>{label}</p>
-              <p className="font-poppins" style={{ fontSize: 20, fontWeight: 800, color, margin: 0, lineHeight: 1 }}>{val}</p>
+            <div key={label} className="bg-white/[0.03] backdrop-blur-sm border border-white/5 rounded-xl p-3.5">
+              <p className="text-[9px] font-mono font-bold text-white/40 tracking-[0.15em] uppercase mb-1">{label}</p>
+              <p className="font-display text-xl lg:text-2xl font-bold m-0 leading-none" style={{ color }}>{val}</p>
             </div>
           ))}
         </div>
@@ -167,30 +128,30 @@ const MyPositionBanner = ({ myPosition, loading }: any) => {
 // TOP 3 PODIUM
 // ─────────────────────────────────────────────────────────────────────────────
 const Top3Podium = ({ top3, isMe }: { top3: (RankingEntry | DepartmentRankingEntry)[]; isMe: (id: string) => boolean }) => (
-  <div className="top3-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}>
-    {[1, 0, 2].map((idx) => { // 2nd, 1st, 3rd
+  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-fr items-end" style={{ minHeight: '260px' }}>
+    {[1, 0, 2].map((idx) => { // 2nd, 1st, 3rd (rendered order)
       const entry = top3[idx];
-      if (!entry) return <div key={idx} />;
+      if (!entry) return <div key={`empty-${idx}`} />;
       const meta = RANK_COLORS[idx];
       const isCurrentUser = isMe(entry.studentId);
-      const heights = ["86px", "106px", "72px"];
+      const podiumHeightClass = idx === 0 ? "h-32" : idx === 1 ? "h-24" : "h-20"; // Adjust podium heights
       return (
         <motion.div key={entry.studentId} initial={{ opacity: 0, y: 16 + idx * 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.09, duration: 0.4 }}
-          style={{ background: meta.bg, border: `1.5px solid ${meta.border}`, borderRadius: 18, padding: "18px 16px", textAlign: "center", position: "relative", boxShadow: isCurrentUser ? `0 0 0 2px ${C.blue}, 0 8px 24px ${C.blue}30` : "0 4px 16px rgba(0,0,0,0.08)" }}>
+          className={`flex flex-col text-center relative rounded-[1.5rem] p-5 shadow-lg ${isCurrentUser ? 'ring-2 ring-primary shadow-primary/20' : ''}`} style={{ background: meta.bg, border: `1px solid ${meta.border}` }}>
           {isCurrentUser && (
-            <div style={{ position: "absolute", top: 8, right: 8, fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 10, background: C.blue, color: "#fff" }}>You</div>
+            <div className="absolute top-3 right-3 text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-primary text-white uppercase tracking-widest shadow-sm">You</div>
           )}
-          <div style={{ fontSize: 28, marginBottom: 6 }}>{meta.icon}</div>
-          <div style={{ width: 44, height: 44, borderRadius: "50%", background: `${C.blue}22`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 15, fontWeight: 800, color: meta.color, margin: "0 auto 8px", border: `2px solid ${meta.border}` }}>
+          <div className="text-4xl mb-3 drop-shadow-md">{meta.icon}</div>
+          <div className="w-12 h-12 rounded-full flex items-center justify-center font-display font-bold text-lg mx-auto mb-3 shadow-inner" style={{ background: `${meta.border}40`, color: meta.color, border: `2px solid ${meta.border}80` }}>
             {getInitials(entry.name)}
           </div>
-          <p style={{ fontSize: 13, fontWeight: 800, color: meta.color, margin: "0 0 3px", lineHeight: 1.2 }}>{entry.name}</p>
-          {"department" in entry && <p style={{ fontSize: 10, color: meta.color, opacity: 0.7, margin: "0 0 6px", fontWeight: 600 }}>{(entry as RankingEntry).department}</p>}
-          <div style={{ fontSize: 17, fontWeight: 900, color: meta.color }}>{entry.points.toLocaleString()}</div>
-          <div style={{ fontSize: 10, fontWeight: 600, color: meta.color, opacity: 0.65 }}>pts</div>
-          {/* podium bar */}
-          <div style={{ height: heights[idx], background: `${meta.border}40`, borderRadius: "0 0 8px 8px", marginTop: 10, display: "flex", alignItems: "flex-end", justifyContent: "center", paddingBottom: 6 }}>
-            <span style={{ fontSize: 18, fontWeight: 900, color: meta.color }}>#{idx === 0 ? 2 : idx === 1 ? 1 : 3}</span>
+          <p className="text-sm font-display font-bold truncate px-2 mb-0.5" style={{ color: meta.color }}>{entry.name}</p>
+          {"department" in entry && <p className="text-[10px] font-mono tracking-wider truncate px-2 mb-2 opacity-80 uppercase" style={{ color: meta.color }}>{(entry as RankingEntry).department}</p>}
+          <div className="text-xl font-display font-bold mt-1" style={{ color: meta.color }}>{entry.points.toLocaleString()}</div>
+          <div className="text-[10px] font-mono font-bold uppercase tracking-widest opacity-70 mb-4" style={{ color: meta.color }}>Points</div>
+          {/* podium bar base */}
+          <div className={`mt-auto w-full flex items-end justify-center pb-2 rounded-b-xl ${podiumHeightClass}`} style={{ background: `${meta.border}50` }}>
+             <span className="text-2xl font-display font-black opacity-40 mix-blend-color-burn">#{idx === 0 ? 2 : idx === 1 ? 1 : 3}</span>
           </div>
         </motion.div>
       );
@@ -203,25 +164,29 @@ const Top3Podium = ({ top3, isMe }: { top3: (RankingEntry | DepartmentRankingEnt
 // ─────────────────────────────────────────────────────────────────────────────
 const RankingTable = ({ entries, isMe, showDept = true, loading }: any) => {
   if (loading) return (
-    <div style={{ padding: "18px", display: "flex", flexDirection: "column", gap: 8 }}>
-      {[...Array(8)].map((_, i) => <Sk key={i} h={50} />)}
+    <div className="p-5 flex flex-col gap-3">
+      {[...Array(8)].map((_, i) => <Sk key={i} h={64} className="rounded-xl" />)}
     </div>
   );
   if (!entries.length) return (
-    <div style={{ padding: "48px", textAlign: "center" }}>
-      <Trophy size={36} color="var(--text-muted)" style={{ marginBottom: 10 }} />
-      <p style={{ fontSize: 14, color: "var(--text-muted)", fontWeight: 600 }}>No rankings yet</p>
+    <div className="py-20 px-6 text-center flex flex-col items-center">
+      <div className="w-16 h-16 rounded-2xl bg-foreground/5 flex items-center justify-center mb-4">
+        <Trophy size={28} className="text-muted-foreground" />
+      </div>
+      <p className="text-base font-display font-bold text-foreground mb-1 mt-2">No rankings available</p>
+      <p className="text-sm text-muted-foreground mb-6">Check back later when more data is available.</p>
     </div>
   );
 
   return (
-    <div style={{ overflowX: "auto" }}>
-      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+    <div className="overflow-x-auto">
+      <table className="w-full border-collapse">
         <thead>
-          <tr style={{ borderBottom: "1px solid var(--table-border)", background: "var(--body-bg)" }}>
+          <tr className="bg-foreground/[0.02] border-b border-border/40">
             {["Rank","Student","Points", ...(showDept ? ["Department","Year","Dept Rank"] : ["Year"])].map(h => (
-              <th key={h} className={["Year","Dept Rank"].includes(h) ? "rank-cols-hide" : ""}
-                style={{ padding: "11px 16px", textAlign: "left", fontSize: 11, fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.06em", textTransform: "uppercase", whiteSpace: "nowrap" }}>{h}</th>
+              <th key={h} className={`p-4 text-left text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-widest whitespace-nowrap ${["Year","Dept Rank"].includes(h) ? "hidden lg:table-cell" : ""}`}>
+                {h}
+              </th>
             ))}
           </tr>
         </thead>
@@ -230,32 +195,40 @@ const RankingTable = ({ entries, isMe, showDept = true, loading }: any) => {
             const me = isMe(entry.studentId);
             return (
               <motion.tr key={entry.studentId ?? i}
-                className={`rank-row${me ? " me" : ""}`}
-                initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.025 }}
-                style={{ borderBottom: "1px solid var(--table-border)", borderLeft: me ? `3px solid ${C.blue}` : "3px solid transparent" }}>
-                <td style={{ padding: "12px 16px" }}><RankCell rank={entry.rank ?? entry.overallRank} isMe={me} /></td>
-                <td style={{ padding: "12px 16px", minWidth: 180 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 9 }}>
-                    <div style={{ width: 34, height: 34, borderRadius: "50%", background: me ? `${C.blue}22` : `${PIE_COLORS[i % 4]}18`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 800, color: me ? C.blue : PIE_COLORS[i % 4], border: me ? `2px solid ${C.blue}55` : "none", flexShrink: 0 }}>
+                className={`group border-b border-border/30 last:border-0 transition-colors ${me ? 'bg-primary/5 hover:bg-primary/10' : 'hover:bg-foreground/5'}`}
+                initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.025 }}>
+                <td className="p-4"><RankCell rank={entry.rank ?? entry.overallRank} isMe={me} /></td>
+                <td className="p-4 min-w-[220px]">
+                  <div className="flex items-center gap-3.5">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-display font-bold shrink-0 shadow-sm ${me ? 'bg-primary text-primary-foreground' : 'bg-foreground/5 text-foreground'}`}
+                         style={!me ? { color: PIE_COLORS[i % 4], backgroundColor: `${PIE_COLORS[i % 4]}15` } : {}}>
                       {getInitials(entry.name)}
                     </div>
-                    <div>
-                      <p style={{ fontSize: 13, fontWeight: me ? 800 : 600, color: me ? C.blue : "var(--text-primary)", margin: 0, whiteSpace: "nowrap" }}>
-                        {entry.name} {me && <span style={{ fontSize: 10, background: C.blue, color: "#fff", borderRadius: 6, padding: "1px 5px", marginLeft: 4 }}>You</span>}
+                    <div className="min-w-0">
+                      <p className={`text-sm font-bold truncate m-0 ${me ? 'text-primary' : 'text-foreground'}`}>
+                        {entry.name} {me && <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[8px] font-mono font-bold text-primary-foreground bg-primary uppercase tracking-widest">You</span>}
                       </p>
-                      <p style={{ fontSize: 11, color: "var(--text-muted)", margin: 0 }}>{entry.email}</p>
+                      <p className="text-[11px] font-mono text-muted-foreground truncate m-0 mt-0.5">{entry.email}</p>
                     </div>
                   </div>
                 </td>
-                <td style={{ padding: "12px 16px" }}>
-                  <span style={{ fontSize: 15, fontWeight: 800, background: `linear-gradient(135deg,${C.amber},${C.rose})`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
+                <td className="p-4">
+                  <span className="text-base font-display font-bold bg-clip-text text-transparent bg-gradient-to-r from-amber-500 to-rose-500">
                     {(entry.points ?? 0).toLocaleString()}
                   </span>
                 </td>
-                {showDept && <td className="rank-cols-hide" style={{ padding: "12px 16px" }}><span style={{ fontSize: 11, fontWeight: 600, padding: "3px 9px", borderRadius: 20, background: `${C.blue}12`, color: C.blue }}>{entry.department}</span></td>}
-                <td className="rank-cols-hide" style={{ padding: "12px 16px", fontSize: 12, color: "var(--text-secondary)", fontWeight: 500 }}>{entry.year}</td>
                 {showDept && (
-                  <td className="rank-cols-hide" style={{ padding: "12px 16px", fontSize: 12, fontWeight: 700, color: "var(--text-muted)" }}>
+                  <td className="p-4 hidden lg:table-cell">
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-mono font-bold bg-primary/10 text-primary uppercase tracking-wider">
+                      {entry.department}
+                    </span>
+                  </td>
+                )}
+                <td className="p-4 text-xs font-mono font-semibold text-muted-foreground hidden lg:table-cell uppercase">
+                  {entry.year}
+                </td>
+                {showDept && (
+                  <td className="p-4 text-[11px] font-mono font-bold text-foreground hidden lg:table-cell">
                     #{entry.departmentRank ?? entry.rank}
                   </td>
                 )}
@@ -318,87 +291,87 @@ export default function RankingsPage() {
   const years = ["ALL", "1st", "2nd", "3rd", "4th"];
 
   return (
-    <>
-      <style>{GLOBAL_CSS}</style>
-      <div style={{ width: "100%", minHeight: "100vh", background: "var(--body-bg)" }}>
-        <Header subtitle="See how you stack up against your peers across the institution." />
+    <div className="w-full min-h-screen bg-background text-foreground">
+      <Header subtitle="See how you stack up against your peers across the institution." />
 
-        <div style={{ padding: "24px 24px 48px", display: "flex", flexDirection: "column", gap: 22 }}>
+      <main className="p-6 lg:p-8 max-w-[1600px] mx-auto space-y-6">
 
-          {/* My Position Banner */}
-          <MyPositionBanner myPosition={myPosition} loading={isLoadingPosition} />
+        {/* My Position Banner */}
+        <MyPositionBanner myPosition={myPosition} loading={isLoadingPosition} />
 
-          {/* View toggle + filters */}
-          <div style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", borderRadius: 16, padding: "16px 20px", boxShadow: "var(--card-shadow)" }}>
-            <div className="filter-rank" style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
-
-              {/* View toggle */}
-              <div style={{ display: "flex", gap: 2, padding: "3px", background: "var(--body-bg)", borderRadius: 12, border: "1px solid var(--card-border)" }}>
-                {[
-                  { key: "overall", label: "Overall", icon: <Trophy size={12} /> },
-                  { key: "department", label: departmentName || "Department", icon: <Building2 size={12} /> },
-                ].map(({ key, label, icon }) => (
-                  <button key={key} onClick={() => setActiveView(key as any)} style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 14px", borderRadius: 9, border: "none", cursor: "pointer", fontSize: 12, fontWeight: 700, transition: "all 0.18s", background: activeView === key ? C.blue : "transparent", color: activeView === key ? "#fff" : "var(--text-secondary)", boxShadow: activeView === key ? `0 2px 10px ${C.blue}44` : "none" }}>
-                    {icon}{label}
-                  </button>
-                ))}
-              </div>
-
-              {activeView === "overall" && (
-                <>
-                  <div style={{ width: 1, height: 22, background: "var(--card-border)" }} />
-                  <div style={{ display: "flex", gap: 5 }}>
-                    {years.map(y => <Pill key={y} label={y === "ALL" ? "All Years" : y} active={selectedYear === y} onClick={() => setSelectedYear(y)} />)}
-                  </div>
-                </>
-              )}
-
-              <div style={{ marginLeft: "auto", position: "relative", maxWidth: 240, width: "100%" }}>
-                <Search size={14} style={{ position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} />
-                <input className="form-input" placeholder="Search students..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} style={{ paddingLeft: 30 }} />
-              </div>
+        {/* View toggle + filters */}
+        <div className="bg-card-glass/60 backdrop-blur-xl border border-border/40 shadow-sm rounded-2xl p-4 flex flex-col xl:flex-row xl:items-center gap-4 justify-between">
+          <div className="flex flex-col md:flex-row md:items-center gap-4">
+            {/* View toggle block */}
+            <div className="flex bg-foreground/5 p-1 rounded-xl w-full md:w-auto">
+              {[
+                { key: "overall", label: "Overall", icon: <Trophy size={14} /> },
+                { key: "department", label: departmentName || "Department", icon: <Building2 size={14} /> },
+              ].map(({ key, label, icon }) => (
+                <button key={key} onClick={() => setActiveView(key as any)} className={`flex-1 flex justify-center items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all duration-300 ${activeView === key ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}>
+                  {icon}<span className="truncate max-w-[120px]">{label}</span>
+                </button>
+              ))}
             </div>
+
+            {activeView === "overall" && (
+              <>
+                <div className="w-px h-6 bg-border/50 hidden md:block" />
+                <div className="flex gap-2 flex-wrap">
+                  {years.map(y => <Pill key={y} label={y === "ALL" ? "All Years" : y} active={selectedYear === y} onClick={() => setSelectedYear(y)} />)}
+                </div>
+              </>
+            )}
           </div>
 
-          {/* Podium top 3 */}
-          {activeTop3.length >= 3 && (
-            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-              <div style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", borderRadius: 18, padding: "20px 22px", boxShadow: "var(--card-shadow)" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 18 }}>
-                  <Crown size={16} color={C.gold} />
-                  <p style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>Top 3 Performers</p>
+          <div className="relative w-full xl:max-w-[280px]">
+            <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <input className="w-full bg-background border border-border/50 rounded-xl py-2 pl-9 pr-4 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Search students..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 xl:grid-cols-1 gap-6 items-start">
+          {/* Podium top 3 (only shows if we have data) */}
+          <div className="w-full">
+            {activeTop3.length >= 3 && (
+              <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="h-full">
+                <div className="bg-card-glass/60 backdrop-blur-xl border border-border/40 shadow-sm rounded-2xl p-6 h-full">
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center"><Crown size={16} className="text-amber-500" /></div>
+                    <p className="text-sm font-display font-bold text-foreground">Top 3 Performers</p>
+                  </div>
+                  <Top3Podium top3={activeTop3} isMe={(id) => !!isMe(id)} />
                 </div>
-                <Top3Podium top3={activeTop3} isMe={(id) => !!isMe(id)} />
-              </div>
-            </motion.div>
-          )}
+              </motion.div>
+            )}
+          </div>
 
           {/* Full table */}
-          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-            <div style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", borderRadius: 18, boxShadow: "var(--card-shadow)", overflow: "hidden" }}>
-              <div style={{ padding: "16px 22px", borderBottom: "1px solid var(--table-border)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <div style={{ width: 34, height: 34, borderRadius: 9, background: `${C.blue}16`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <BarChart2 size={15} color={C.blue} />
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="w-full">
+            <div className="bg-card-glass/60 backdrop-blur-xl border border-border/40 shadow-sm rounded-2xl overflow-hidden">
+              <div className="p-5 lg:p-6 border-b border-border/40 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <BarChart2 size={20} className="text-primary" />
                   </div>
                   <div>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>
+                    <p className="text-base font-display font-bold text-foreground m-0">
                       {activeView === "overall" ? "Overall Leaderboard" : `${departmentName} Leaderboard`}
                     </p>
-                    <p style={{ fontSize: 11, color: "var(--text-muted)", margin: 0 }}>
+                    <p className="text-[11px] font-mono text-muted-foreground uppercase tracking-widest mt-0.5 m-0">
                       {activeView === "overall" ? `${pagination.total} students` : `${deptPagination.total} students`}
                     </p>
                   </div>
                 </div>
                 {currentStudentRanking && (
-                  <div style={{ display: "flex", gap: 10 }}>
+                  <div className="flex items-center gap-2">
                     {[
-                      { label: "Your Overall", val: `#${currentStudentRanking.overallRank}`, color: C.blue },
-                      { label: "Your Dept",    val: `#${currentStudentRanking.departmentRank}`, color: C.violet },
-                    ].map(({ label, val, color }) => (
-                      <div key={label} style={{ padding: "8px 14px", borderRadius: 10, background: `${color}12`, border: `1px solid ${color}30`, textAlign: "center" }}>
-                        <p style={{ fontSize: 9, fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.05em", textTransform: "uppercase", margin: 0 }}>{label}</p>
-                        <p style={{ fontSize: 16, fontWeight: 900, color, margin: 0, lineHeight: 1.1 }}>{val}</p>
+                      { label: "Your Overall", val: `#${currentStudentRanking.overallRank}`, color: "text-primary", bg: "bg-primary/10" },
+                      { label: "Your Dept",    val: `#${currentStudentRanking.departmentRank}`, color: "text-violet-600", bg: "bg-violet-500/10" },
+                    ].map(({ label, val, color, bg }) => (
+                      <div key={label} className={`px-4 py-2 rounded-xl flex flex-col items-center justify-center ${bg}`}>
+                        <p className="text-[9px] font-mono font-bold text-muted-foreground tracking-[0.15em] uppercase mb-0.5">{label}</p>
+                        <p className={`text-lg font-display font-bold leading-none ${color}`}>{val}</p>
                       </div>
                     ))}
                   </div>
@@ -412,24 +385,22 @@ export default function RankingsPage() {
                 loading={activeView === "overall" ? isLoadingOverall : isLoadingDepartment}
               />
             </div>
-          </motion.div>
 
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10 }}>
-              <button onClick={() => activeView === "overall" ? setPage(pagination.skip - pagination.limit) : setDeptPage(deptPagination.skip - deptPagination.limit)} disabled={currentPage === 1}
-                style={{ padding: "7px 14px", borderRadius: 8, border: "1.5px solid var(--card-border)", background: "var(--card-bg)", color: "var(--text-secondary)", cursor: currentPage === 1 ? "not-allowed" : "pointer", opacity: currentPage === 1 ? 0.5 : 1, display: "flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 600 }}>
-                <ChevronLeft size={13} /> Prev
-              </button>
-              <span style={{ fontSize: 13, fontWeight: 600, color: "var(--text-secondary)" }}>Page {currentPage} of {totalPages}</span>
-              <button onClick={() => activeView === "overall" ? setPage(pagination.skip + pagination.limit) : setDeptPage(deptPagination.skip + deptPagination.limit)} disabled={currentPage === totalPages}
-                style={{ padding: "7px 14px", borderRadius: 8, border: "1.5px solid var(--card-border)", background: "var(--card-bg)", color: "var(--text-secondary)", cursor: currentPage === totalPages ? "not-allowed" : "pointer", opacity: currentPage === totalPages ? 0.5 : 1, display: "flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 600 }}>
-                Next <ChevronRight size={13} />
-              </button>
-            </div>
-          )}
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-center gap-4 mt-6">
+                <Button variant="outline" size="sm" onClick={() => activeView === "overall" ? setPage(pagination.skip - pagination.limit) : setDeptPage(deptPagination.skip - deptPagination.limit)} disabled={currentPage === 1} className="rounded-xl font-bold uppercase tracking-widest text-[10px] gap-2 h-9 px-4">
+                  <ChevronLeft size={14} /> Prev
+                </Button>
+                <span className="text-[11px] font-mono font-bold text-muted-foreground uppercase tracking-widest">Page {currentPage} of {totalPages}</span>
+                <Button variant="outline" size="sm" onClick={() => activeView === "overall" ? setPage(pagination.skip + pagination.limit) : setDeptPage(deptPagination.skip + deptPagination.limit)} disabled={currentPage === totalPages} className="rounded-xl font-bold uppercase tracking-widest text-[10px] gap-2 h-9 px-4">
+                  Next <ChevronRight size={14} />
+                </Button>
+              </div>
+            )}
+          </motion.div>
         </div>
-      </div>
-    </>
+      </main>
+    </div>
   );
 }

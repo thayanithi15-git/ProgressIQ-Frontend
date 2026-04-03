@@ -15,7 +15,7 @@ import { getStoredMentorId } from "@/utils/mentorSession";
 
 // ─── TOKENS ────────────────────────────────────────────────────────────────────
 const C = {
-  blue:    "#3B6FD4",
+  blue:    "var(--piq-blue)",
   violet:  "#7C3AED",
   emerald: "#059669",
   amber:   "#D97706",
@@ -26,50 +26,40 @@ const C = {
 const ACCENT = C.indigo;
 
 const STATUS_META: Record<string, { label: string; color: string; bg: string }> = {
-  PENDING:     { label: "Pending",     color: C.amber,   bg: `${C.amber}18`   },
-  IN_PROGRESS: { label: "In Progress", color: C.blue,    bg: `${C.blue}18`    },
-  SUBMITTED:   { label: "Submitted",   color: C.violet,  bg: `${C.violet}18`  },
-  APPROVED:    { label: "Approved",    color: C.emerald, bg: `${C.emerald}18` },
-  REJECTED:    { label: "Rejected",    color: C.rose,    bg: `${C.rose}18`    },
+  PENDING: {
+    label: "Pending",
+    color: "#6b7280",
+    bg: "rgba(107, 114, 128, 0.12)",
+  },
+
+  IN_PROGRESS: {
+    label: "In Progress",
+    color: "#2563eb",
+    bg: "rgba(59, 130, 246, 0.12)",
+  },
+
+  SUBMITTED: {
+    label: "Submitted",
+    color: "#7c3aed",
+    bg: "rgba(124, 58, 237, 0.12)",
+  },
+
+  APPROVED: {
+    label: "Approved",
+    color: "#059669",
+    bg: "rgba(16, 185, 129, 0.12)",
+  },
+
+  REJECTED: {
+    label: "Rejected",
+    color: "#dc2626",
+    bg: "rgba(239, 68, 68, 0.12)",
+  },
 };
 
-// ─── GLOBAL CSS ────────────────────────────────────────────────────────────────
-const GLOBAL_CSS = `
-  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-  @keyframes spin    { to{transform:rotate(360deg)} }
-  :root {
-    --card-bg:#fff; --card-border:#E8EDF4; --card-shadow:0 2px 12px rgba(0,0,0,0.06);
-    --body-bg:#F7F9FC; --text-primary:#1E293B; --text-secondary:#64748B; --text-muted:#94A3B8;
-    --input-bg:#F8FAFC; --input-border:#E2E8F0;
-    --modal-overlay:rgba(15,23,42,0.55);
-    --sk-from:#EEF2F7; --sk-via:#E2E8F0;
-    --table-border:#F1F5F9; --pill-inactive-bg:#F1F5F9; --pill-inactive-text:#64748B;
-    --table-hover:#F8FAFC;
-  }
-  .dark {
-    --card-bg:#1E2432; --card-border:#2A3349; --card-shadow:0 2px 12px rgba(0,0,0,0.30);
-    --body-bg:#141921; --text-primary:#E8EDF8; --text-secondary:#94A3B8; --text-muted:#64748B;
-    --input-bg:#252E42; --input-border:#2A3349;
-    --modal-overlay:rgba(5,8,14,0.75);
-    --sk-from:#1E2432; --sk-via:#252E42;
-    --table-border:#1E2432; --pill-inactive-bg:#1E2432; --pill-inactive-text:#94A3B8;
-    --table-hover:#1A2030;
-  }
-  .sk { background:linear-gradient(90deg,var(--sk-from) 25%,var(--sk-via) 50%,var(--sk-from) 75%); background-size:200% 100%; animation:shimmer 1.6s infinite linear; border-radius:10px; }
-  .fi { width:100%; padding:10px 14px; border-radius:10px; font-size:13px; font-family:inherit; background:var(--input-bg); border:1.5px solid var(--input-border); color:var(--text-primary); outline:none; transition:border-color 0.18s,box-shadow 0.18s; box-sizing:border-box; }
-  .fi:focus { border-color:${ACCENT}; box-shadow:0 0 0 3px ${ACCENT}22; }
-  .fi::placeholder { color:var(--text-muted); }
-  .fi.ta { resize:vertical; min-height:84px; line-height:1.6; }
-  .modal-overlay { position:fixed; inset:0; background:var(--modal-overlay); display:flex; align-items:center; justify-content:center; z-index:1000; padding:20px; backdrop-filter:blur(4px); }
-  .modal-box { background:var(--card-bg); border:1px solid var(--card-border); border-radius:20px; width:100%; max-width:540px; max-height:92vh; overflow-y:auto; box-shadow:0 24px 64px rgba(0,0,0,0.22); }
-  .ptr:hover { background:var(--table-hover) !important; }
-  @media(max-width:900px){ .stat-grid{grid-template-columns:repeat(3,1fr)!important;} }
-  @media(max-width:600px){ .stat-grid{grid-template-columns:repeat(2,1fr)!important;} .pill-row{flex-wrap:wrap!important;} }
-`;
-
 // ─── HELPERS ───────────────────────────────────────────────────────────────────
-const Sk = ({ h = 16, style = {} }: { h?: number; style?: React.CSSProperties }) => (
-  <div className="sk" style={{ height: h, ...style }} />
+const Sk = ({ h = 16, className = "" }: { h?: number; className?: string }) => (
+  <div className={`animate-pulse bg-foreground/5 rounded-lg ${className}`} style={{ height: h }} />
 );
 
 const fmt = (v?: string) => {
@@ -85,7 +75,7 @@ const mentorName = (m: any) =>
 const StatusBadge = ({ status }: { status: string }) => {
   const m = STATUS_META[status] ?? { label: status, color: C.amber, bg: `${C.amber}18` };
   return (
-    <span style={{ display:"inline-flex", alignItems:"center", gap:4, padding:"3px 10px", borderRadius:20, background:m.bg, color:m.color, fontSize:11, fontWeight:700 }}>
+    <span style={{ background: m.bg, color: m.color }} className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono font-bold tracking-widest uppercase">
       {m.label}
     </span>
   );
@@ -93,9 +83,9 @@ const StatusBadge = ({ status }: { status: string }) => {
 
 // ─── PILL ──────────────────────────────────────────────────────────────────────
 const Pill = ({ label, active, onClick, count }: any) => (
-  <button onClick={onClick} style={{ padding:"5px 13px", borderRadius:20, border:"none", cursor:"pointer", fontSize:12, fontWeight:600, transition:"all 0.18s", background:active ? ACCENT : "var(--pill-inactive-bg)", color:active ? "#fff" : "var(--pill-inactive-text)", boxShadow:active ? `0 2px 8px ${ACCENT}40` : "none", display:"flex", alignItems:"center", gap:5, whiteSpace:"nowrap" }}>
+  <button onClick={onClick} className={`px-4 py-1.5 rounded-full border text-xs font-semibold flex items-center gap-2 whitespace-nowrap transition-all duration-300 ${active ? 'bg-primary text-primary-foreground border-primary shadow-md' : 'bg-card/50 text-muted-foreground border-transparent hover:bg-foreground/5'}`}>
     {label}
-    {count != null && <span style={{ fontSize:10, fontWeight:800, background:active ? "rgba(255,255,255,0.25)" : "var(--card-border)", color:active ? "#fff" : "var(--text-muted)", borderRadius:10, padding:"1px 5px" }}>{count}</span>}
+    {count != null && <span className={`text-[9px] font-mono font-bold tracking-widest px-1.5 py-0.5 rounded-md ${active ? 'bg-background/20 text-white' : 'bg-foreground/10 text-muted-foreground'}`}>{count}</span>}
   </button>
 );
 
@@ -103,22 +93,22 @@ const Pill = ({ label, active, onClick, count }: any) => (
 const ConfirmDialog = ({ open, title, desc, confirmLabel = "Confirm", confirmColor = C.rose, onConfirm, onCancel, loading }: any) => (
   <AnimatePresence>
     {open && (
-      <div className="modal-overlay" onClick={onCancel}>
-        <motion.div initial={{ opacity:0, scale:0.93 }} animate={{ opacity:1, scale:1 }} exit={{ opacity:0, scale:0.93 }}
+      <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onCancel}>
+        <motion.div initial={{ opacity:0, scale:0.95 }} animate={{ opacity:1, scale:1 }} exit={{ opacity:0, scale:0.95 }}
           onClick={e => e.stopPropagation()}
-          style={{ background:"var(--card-bg)", border:"1px solid var(--card-border)", borderRadius:18, padding:"28px", maxWidth:400, width:"100%", boxShadow:"0 24px 60px rgba(0,0,0,0.22)" }}>
-          <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:12 }}>
-            <div style={{ width:40, height:40, borderRadius:10, background:`${confirmColor}18`, display:"flex", alignItems:"center", justifyContent:"center" }}>
+          className="bg-card-glass/60 backdrop-blur-xl border border-border/40 shadow-2xl rounded-2xl p-6 max-w-[400px] w-full">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${confirmColor}18` }}>
               <AlertTriangle size={18} color={confirmColor} />
             </div>
-            <p style={{ fontSize:15, fontWeight:700, color:"var(--text-primary)", margin:0 }}>{title}</p>
+            <p className="text-base font-display font-bold text-foreground">{title}</p>
           </div>
-          <p style={{ fontSize:13, color:"var(--text-secondary)", marginBottom:22, lineHeight:1.6 }}>{desc}</p>
-          <div style={{ display:"flex", gap:10, justifyContent:"flex-end" }}>
-            <button onClick={onCancel} style={{ padding:"8px 18px", borderRadius:10, border:"1.5px solid var(--card-border)", background:"transparent", color:"var(--text-secondary)", fontSize:13, fontWeight:600, cursor:"pointer" }}>Cancel</button>
-            <button onClick={onConfirm} disabled={loading} style={{ padding:"8px 20px", borderRadius:10, border:"none", background:confirmColor, color:"#fff", fontSize:13, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:6, opacity:loading?0.7:1 }}>
-              {loading && <Loader2 size={13} style={{ animation:"spin 1s linear infinite" }} />} {confirmLabel}
-            </button>
+          <p className="text-sm text-muted-foreground mb-6 leading-relaxed">{desc}</p>
+          <div className="flex gap-3 justify-end">
+            <Button variant="outline" onClick={onCancel} className="rounded-xl px-5 text-xs font-bold uppercase tracking-wider">Cancel</Button>
+            <Button onClick={onConfirm} disabled={loading} style={{ background: confirmColor, color: "#fff" }} className="rounded-xl px-5 text-xs font-bold uppercase tracking-wider gap-2">
+              {loading && <Loader2 size={14} className="animate-spin" />} {confirmLabel}
+            </Button>
           </div>
         </motion.div>
       </div>
@@ -133,24 +123,24 @@ const SubmitModal = ({ open, onConfirm, onCancel, loading }: any) => {
   return (
     <AnimatePresence>
       {open && (
-        <div className="modal-overlay" onClick={onCancel}>
-          <motion.div initial={{ opacity:0, scale:0.93 }} animate={{ opacity:1, scale:1 }} exit={{ opacity:0, scale:0.93 }}
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onCancel}>
+          <motion.div initial={{ opacity:0, scale:0.95 }} animate={{ opacity:1, scale:1 }} exit={{ opacity:0, scale:0.95 }}
             onClick={e => e.stopPropagation()}
-            style={{ background:"var(--card-bg)", border:"1px solid var(--card-border)", borderRadius:18, padding:"28px", maxWidth:440, width:"100%", boxShadow:"0 24px 60px rgba(0,0,0,0.22)" }}>
-            <div style={{ display:"flex", alignItems:"center", gap:12, marginBottom:14 }}>
-              <div style={{ width:40, height:40, borderRadius:10, background:`${C.emerald}18`, display:"flex", alignItems:"center", justifyContent:"center" }}><Send size={18} color={C.emerald} /></div>
+            className="bg-card-glass/60 backdrop-blur-xl border border-border/40 shadow-2xl rounded-2xl p-6 max-w-[440px] w-full">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center"><Send size={18} className="text-primary" /></div>
               <div>
-                <p style={{ fontSize:15, fontWeight:700, color:"var(--text-primary)", margin:0 }}>Submit Project</p>
-                <p style={{ fontSize:12, color:"var(--text-muted)", margin:0 }}>Project will be submitted for mentor review</p>
+                <p className="text-base font-display font-bold text-foreground">Submit Project</p>
+                <p className="text-xs text-muted-foreground">Project will be submitted for mentor review</p>
               </div>
             </div>
-            <label style={{ fontSize:12, fontWeight:700, color:"var(--text-secondary)", display:"block", marginBottom:6 }}>Submission Note <span style={{ color:"var(--text-muted)", fontWeight:400 }}>(optional)</span></label>
-            <textarea className="fi ta" value={note} onChange={e => setNote(e.target.value)} placeholder="Add GitHub repo link, deployment URL, or notes for your mentor..." style={{ marginBottom:20 }} />
-            <div style={{ display:"flex", gap:10, justifyContent:"flex-end" }}>
-              <button onClick={onCancel} style={{ padding:"8px 18px", borderRadius:10, border:"1.5px solid var(--card-border)", background:"transparent", color:"var(--text-secondary)", fontSize:13, fontWeight:600, cursor:"pointer" }}>Cancel</button>
-              <button onClick={() => onConfirm(note)} disabled={loading} style={{ padding:"8px 22px", borderRadius:10, border:"none", background:C.emerald, color:"#fff", fontSize:13, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:6, opacity:loading?0.7:1, boxShadow:`0 4px 12px ${C.emerald}44` }}>
-                {loading && <Loader2 size={13} style={{ animation:"spin 1s linear infinite" }} />} Submit Project
-              </button>
+            <label className="text-xs font-bold text-muted-foreground block mb-2 uppercase tracking-widest">Submission Note <span className="text-muted-foreground/50 font-normal lowercase">(optional)</span></label>
+            <textarea className="w-full bg-background border border-border/50 rounded-xl p-3 text-sm text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-y min-h-[90px] mb-5" value={note} onChange={e => setNote(e.target.value)} placeholder="Add GitHub repo link, deployment URL, or notes for your mentor..." />
+            <div className="flex gap-3 justify-end">
+              <Button variant="outline" onClick={onCancel} className="rounded-xl px-5 text-xs font-bold uppercase tracking-wider">Cancel</Button>
+              <Button onClick={() => onConfirm(note)} disabled={loading} className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl px-5 text-xs font-bold uppercase tracking-wider gap-2">
+                {loading && <Loader2 size={14} className="animate-spin" />} Submit Project
+              </Button>
             </div>
           </motion.div>
         </div>
@@ -163,66 +153,64 @@ const SubmitModal = ({ open, onConfirm, onCancel, loading }: any) => {
 const DetailsModal = ({ project, onClose }: { project: Project | null; onClose: () => void }) => (
   <AnimatePresence>
     {project && (
-      <div className="modal-overlay" onClick={onClose}>
-        <motion.div initial={{ opacity:0, scale:0.93 }} animate={{ opacity:1, scale:1 }} exit={{ opacity:0, scale:0.93 }}
-          onClick={e => e.stopPropagation()} className="modal-box">
-          <div style={{ padding:"20px 22px 16px", display:"flex", alignItems:"center", justifyContent:"space-between", borderBottom:"1px solid var(--card-border)" }}>
-            <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-              <div style={{ width:34, height:34, borderRadius:9, background:`${ACCENT}18`, display:"flex", alignItems:"center", justifyContent:"center" }}><Briefcase size={15} color={ACCENT} /></div>
+      <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+        <motion.div initial={{ opacity:0, scale:0.95 }} animate={{ opacity:1, scale:1 }} exit={{ opacity:0, scale:0.95 }}
+          onClick={e => e.stopPropagation()} className="bg-card-glass/80 backdrop-blur-2xl border border-border/40 shadow-2xl rounded-[1.5rem] p-0 w-full max-w-[540px] overflow-hidden flex flex-col max-h-[90vh]">
+          <div className="p-6 pb-4 flex items-center justify-between border-b border-border/40">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center"><Briefcase size={16} className="text-primary" /></div>
               <div>
-                <p style={{ fontSize:13, fontWeight:700, color:"var(--text-primary)", margin:0 }}>Project Details</p>
-                <p style={{ fontSize:11, color:"var(--text-muted)", margin:0 }}>{project.title}</p>
+                <p className="text-base font-display font-bold text-foreground">Project Details</p>
+                <p className="text-xs font-mono text-muted-foreground">{project.title}</p>
               </div>
             </div>
-            <button onClick={onClose} style={{ width:28, height:28, borderRadius:7, border:"none", background:"var(--pill-inactive-bg)", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}><X size={13} color="var(--text-muted)" /></button>
+            <button onClick={onClose} className="w-8 h-8 rounded-lg bg-foreground/5 hover:bg-foreground/10 flex items-center justify-center transition-colors"><X size={14} className="text-muted-foreground" /></button>
           </div>
-          <div style={{ padding:"18px 22px 24px", display:"flex", flexDirection:"column", gap:12 }}>
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:10 }}>
-              <div style={{ padding:"12px 14px", borderRadius:12, background:"var(--body-bg)", border:"1px solid var(--card-border)" }}>
-                <p style={{ fontSize:10, fontWeight:700, color:"var(--text-muted)", textTransform:"uppercase", letterSpacing:"0.05em", margin:"0 0 3px" }}>Mentor</p>
-                <p style={{ fontSize:13, fontWeight:600, color:"var(--text-primary)", margin:0 }}>{mentorName(project.mentorId)}</p>
+          <div className="p-6 overflow-y-auto flex flex-col gap-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-background/40 border border-border/50 rounded-xl p-3.5">
+                <p className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-[0.15em] mb-1">Mentor</p>
+                <p className="text-sm font-bold text-foreground">{mentorName(project.mentorId)}</p>
               </div>
-              <div style={{ padding:"12px 14px", borderRadius:12, background:"var(--body-bg)", border:"1px solid var(--card-border)" }}>
-                <p style={{ fontSize:10, fontWeight:700, color:"var(--text-muted)", textTransform:"uppercase", letterSpacing:"0.05em", margin:"0 0 3px" }}>Status</p>
-                <StatusBadge status={project.status} />
+              <div className="bg-background/40 border border-border/50 rounded-xl p-3.5">
+                <p className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-[0.15em] mb-2">Status</p>
+                <StatusBadge status={project.status} />  
               </div>
             </div>
 
-            <div style={{ padding:"12px 14px", borderRadius:12, background:"var(--body-bg)", border:"1px solid var(--card-border)" }}>
-              <p style={{ fontSize:10, fontWeight:700, color:"var(--text-muted)", textTransform:"uppercase", letterSpacing:"0.05em", margin:"0 0 5px" }}>Description</p>
-              <p style={{ fontSize:13, color:"var(--text-secondary)", margin:0, lineHeight:1.65 }}>{project.description}</p>
+            <div className="bg-background/40 border border-border/50 rounded-xl p-4">
+              <p className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-[0.15em] mb-2">Description</p>
+              <p className="text-sm text-muted-foreground leading-relaxed">{project.description}</p>
             </div>
 
             {/* Links */}
             {(project.githubLink || project.websiteLink) && (
-              <div style={{ display:"flex", gap:8 }}>
-                {project.githubLink  && <a href={project.githubLink}  target="_blank" rel="noreferrer" style={{ display:"flex", alignItems:"center", gap:5, padding:"6px 12px", borderRadius:8, background:`${C.blue}12`, color:C.blue,  fontSize:12, fontWeight:600, textDecoration:"none" }}><Github size={12} />GitHub</a>}
-                {project.websiteLink && <a href={project.websiteLink} target="_blank" rel="noreferrer" style={{ display:"flex", alignItems:"center", gap:5, padding:"6px 12px", borderRadius:8, background:`${C.cyan}12`, color:C.cyan,  fontSize:12, fontWeight:600, textDecoration:"none" }}><Globe  size={12} />Website</a>}
+              <div className="flex gap-3">
+                {project.githubLink  && <a href={project.githubLink}  target="_blank" rel="noreferrer" className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-500/10 text-blue-600 text-xs font-bold hover:bg-blue-500/20 transition-colors"><Github size={14} />GitHub</a>}
+                {project.websiteLink && <a href={project.websiteLink} target="_blank" rel="noreferrer" className="flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-500/10 text-cyan-600 text-xs font-bold hover:bg-cyan-500/20 transition-colors"><Globe  size={14} />Website</a>}
               </div>
             )}
 
             {project.submissionNote && (
-              <div style={{ padding:"12px 14px", borderRadius:12, background:`${C.blue}08`, border:`1px solid ${C.blue}22` }}>
-                <p style={{ fontSize:10, fontWeight:700, color:C.blue, textTransform:"uppercase", letterSpacing:"0.05em", margin:"0 0 5px" }}>My Submission Note</p>
-                <p style={{ fontSize:13, color:"var(--text-secondary)", margin:0, lineHeight:1.65, whiteSpace:"pre-wrap" }}>{project.submissionNote}</p>
+              <div className="bg-blue-500/5 border border-blue-500/20 rounded-xl p-4">
+                <p className="text-[10px] font-mono font-bold text-blue-600 uppercase tracking-[0.15em] mb-2">My Submission Note</p>
+                <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{project.submissionNote}</p>
               </div>
             )}
 
             {project.verificationNote ? (
-              <div style={{ padding:"12px 14px", borderRadius:12, background:`${C.emerald}08`, border:`1px solid ${C.emerald}22` }}>
-                <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:6 }}>
-                  <p style={{ fontSize:10, fontWeight:700, color:C.emerald, textTransform:"uppercase", letterSpacing:"0.05em", margin:0 }}>Mentor Feedback</p>
+              <div className="bg-foreground/5 border border-border/30 rounded-xl p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-[10px] font-mono font-bold text-foreground uppercase tracking-[0.15em]">Mentor Feedback</p>
                   {project.pointsAwarded != null && project.pointsAwarded > 0 && (
-                    <span style={{ fontSize:11, fontWeight:800, color:C.emerald, background:`${C.emerald}18`, padding:"2px 8px", borderRadius:8 }}>+{project.pointsAwarded} pts</span>
+                    <span className="text-[10px] font-bold text-primary bg-primary/10 px-2 py-1 rounded-md">+{project.pointsAwarded} pts</span>
                   )}
                 </div>
-                <p style={{ fontSize:13, color:"var(--text-secondary)", margin:0, lineHeight:1.65, whiteSpace:"pre-wrap" }}>{project.verificationNote}</p>
+                <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{project.verificationNote}</p>
               </div>
             ) : (
-              <div style={{ padding:"12px 14px", borderRadius:12, background:"var(--body-bg)", border:"1px solid var(--card-border)", textAlign:"center" }}>
-                <p style={{ fontSize:13, color:"var(--text-muted)", margin:0 }}>
-                  {project.status === "SUBMITTED" ? "⏳ Awaiting mentor review…" : "No mentor feedback yet."}
-                </p>
+              <div className="bg-background/20 border border-border/30 rounded-xl p-4 text-center">
+                <p className="text-sm text-muted-foreground">{project.status === "SUBMITTED" ? "⏳ Awaiting mentor review…" : "No mentor feedback yet."}</p>
               </div>
             )}
           </div>
@@ -243,44 +231,44 @@ const ProjectFormModal = ({ open, editing, onClose, onSubmit, loading }: any) =>
   return (
     <AnimatePresence>
       {open && (
-        <div className="modal-overlay" onClick={onClose}>
-          <motion.div initial={{ opacity:0, scale:0.93, y:10 }} animate={{ opacity:1, scale:1, y:0 }} exit={{ opacity:0, scale:0.93, y:10 }}
-            onClick={e => e.stopPropagation()} className="modal-box">
-            <div style={{ padding:"20px 22px 16px", display:"flex", alignItems:"center", justifyContent:"space-between", borderBottom:"1px solid var(--card-border)" }}>
-              <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-                <div style={{ width:34, height:34, borderRadius:9, background:`${ACCENT}18`, display:"flex", alignItems:"center", justifyContent:"center" }}><Briefcase size={15} color={ACCENT} /></div>
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+          <motion.div initial={{ opacity:0, scale:0.95, y:10 }} animate={{ opacity:1, scale:1, y:0 }} exit={{ opacity:0, scale:0.95, y:10 }}
+            onClick={e => e.stopPropagation()} className="bg-card-glass/80 backdrop-blur-2xl border border-border/40 shadow-2xl rounded-[1.5rem] w-full max-w-[540px] overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="p-6 pb-4 flex items-center justify-between border-b border-border/40">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center"><Briefcase size={16} className="text-primary" /></div>
                 <div>
-                  <p style={{ fontSize:13, fontWeight:700, color:"var(--text-primary)", margin:0 }}>{editing ? "Edit Project" : "Create Project"}</p>
-                  <p style={{ fontSize:11, color:"var(--text-muted)", margin:0 }}>{editing ? "Update your project details" : "Create a new personal project"}</p>
+                  <p className="text-base font-display font-bold text-foreground">{editing ? "Edit Project" : "Create Project"}</p>
+                  <p className="text-[11px] font-mono text-muted-foreground">{editing ? "Update your project details" : "Create a new personal project"}</p>
                 </div>
               </div>
-              <button onClick={onClose} style={{ width:28, height:28, borderRadius:7, border:"none", background:"var(--pill-inactive-bg)", cursor:"pointer", display:"flex", alignItems:"center", justifyContent:"center" }}><X size={13} color="var(--text-muted)" /></button>
+              <button onClick={onClose} className="w-8 h-8 rounded-lg bg-foreground/5 hover:bg-foreground/10 flex items-center justify-center transition-colors"><X size={14} className="text-muted-foreground" /></button>
             </div>
-            <form onSubmit={e => { e.preventDefault(); onSubmit(form); }} style={{ padding:"18px 22px 24px", display:"flex", flexDirection:"column", gap:14 }}>
+            <form onSubmit={e => { e.preventDefault(); onSubmit(form); }} className="p-6 overflow-y-auto flex flex-col gap-5">
               <div>
-                <label style={{ fontSize:12, fontWeight:700, color:"var(--text-secondary)", display:"block", marginBottom:5 }}>Title <span style={{ color:C.rose }}>*</span></label>
-                <input className="fi" value={form.title} onChange={e => setForm(p => ({...p, title:e.target.value}))} required placeholder="e.g. E-commerce Platform" />
+                <label className="text-[10px] font-mono font-bold text-muted-foreground block mb-1.5 uppercase tracking-widest">Title <span className="text-rose-500">*</span></label>
+                <input className="w-full bg-background border border-border/50 rounded-xl p-3 text-sm text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" value={form.title} onChange={e => setForm(p => ({...p, title:e.target.value}))} required placeholder="e.g. E-commerce Platform" />
               </div>
               <div>
-                <label style={{ fontSize:12, fontWeight:700, color:"var(--text-secondary)", display:"block", marginBottom:5 }}>Description <span style={{ color:C.rose }}>*</span></label>
-                <textarea className="fi ta" value={form.description} onChange={e => setForm(p => ({...p, description:e.target.value}))} required placeholder="Describe your project..." />
+                <label className="text-[10px] font-mono font-bold text-muted-foreground block mb-1.5 uppercase tracking-widest">Description <span className="text-rose-500">*</span></label>
+                <textarea className="w-full bg-background border border-border/50 rounded-xl p-3 text-sm text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-y min-h-[90px]" value={form.description} onChange={e => setForm(p => ({...p, description:e.target.value}))} required placeholder="Describe your project..." />
               </div>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:12 }}>
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label style={{ fontSize:12, fontWeight:700, color:"var(--text-secondary)", display:"block", marginBottom:5 }}>GitHub Link</label>
-                  <input className="fi" value={form.githubLink} onChange={e => setForm(p => ({...p, githubLink:e.target.value}))} placeholder="https://github.com/..." />
+                  <label className="text-[10px] font-mono font-bold text-muted-foreground block mb-1.5 uppercase tracking-widest">GitHub Link</label>
+                  <input className="w-full bg-background border border-border/50 rounded-xl p-3 text-sm text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" value={form.githubLink} onChange={e => setForm(p => ({...p, githubLink:e.target.value}))} placeholder="https://github.com/..." />
                 </div>
                 <div>
-                  <label style={{ fontSize:12, fontWeight:700, color:"var(--text-secondary)", display:"block", marginBottom:5 }}>Website Link</label>
-                  <input className="fi" value={form.websiteLink} onChange={e => setForm(p => ({...p, websiteLink:e.target.value}))} placeholder="https://..." />
+                  <label className="text-[10px] font-mono font-bold text-muted-foreground block mb-1.5 uppercase tracking-widest">Website Link</label>
+                  <input className="w-full bg-background border border-border/50 rounded-xl p-3 text-sm text-foreground focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" value={form.websiteLink} onChange={e => setForm(p => ({...p, websiteLink:e.target.value}))} placeholder="https://..." />
                 </div>
               </div>
-              <div style={{ display:"flex", gap:10, justifyContent:"flex-end", marginTop:4 }}>
-                <button type="button" onClick={onClose} style={{ padding:"9px 18px", borderRadius:10, border:"1.5px solid var(--card-border)", background:"transparent", color:"var(--text-secondary)", fontSize:13, fontWeight:600, cursor:"pointer" }}>Cancel</button>
-                <button type="submit" disabled={loading} style={{ padding:"9px 22px", borderRadius:10, border:"none", background:ACCENT, color:"#fff", fontSize:13, fontWeight:700, cursor:"pointer", display:"flex", alignItems:"center", gap:6, opacity:loading?0.7:1, boxShadow:`0 4px 12px ${ACCENT}44` }}>
-                  {loading && <Loader2 size={13} style={{ animation:"spin 1s linear infinite" }} />}
+              <div className="flex gap-3 justify-end mt-2">
+                <Button type="button" variant="outline" onClick={onClose} className="rounded-xl px-6 text-xs font-bold uppercase tracking-wider">Cancel</Button>
+                <Button type="submit" disabled={loading} className="rounded-xl px-6 text-xs font-bold uppercase tracking-wider gap-2">
+                  {loading && <Loader2 size={14} className="animate-spin" />}
                   {editing ? "Update" : "Create Project"}
-                </button>
+                </Button>
               </div>
             </form>
           </motion.div>
@@ -303,40 +291,39 @@ const ProjectRow = ({ project, idx, onEdit, onDelete, onStart, onSubmit, onDetai
   const showDetails = ["SUBMITTED","APPROVED","REJECTED"].includes(project.status) || !!project.submissionNote || !!project.verificationNote;
 
   const Btn = ({ onClick, bg, color, children }: any) => (
-    <button onClick={onClick} style={{ display:"flex", alignItems:"center", gap:4, padding:"5px 9px", borderRadius:7, border:"none", background:`${bg}18`, color:color ?? bg, fontSize:11, fontWeight:700, cursor:"pointer", whiteSpace:"nowrap" }}>
+    <button onClick={onClick} style={{ background: `${bg}18`, color }} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-none text-[10px] font-bold uppercase tracking-wider cursor-pointer whitespace-nowrap transition-transform hover:scale-105 active:scale-95">
       {children}
     </button>
   );
 
   return (
-    <motion.tr className="ptr" initial={{ opacity:0, x:-6 }} animate={{ opacity:1, x:0 }} transition={{ delay:idx*0.03 }}
-      style={{ borderBottom:"1px solid var(--table-border)", transition:"background 0.14s" }}>
-      <td style={{ padding:"12px 14px", fontSize:12, fontWeight:700, color:"var(--text-muted)", width:40 }}>{idx+1}</td>
-      <td style={{ padding:"12px 14px", minWidth:200 }}>
-        <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-          <div style={{ width:30, height:30, borderRadius:8, background:`${ACCENT}18`, display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}><Briefcase size={13} color={ACCENT} /></div>
-          <div style={{ minWidth:0 }}>
-            <p style={{ fontSize:13, fontWeight:700, color:"var(--text-primary)", margin:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:220 }}>{project.title}</p>
-            <p style={{ fontSize:11, color:"var(--text-muted)", margin:0, overflow:"hidden", textOverflow:"ellipsis", whiteSpace:"nowrap", maxWidth:220 }}>{project.description}</p>
+    <motion.tr className="group hover:bg-foreground/5 transition-colors border-b border-border/30 last:border-0" initial={{ opacity:0, x:-6 }} animate={{ opacity:1, x:0 }} transition={{ delay:idx*0.03 }}>
+      <td className="p-4 text-[11px] font-mono font-bold text-muted-foreground w-10 text-center">{idx+1}</td>
+      <td className="p-4 min-w-[200px]">
+        <div className="flex items-center gap-4">
+          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0"><Briefcase size={16} className="text-primary" /></div>
+          <div className="min-w-0">
+            <p className="text-sm font-bold text-foreground truncate max-w-[220px] lg:max-w-[300px]">{project.title}</p>
+            <p className="text-xs text-muted-foreground truncate max-w-[220px] lg:max-w-[300px] mt-0.5">{project.description}</p>
           </div>
         </div>
       </td>
-      <td style={{ padding:"12px 14px", fontSize:12, color:"var(--text-secondary)", fontWeight:500 }}>{mentorName(project.mentorId)}</td>
-      <td style={{ padding:"12px 14px" }}>
-        <div style={{ display:"flex", gap:6 }}>
-          {project.githubLink  && <a href={project.githubLink}  target="_blank" rel="noreferrer" style={{ display:"flex", alignItems:"center", gap:4, fontSize:11, fontWeight:600, color:C.blue, textDecoration:"none" }}><Github size={11} />GitHub</a>}
-          {project.websiteLink && <a href={project.websiteLink} target="_blank" rel="noreferrer" style={{ display:"flex", alignItems:"center", gap:4, fontSize:11, fontWeight:600, color:C.cyan, textDecoration:"none" }}><Globe  size={11} />Site</a>}
-          {!project.githubLink && !project.websiteLink && <span style={{ fontSize:11, color:"var(--text-muted)" }}>—</span>}
+      <td className="p-4 text-xs text-muted-foreground font-semibold">{mentorName(project.mentorId)}</td>
+      <td className="p-4">
+        <div className="flex gap-3">
+          {project.githubLink  && <a href={project.githubLink}  target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-[11px] font-bold text-blue-600 hover:text-blue-500 transition-colors uppercase tracking-wider bg-blue-500/10 px-2 py-1 rounded-md"><Github size={12} />GitHub</a>}
+          {project.websiteLink && <a href={project.websiteLink} target="_blank" rel="noreferrer" className="flex items-center gap-1.5 text-[11px] font-bold text-cyan-600 hover:text-cyan-500 transition-colors uppercase tracking-wider bg-cyan-500/10 px-2 py-1 rounded-md"><Globe  size={12} />Site</a>}
+          {!project.githubLink && !project.websiteLink && <span className="text-xs text-muted-foreground">—</span>}
         </div>
       </td>
-      <td style={{ padding:"12px 14px" }}><StatusBadge status={project.status} /></td>
-      <td style={{ padding:"12px 14px" }}>
-        <div style={{ display:"flex", gap:5, alignItems:"center", flexWrap:"wrap" }}>
-          {canStart    && <Btn onClick={()=>onStart(project)}      bg={C.blue}    color={C.blue}><Play size={11} fill="currentColor" /> Start</Btn>}
-          {canSubmit   && <Btn onClick={()=>onSubmit(project._id)} bg={C.emerald} color={C.emerald}><Send size={11} /> Submit</Btn>}
-          {showDetails && <Btn onClick={()=>onDetails(project)}    bg={C.violet}  color={C.violet}><Eye size={11} /> Details</Btn>}
-          {canEdit     && <Btn onClick={()=>onEdit(project)}       bg={ACCENT}    color={ACCENT}><Edit2 size={11} /></Btn>}
-          {canDelete   && <Btn onClick={()=>onDelete(project)}     bg={C.rose}    color={C.rose}><Trash2 size={11} /></Btn>}
+      <td className="p-4"><StatusBadge status={project.status} /></td>
+      <td className="p-4">
+        <div className="flex gap-2 items-center flex-wrap">
+          {canStart    && <Btn onClick={()=>onStart(project)}      bg="var(--piq-blue)" color="var(--piq-blue)"><Play size={12} fill="currentColor" /> Start</Btn>}
+          {canSubmit   && <Btn onClick={()=>onSubmit(project._id)} bg="var(--piq-blue)" color="var(--piq-blue)"><Send size={12} /> Submit</Btn>}
+          {showDetails && <Btn onClick={()=>onDetails(project)}    bg="var(--piq-blue)" color="var(--piq-blue)"><Eye size={12} /> Details</Btn>}
+          {canEdit     && <Btn onClick={()=>onEdit(project)}       bg="var(--piq-blue)" color="var(--piq-blue)"><Edit2 size={12} /></Btn>}
+          {canDelete   && <Btn onClick={()=>onDelete(project)}     bg="var(--piq-blue)" color="var(--piq-blue)"><Trash2 size={12} /></Btn>}
         </div>
       </td>
     </motion.tr>
@@ -421,116 +408,105 @@ export default function ProjectsPage() {
   ];
 
   const STATS = [
-    { label:"Pending",     val:counts.PENDING,     color:C.amber },
-    { label:"In Progress", val:counts.IN_PROGRESS, color:C.blue },
-    { label:"Submitted",   val:counts.SUBMITTED,   color:C.violet },
-    { label:"Approved",    val:counts.APPROVED,    color:C.emerald },
-    { label:"Rejected",    val:counts.REJECTED,    color:C.rose },
+    { label:"Pending",     val:counts.PENDING,     color:"var(--piq-blue)" },
+    { label:"In Progress", val:counts.IN_PROGRESS, color:"var(--piq-blue)" },
+    { label:"Submitted",   val:counts.SUBMITTED,   color:"var(--piq-blue)" },
+    { label:"Approved",    val:counts.APPROVED,    color:"var(--piq-blue)" },
+    { label:"Rejected",    val:counts.REJECTED,    color:"var(--piq-blue)" },
   ];
 
   return (
-    <>
-      <style>{GLOBAL_CSS}</style>
-      <div style={{ width:"100%", minHeight:"100vh", background:"var(--body-bg)" }}>
-        <Header subtitle="Manage your projects and submit them for mentor review." 
-        // HeaderComp={
-        //   hasMentor ? (
-        //     <Button onClick={openCreateModal} style={{ display:"flex", alignItems:"center", gap:6, fontSize:13, background:ACCENT, color:"#fff", boxShadow:`0 4px 12px ${ACCENT}44` }}>
-        //       <Plus size={14} /> Add Project
-        //     </Button>
-        //   ) : undefined
-        // } 
-        />
+    <div className="w-full min-h-screen bg-background">
+      <Header subtitle="Manage your projects and submit them for mentor review." />
 
-        <div style={{ padding:"22px 22px 48px", display:"flex", flexDirection:"column", gap:18 }}>
+      <main className="p-6 lg:padding-8 max-w-[1600px] mx-auto space-y-6">
 
-          {/* No mentor warning */}
-          {!hasMentor && (
-            <div style={{ padding:"14px 18px", borderRadius:12, background:`${C.amber}10`, border:`1.5px solid ${C.amber}30`, display:"flex", alignItems:"center", gap:10 }}>
-              <AlertCircle size={16} color={C.amber} />
-              <p style={{ fontSize:13, color:C.amber, fontWeight:600, margin:0 }}>You have no mentor assigned. Contact admin to get a mentor.</p>
-            </div>
-          )}
+        {/* No mentor warning */}
+        {!hasMentor && (
+          <div className="p-4 rounded-xl bg-foreground/5 border border-border/40 flex items-center gap-3">
+            <AlertCircle size={18} className="text-muted-foreground" />
+            <p className="text-sm text-muted-foreground font-bold m-0">You have no mentor assigned. Contact admin to get a mentor.</p>
+          </div>
+        )}
 
-          {/* Stats */}
-          <div className="stat-grid" style={{ display:"grid", gridTemplateColumns:"repeat(5,1fr)", gap:12 }}>
-            {STATS.map(({ label, val, color }, i) => (
-              <motion.div key={label} initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} transition={{ delay:i*0.04 }}
-                style={{ background:"var(--card-bg)", border:"1px solid var(--card-border)", borderRadius:14, padding:"14px 16px", boxShadow:"var(--card-shadow)" }}>
-                <p style={{ fontSize:10, fontWeight:700, color:"var(--text-muted)", letterSpacing:"0.05em", textTransform:"uppercase", margin:"0 0 5px" }}>{label}</p>
-                <p style={{ fontSize:26, fontWeight:800, color, margin:0, lineHeight:1 }}>{val}</p>
-              </motion.div>
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          {STATS.map(({ label, val, color }, i) => (
+            <motion.div key={label} initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} transition={{ delay:i*0.04 }}
+              className="bg-card-glass/60 backdrop-blur-xl border border-border/40 shadow-sm rounded-2xl p-5">
+              <p className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-[0.15em] mb-2">{label}</p>
+              <p className="text-3xl font-display font-bold text-foreground leading-none">{val}</p>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Filters */}
+        <div className="bg-card-glass/60 backdrop-blur-xl border border-border/40 shadow-sm rounded-2xl p-4 flex flex-col items-start md:flex-row md:items-center justify-between gap-4">
+          <div className="flex gap-2 flex-wrap">
+            {FILTERS.map(f => (
+              <Pill key={f.key} label={f.label} active={statusFilter === f.key} onClick={() => setStatusFilter(f.key)} count={counts[f.key] as number} />
             ))}
           </div>
-
-          {/* Filters */}
-          <div style={{ background:"var(--card-bg)", border:"1px solid var(--card-border)", borderRadius:16, padding:"14px 18px", boxShadow:"var(--card-shadow)", display:"flex", alignItems:"center", justifyContent:"space-between", gap:14, flexWrap:"wrap" }}>
-            <div className="pill-row" style={{ display:"flex", gap:6, flexWrap:"wrap", flex:1 }}>
-              {FILTERS.map(f => (
-                <Pill key={f.key} label={f.label} active={statusFilter === f.key} onClick={() => setStatusFilter(f.key)} count={counts[f.key] as number} />
-              ))}
-            </div>
-            <div style={{ position:"relative", maxWidth:240, width:"100%" }}>
-              <Search size={13} style={{ position:"absolute", left:10, top:"50%", transform:"translateY(-50%)", color:"var(--text-muted)" }} />
-              <input className="fi" placeholder="Search projects…" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} style={{ paddingLeft:30 }} />
-            </div>
+          <div className="relative w-full max-w-[280px]">
+            <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <input className="w-full bg-background border border-border/50 rounded-xl py-2 pl-9 pr-4 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Search projects…" value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
           </div>
+        </div>
 
-          {/* Table */}
-          <div style={{ background:"var(--card-bg)", border:"1px solid var(--card-border)", borderRadius:16, boxShadow:"var(--card-shadow)", overflow:"hidden" }}>
-            {isLoading ? (
-              <div style={{ padding:18, display:"flex", flexDirection:"column", gap:10 }}>
-                {Array.from({length:5}).map((_,i) => <Sk key={i} h={50} style={{ borderRadius:10 }} />)}
+        {/* Table */}
+        <div className="bg-card-glass/60 backdrop-blur-xl border border-border/40 shadow-sm rounded-2xl overflow-hidden">
+          {isLoading ? (
+            <div className="p-6 flex flex-col gap-3">
+              {Array.from({length:5}).map((_,i) => <Sk key={i} h={52} />)}
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="py-20 px-6 text-center flex flex-col items-center">
+              <div className="w-16 h-16 rounded-2xl bg-foreground/5 flex items-center justify-center mb-4">
+                <Briefcase size={28} className="text-muted-foreground" />
               </div>
-            ) : filtered.length === 0 ? (
-              <div style={{ padding:"56px 24px", textAlign:"center" }}>
-                <Briefcase size={38} color="var(--text-muted)" style={{ marginBottom:12 }} />
-                <p style={{ fontSize:15, fontWeight:700, color:"var(--text-primary)", marginBottom:6 }}>No projects found</p>
-                <p style={{ fontSize:13, color:"var(--text-muted)", marginBottom:20 }}>
-                  {statusFilter !== "ALL" ? "Try a different filter" : "Create a project or wait for your mentor to assign one"}
-                </p>
-                {hasMentor && (
-                  <button onClick={openCreateModal} style={{ padding:"9px 22px", borderRadius:10, border:"none", background:ACCENT, color:"#fff", fontSize:13, fontWeight:700, cursor:"pointer", boxShadow:`0 4px 12px ${ACCENT}44` }}>
-                    + Create Project
-                  </button>
-                )}
-              </div>
-            ) : (
-              <div style={{ overflowX:"auto" }}>
-                <table style={{ width:"100%", borderCollapse:"collapse" }}>
-                  <thead>
-                    <tr style={{ background:"var(--body-bg)", borderBottom:"1px solid var(--table-border)" }}>
-                      {["#","Project","Mentor","Links","Status","Actions"].map(h => (
-                        <th key={h} style={{ padding:"11px 14px", textAlign:"left", fontSize:11, fontWeight:700, color:"var(--text-muted)", letterSpacing:"0.06em", textTransform:"uppercase", whiteSpace:"nowrap" }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filtered.map((project, i) => (
-                      <ProjectRow key={project._id} project={project} idx={i} onEdit={openEditModal} onDelete={setDeleteTarget} onStart={setStartTarget} onSubmit={openSubmitModal} onDetails={setDetailProject} />
+              <p className="text-base font-display font-bold text-foreground mb-1 mt-2">No projects found</p>
+              <p className="text-sm text-muted-foreground mb-6">
+                {statusFilter !== "ALL" ? "Try matching a different status filter." : "Create a personal project or wait for your mentor to assign one."}
+              </p>
+              {hasMentor && (
+                <Button onClick={openCreateModal} className="rounded-xl px-6 font-bold uppercase tracking-wider text-xs gap-2">
+                  <Plus size={16} /> Create Project
+                </Button>
+              )}
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="bg-foreground/[0.02] border-b border-border/40">
+                    {["#","Project","Mentor","Links","Status","Actions"].map((h, i) => (
+                      <th key={h} className={`p-4 text-left text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-widest whitespace-nowrap ${i===0?'text-center':''}`}>{h}</th>
                     ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div style={{ display:"flex", alignItems:"center", justifyContent:"center", gap:8 }}>
-              <button onClick={() => setPage(pagination.skip - pagination.limit)} disabled={currentPage === 1}
-                style={{ padding:"7px 14px", borderRadius:8, border:"1.5px solid var(--card-border)", background:"var(--card-bg)", color:"var(--text-secondary)", cursor:currentPage===1?"not-allowed":"pointer", opacity:currentPage===1?0.5:1, display:"flex", alignItems:"center", gap:4, fontSize:12, fontWeight:600 }}>
-                <ChevronLeft size={13} /> Prev
-              </button>
-              <span style={{ fontSize:13, fontWeight:600, color:"var(--text-secondary)" }}>Page {currentPage} / {totalPages}</span>
-              <button onClick={() => setPage(pagination.skip + pagination.limit)} disabled={currentPage === totalPages}
-                style={{ padding:"7px 14px", borderRadius:8, border:"1.5px solid var(--card-border)", background:"var(--card-bg)", color:"var(--text-secondary)", cursor:currentPage===totalPages?"not-allowed":"pointer", opacity:currentPage===totalPages?0.5:1, display:"flex", alignItems:"center", gap:4, fontSize:12, fontWeight:600 }}>
-                Next <ChevronRight size={13} />
-              </button>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map((project, i) => (
+                    <ProjectRow key={project._id} project={project} idx={i} onEdit={openEditModal} onDelete={setDeleteTarget} onStart={setStartTarget} onSubmit={openSubmitModal} onDetails={setDetailProject} />
+                  ))}
+                </tbody>
+              </table>
             </div>
           )}
         </div>
-      </div>
+
+        {/* Pagination bar */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-4 pt-2">
+            <Button variant="outline" size="sm" onClick={() => setPage(pagination.skip - pagination.limit)} disabled={currentPage === 1} className="rounded-xl font-bold uppercase tracking-widest text-[10px] gap-2 h-9 px-4">
+              <ChevronLeft size={14} /> Prev
+            </Button>
+            <span className="text-[11px] font-mono font-bold text-muted-foreground uppercase tracking-widest">Page {currentPage} of {totalPages}</span>
+            <Button variant="outline" size="sm" onClick={() => setPage(pagination.skip + pagination.limit)} disabled={currentPage === totalPages} className="rounded-xl font-bold uppercase tracking-widest text-[10px] gap-2 h-9 px-4">
+              Next <ChevronRight size={14} />
+            </Button>
+          </div>
+        )}
+      </main>
 
       {/* Modals */}
       <ProjectFormModal open={isModalOpen} editing={editingProject} onClose={closeModal} onSubmit={handleFormSubmit} loading={isSubmitting} />
@@ -538,9 +514,9 @@ export default function ProjectsPage() {
       <DetailsModal     project={detailProject} onClose={() => setDetailProject(null)} />
 
       <ConfirmDialog open={!!deleteTarget} title="Delete Project" desc={`Delete "${deleteTarget?.title}"? This cannot be undone.`}
-        confirmLabel="Delete" onConfirm={handleDelete} onCancel={() => setDeleteTarget(null)} loading={isDeleting} />
+        confirmLabel="Delete" confirmColor="var(--piq-blue)" onConfirm={handleDelete} onCancel={() => setDeleteTarget(null)} loading={isDeleting} />
       <ConfirmDialog open={!!startTarget} title="Start Project" desc={`Start working on "${startTarget?.title}"? Status will change to In Progress.`}
-        confirmLabel="Start" confirmColor={C.blue} onConfirm={handleStart} onCancel={() => setStartTarget(null)} loading={isStarting} />
-    </>
+        confirmLabel="Start" confirmColor="var(--piq-blue)" onConfirm={handleStart} onCancel={() => setStartTarget(null)} loading={isStarting} />
+    </div>
   );
 }

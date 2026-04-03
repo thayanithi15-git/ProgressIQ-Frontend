@@ -15,58 +15,47 @@ import { Button } from "@/components/ui/button";
 // TOKENS
 // ─────────────────────────────────────────────────────────────────────────────
 const C = {
-  blue:    "#3B6FD4",
-  violet:  "#7C3AED",
+  blue: "var(--piq-blue)",
+  violet: "#7C3AED",
   emerald: "#059669",
-  amber:   "#D97706",
-  rose:    "#E11D48",
-  cyan:    "#0891B2",
-  pink:    "#EC4899",
-  orange:  "#EA580C",
+  amber: "#D97706",
+  rose: "#E11D48",
+  cyan: "#0891B2",
+  pink: "#EC4899",
+  orange: "#EA580C",
 };
 
 const ACCENT = C.amber; // Certifications accent colour
 
-const STATUS_META: Record<string, { label: string; color: string; bg: string; icon: any }> = {
-  PENDING:  { label: "Pending",  color: C.amber,   bg: `${C.amber}18`,   icon: Clock },
-  APPROVED: { label: "Approved", color: C.emerald, bg: `${C.emerald}18`, icon: CheckCircle },
-  REJECTED: { label: "Rejected", color: C.rose,    bg: `${C.rose}18`,    icon: XCircle },
-};
+const   STATUS_META: Record<string, { label: string; color: string; bg: string; icon: any }> = {
+  PENDING: {
+    label: "Pending",
+    color: "#b45309",
+    bg: "rgba(245, 158, 11, 0.12)",
+    icon: Clock
+  },
 
-const GLOBAL_CSS = `
-  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-  @keyframes spin { to{transform:rotate(360deg)} }
-  :root {
-    --card-bg:#fff; --card-border:#E8EDF4; --card-shadow:0 2px 12px rgba(0,0,0,0.06);
-    --body-bg:#F7F9FC; --text-primary:#1E293B; --text-secondary:#64748B; --text-muted:#94A3B8;
-    --input-bg:#F8FAFC; --input-border:#E2E8F0;
-    --modal-overlay:rgba(15,23,42,0.55);
-    --sk-from:#EEF2F7; --sk-via:#E2E8F0;
-    --table-border:#F1F5F9; --pill-inactive-bg:#F1F5F9; --pill-inactive-text:#64748B;
-  }
-  .dark {
-    --card-bg:#1E2432; --card-border:#2A3349; --card-shadow:0 2px 12px rgba(0,0,0,0.30);
-    --body-bg:#141921; --text-primary:#E8EDF8; --text-secondary:#94A3B8; --text-muted:#64748B;
-    --input-bg:#252E42; --input-border:#2A3349;
-    --modal-overlay:rgba(5,8,14,0.75);
-    --sk-from:#1E2432; --sk-via:#252E42;
-    --table-border:#1E2432; --pill-inactive-bg:#1E2432; --pill-inactive-text:#94A3B8;
-  }
-  .sk { background:linear-gradient(90deg,var(--sk-from) 25%,var(--sk-via) 50%,var(--sk-from) 75%); background-size:200% 100%; animation:shimmer 1.6s infinite linear; border-radius:10px; }
-  .form-input { width:100%; padding:10px 14px; border-radius:10px; font-size:13px; font-family:inherit; background:var(--input-bg); border:1.5px solid var(--input-border); color:var(--text-primary); outline:none; transition:border-color 0.18s,box-shadow 0.18s; }
-  .form-input:focus { border-color:${ACCENT}; box-shadow:0 0 0 3px ${ACCENT}22; }
-  .form-input::placeholder { color:var(--text-muted); }
-  .form-input.textarea { resize:vertical; min-height:80px; line-height:1.6; }
-  .modal-overlay { position:fixed; inset:0; background:var(--modal-overlay); display:flex; align-items:center; justify-content:center; z-index:1000; padding:20px; backdrop-filter:blur(4px); }
-  .modal-box { background:var(--card-bg); border:1px solid var(--card-border); border-radius:20px; width:100%; max-width:540px; max-height:92vh; overflow-y:auto; box-shadow:0 24px 64px rgba(0,0,0,0.22); }
-  @media(max-width:900px){ .cert-grid{grid-template-columns:repeat(2,1fr)!important;} }
-  @media(max-width:580px){ .cert-grid{grid-template-columns:1fr!important;} .cert-stats{grid-template-columns:repeat(2,1fr)!important;} .filter-flex{flex-wrap:wrap!important;} }
-`;
+  APPROVED: {
+    label: "Approved",
+    color: "#047857",
+    bg: "rgba(16, 185, 129, 0.12)",
+    icon: CheckCircle
+  },
+
+  REJECTED: {
+    label: "Rejected",
+    color: "#b91c1c",
+    bg: "rgba(239, 68, 68, 0.12)",
+    icon: XCircle
+  },
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // HELPERS
 // ─────────────────────────────────────────────────────────────────────────────
-const Sk = ({ w = "100%", h = 16, style = {} }: any) => <div className="sk" style={{ width: w, height: h, ...style }} />;
+const Sk = ({ h = 16, className = "" }: { h?: number; className?: string }) => (
+  <div className={`animate-pulse bg-foreground/5 rounded-lg ${className}`} style={{ height: h }} />
+);
 
 const fmtDate = (v?: string) => {
   if (!v) return "—";
@@ -84,32 +73,43 @@ const durationDays = (from: string, to: string) => {
 const StatusBadge = ({ status }: any) => {
   const meta = STATUS_META[status] ?? STATUS_META.PENDING;
   const Icon = meta.icon;
-  return <span style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "4px 10px", borderRadius: 20, background: meta.bg, color: meta.color, fontSize: 11, fontWeight: 700 }}><Icon size={11} strokeWidth={2.5} />{meta.label}</span>;
+
+  return (
+    <span
+      style={{ background: meta.bg, color: meta.color }}
+      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono font-bold tracking-widest uppercase"
+    >
+      <Icon size={12} strokeWidth={2.5} />
+      {meta.label}
+    </span>
+  );
 };
 
 const Pill = ({ label, active, onClick, count }: any) => (
-  <button onClick={onClick} style={{ padding: "5px 13px", borderRadius: 20, border: "none", cursor: "pointer", fontSize: 12, fontWeight: 600, transition: "all 0.18s", background: active ? ACCENT : "var(--pill-inactive-bg)", color: active ? "#fff" : "var(--pill-inactive-text)", boxShadow: active ? `0 2px 10px ${ACCENT}44` : "none", display: "flex", alignItems: "center", gap: 5 }}>
+  <button onClick={onClick} className={`px-4 py-1.5 rounded-full border text-[11px] font-bold uppercase tracking-wider flex items-center gap-2 whitespace-nowrap transition-all duration-300 ${active ? 'bg-primary text-primary-foreground border-primary shadow-md' : 'bg-card/50 text-muted-foreground border-transparent hover:bg-foreground/5'}`}>
     {label}
-    {count != null && <span style={{ fontSize: 10, fontWeight: 800, background: active ? "rgba(255,255,255,0.25)" : "var(--card-border)", color: active ? "#fff" : "var(--text-muted)", borderRadius: 10, padding: "1px 6px" }}>{count}</span>}
+    {count != null && <span className={`text-[9px] font-mono font-bold tracking-widest px-1.5 py-0.5 rounded-md ${active ? 'bg-primary-foreground/20 text-primary-foreground' : 'bg-foreground/10 text-muted-foreground'}`}>{count}</span>}
   </button>
 );
 
 const ConfirmDialog = ({ open, title, desc, onConfirm, onCancel, loading }: any) => (
   <AnimatePresence>
     {open && (
-      <div className="modal-overlay" onClick={onCancel}>
-        <motion.div initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.94 }} onClick={(e) => e.stopPropagation()}
-          style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", borderRadius: 18, padding: "28px", maxWidth: 420, width: "100%", boxShadow: "0 24px 64px rgba(0,0,0,0.22)" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
-            <div style={{ width: 40, height: 40, borderRadius: 10, background: `${C.rose}18`, display: "flex", alignItems: "center", justifyContent: "center" }}><AlertTriangle size={18} color={C.rose} /></div>
-            <p style={{ fontSize: 15, fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>{title}</p>
+      <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onCancel}>
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} onClick={(e) => e.stopPropagation()}
+          className="bg-card-glass/60 backdrop-blur-xl border border-border/40 shadow-2xl rounded-2xl p-6 max-w-[420px] w-full">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-500">
+              <AlertTriangle size={18} />
+            </div>
+            <p className="text-base font-display font-bold text-foreground m-0">{title}</p>
           </div>
-          <p style={{ fontSize: 13, color: "var(--text-secondary)", marginBottom: 22, lineHeight: 1.6 }}>{desc}</p>
-          <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-            <button onClick={onCancel} style={{ padding: "8px 18px", borderRadius: 10, border: "1.5px solid var(--card-border)", background: "transparent", color: "var(--text-secondary)", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Cancel</button>
-            <button onClick={onConfirm} disabled={loading} style={{ padding: "8px 18px", borderRadius: 10, border: "none", background: C.rose, color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, opacity: loading ? 0.7 : 1 }}>
-              {loading && <Loader2 size={13} style={{ animation: "spin 1s linear infinite" }} />} Delete
-            </button>
+          <p className="text-sm text-muted-foreground mb-6 leading-relaxed">{desc}</p>
+          <div className="flex gap-3 justify-end">
+            <Button variant="outline" onClick={onCancel} className="rounded-xl px-5 text-xs font-bold uppercase tracking-wider">Cancel</Button>
+            <Button onClick={onConfirm} disabled={loading} className="bg-rose-500 hover:bg-rose-600 text-white rounded-xl px-5 text-xs font-bold uppercase tracking-wider gap-2">
+              {loading && <Loader2 size={14} className="animate-spin" />} Delete
+            </Button>
           </div>
         </motion.div>
       </div>
@@ -120,34 +120,35 @@ const ConfirmDialog = ({ open, title, desc, onConfirm, onCancel, loading }: any)
 const FeedbackModal = ({ open, feedback, onClose }: any) => (
   <AnimatePresence>
     {open && (
-      <div className="modal-overlay" onClick={onClose}>
-        <motion.div initial={{ opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.94 }} onClick={(e) => e.stopPropagation()} className="modal-box" style={{ maxWidth: 480 }}>
-          <div style={{ padding: "22px 24px 0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <div style={{ width: 36, height: 36, borderRadius: 10, background: `${C.violet}18`, display: "flex", alignItems: "center", justifyContent: "center" }}><MessageSquare size={16} color={C.violet} /></div>
-              <p style={{ fontSize: 14, fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>Mentor Feedback</p>
+      <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} onClick={(e) => e.stopPropagation()}
+          className="bg-card-glass/80 backdrop-blur-2xl border border-border/40 shadow-2xl rounded-[1.5rem] w-full max-w-[480px] overflow-hidden flex flex-col">
+          <div className="p-6 pb-4 flex items-center justify-between border-b border-border/40">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center"><MessageSquare size={16} className="text-violet-600" /></div>
+              <p className="text-base font-display font-bold text-foreground m-0">Mentor Feedback</p>
             </div>
-            <button onClick={onClose} style={{ width: 30, height: 30, borderRadius: 8, border: "none", background: "var(--pill-inactive-bg)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={14} color="var(--text-muted)" /></button>
+            <button onClick={onClose} className="w-8 h-8 rounded-lg bg-foreground/5 hover:bg-foreground/10 flex items-center justify-center transition-colors"><X size={14} className="text-muted-foreground" /></button>
           </div>
-          <div style={{ padding: "18px 24px 24px" }}>
+          <div className="p-6">
             {feedback ? (
-              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-                  <div style={{ flex: 1, padding: "12px 14px", borderRadius: 12, background: "var(--body-bg)", border: "1px solid var(--card-border)" }}>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 3px" }}>From</p>
-                    <p style={{ fontSize: 13, fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>{feedback.mentor}</p>
-                    <p style={{ fontSize: 11, color: "var(--text-muted)", margin: 0 }}>{feedback.mentorEmail}</p>
+              <div className="flex flex-col gap-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-background/40 border border-border/50 rounded-xl p-3.5">
+                    <p className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-[0.15em] mb-1">From</p>
+                    <p className="text-sm font-bold text-foreground">{feedback.mentor}</p>
+                    <p className="text-[11px] text-muted-foreground">{feedback.mentorEmail}</p>
                   </div>
-                  <div style={{ padding: "12px 14px", borderRadius: 12, background: "var(--body-bg)", border: "1px solid var(--card-border)" }}>
-                    <p style={{ fontSize: 10, fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em", margin: "0 0 3px" }}>Date</p>
-                    <p style={{ fontSize: 13, fontWeight: 600, color: "var(--text-primary)", margin: 0 }}>{fmtDate(feedback.createdAt)}</p>
+                  <div className="bg-background/40 border border-border/50 rounded-xl p-3.5">
+                    <p className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-[0.15em] mb-1">Date</p>
+                    <p className="text-sm font-bold text-foreground">{fmtDate(feedback.createdAt)}</p>
                   </div>
                 </div>
-                <div style={{ padding: "14px 16px", borderRadius: 12, background: `${C.rose}08`, border: `1px solid ${C.rose}25`, lineHeight: 1.65 }}>
-                  <p style={{ fontSize: 13, color: "var(--text-secondary)", margin: 0 }}>{feedback.message}</p>
+                <div className="bg-rose-500/5 border border-rose-500/20 rounded-xl p-4">
+                  <p className="text-sm text-foreground/80 leading-relaxed whitespace-pre-wrap">{feedback.message}</p>
                 </div>
               </div>
-            ) : <p style={{ fontSize: 13, color: "var(--text-muted)", textAlign: "center", padding: "20px 0" }}>No feedback available</p>}
+            ) : <p className="text-sm text-muted-foreground text-center py-6">No feedback available</p>}
           </div>
         </motion.div>
       </div>
@@ -156,17 +157,10 @@ const FeedbackModal = ({ open, feedback, onClose }: any) => (
 );
 
 const Field = ({ label, required, children }: any) => (
-  <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
-    <label
-      style={{
-        fontSize: 12,
-        fontWeight: 700,
-        color: "var(--text-secondary)",
-        letterSpacing: "0.04em",
-      }}
-    >
+  <div className="flex flex-col gap-1.5">
+    <label className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-widest">
       {label}
-      {required && <span style={{ color: C.rose }}> *</span>}
+      {required && <span className="text-rose-500"> *</span>}
     </label>
     {children}
   </div>
@@ -193,44 +187,38 @@ const CertFormModal = ({ open, editing, onClose, onSubmit, isSubmitting }: any) 
     }
   }, [editing, open]);
 
-  // const F = ({ label, required, children }: any) => (
-  //   <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
-  //     <label style={{ fontSize: 12, fontWeight: 700, color: "var(--text-secondary)", letterSpacing: "0.04em" }}>{label}{required && <span style={{ color: C.rose }}> *</span>}</label>
-  //     {children}
-  //   </div>
-  // );
-
   return (
     <AnimatePresence>
       {open && (
-        <div className="modal-overlay" onClick={onClose}>
-          <motion.div initial={{ opacity: 0, scale: 0.94, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.94, y: 10 }} onClick={(e) => e.stopPropagation()} className="modal-box">
-            <div style={{ padding: "22px 24px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid var(--card-border)" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <div style={{ width: 36, height: 36, borderRadius: 10, background: `${ACCENT}18`, display: "flex", alignItems: "center", justifyContent: "center" }}><Award size={16} color={ACCENT} /></div>
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+          <motion.div initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }} onClick={(e) => e.stopPropagation()}
+            className="bg-card-glass/80 backdrop-blur-2xl border border-border/40 shadow-2xl rounded-[1.5rem] w-full max-w-[540px] overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="p-6 pb-4 flex items-center justify-between border-b border-border/40">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary"><Award size={16} /></div>
                 <div>
-                  <p style={{ fontSize: 14, fontWeight: 700, color: "var(--text-primary)", margin: 0 }}>{isEdit ? "Edit Certification" : "Add Certification"}</p>
-                  <p style={{ fontSize: 11, color: "var(--text-muted)", margin: 0 }}>{isEdit ? "Update certification details" : "Add a new certification for review"}</p>
+                  <p className="text-base font-display font-bold text-foreground m-0">{isEdit ? "Edit Certification" : "Add Certification"}</p>
+                  <p className="text-[11px] font-mono text-muted-foreground m-0">{isEdit ? "Update certification details" : "Add a new certification for review"}</p>
                 </div>
               </div>
-              <button onClick={onClose} style={{ width: 30, height: 30, borderRadius: 8, border: "none", background: "var(--pill-inactive-bg)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}><X size={14} color="var(--text-muted)" /></button>
+              <button onClick={onClose} className="w-8 h-8 rounded-lg bg-foreground/5 hover:bg-foreground/10 flex items-center justify-center transition-colors"><X size={14} className="text-muted-foreground" /></button>
             </div>
-            <form onSubmit={(e) => { e.preventDefault(); onSubmit(form); }} style={{ padding: "20px 24px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
-              <Field label="Certification Title" required><input className="form-input" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} required placeholder="e.g. AWS Solutions Architect" /></Field>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                <Field label="Platform" required><input className="form-input" value={form.platform} onChange={e => setForm(p => ({ ...p, platform: e.target.value }))} required placeholder="e.g. Coursera" /></Field>
-                <Field label="Platform URL" required><input className="form-input" value={form.platformLink} onChange={e => setForm(p => ({ ...p, platformLink: e.target.value }))} required placeholder="https://..." /></Field>
+            <form onSubmit={(e) => { e.preventDefault(); onSubmit(form); }} className="p-6 overflow-y-auto flex flex-col gap-5">
+              <Field label="Certification Title" required><input className="w-full bg-background border border-border/50 rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" value={form.title} onChange={e => setForm(p => ({ ...p, title: e.target.value }))} required placeholder="e.g. AWS Solutions Architect" /></Field>
+              <div className="grid grid-cols-2 gap-4">
+                <Field label="Platform" required><input className="w-full bg-background border border-border/50 rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" value={form.platform} onChange={e => setForm(p => ({ ...p, platform: e.target.value }))} required placeholder="e.g. Coursera" /></Field>
+                <Field label="Platform URL" required><input className="w-full bg-background border border-border/50 rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" value={form.platformLink} onChange={e => setForm(p => ({ ...p, platformLink: e.target.value }))} required placeholder="https://..." /></Field>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                <Field label="Start Date" required><input className="form-input" type="date" value={form.from} onChange={e => setForm(p => ({ ...p, from: e.target.value }))} required /></Field>
-                <Field label="End Date" required><input className="form-input" type="date" value={form.to} onChange={e => setForm(p => ({ ...p, to: e.target.value }))} required /></Field>
+              <div className="grid grid-cols-2 gap-4">
+                <Field label="Start Date" required><input className="w-full bg-background border border-border/50 rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" type="date" value={form.from} onChange={e => setForm(p => ({ ...p, from: e.target.value }))} required /></Field>
+                <Field label="End Date" required><input className="w-full bg-background border border-border/50 rounded-xl p-3 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" type="date" value={form.to} onChange={e => setForm(p => ({ ...p, to: e.target.value }))} required /></Field>
               </div>
-              <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 4 }}>
-                <button type="button" onClick={onClose} style={{ padding: "9px 20px", borderRadius: 10, border: "1.5px solid var(--card-border)", background: "transparent", color: "var(--text-secondary)", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Cancel</button>
-                <button type="submit" disabled={isSubmitting} style={{ padding: "9px 24px", borderRadius: 10, border: "none", background: ACCENT, color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, opacity: isSubmitting ? 0.7 : 1, boxShadow: `0 4px 14px ${ACCENT}44` }}>
-                  {isSubmitting && <Loader2 size={13} style={{ animation: "spin 1s linear infinite" }} />}
+              <div className="flex gap-3 justify-end mt-2">
+                <Button type="button" variant="outline" onClick={onClose} className="rounded-xl px-6 text-xs font-bold uppercase tracking-wider">Cancel</Button>
+                <Button type="submit" disabled={isSubmitting} className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl px-6 text-xs font-bold uppercase tracking-wider gap-2">
+                  {isSubmitting && <Loader2 size={14} className="animate-spin" />}
                   {isEdit ? "Update" : "Submit"}
-                </button>
+                </Button>
               </div>
             </form>
           </motion.div>
@@ -247,62 +235,94 @@ const CertCard = ({ item, index, onEdit, onDelete, onFeedback }: any) => {
   const days = durationDays(item.from, item.to);
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.045 }}
-      style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", borderRadius: 16, padding: "18px 20px", boxShadow: "var(--card-shadow)", display: "flex", flexDirection: "column", gap: 12, position: "relative", overflow: "hidden", transition: "box-shadow 0.18s, transform 0.18s" }}
-      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 32px rgba(0,0,0,0.12)"; (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; }}
-      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.boxShadow = "var(--card-shadow)"; (e.currentTarget as HTMLElement).style.transform = "translateY(0)"; }}>
+      className="bg-card-glass/60 backdrop-blur-xl border border-border/40 shadow-sm rounded-2xl p-5 flex flex-col gap-4 relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
 
-      {/* Accent strip */}
-      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg,${ACCENT},${C.orange})`, borderRadius: "16px 16px 0 0" }} />
+      {/* Accent strip removed to adhere to monotone style */}
+      {/* <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-blue-500" /> */}
 
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 10, paddingTop: 4 }}>
-        <div style={{ display: "flex", alignItems: "flex-start", gap: 10, flex: 1, minWidth: 0 }}>
-          <div style={{ width: 40, height: 40, borderRadius: 10, background: `${ACCENT}18`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <Award size={18} color={ACCENT} />
+      <div className="flex justify-between items-start gap-3 mt-1">
+        <div className="flex items-start gap-3 flex-1 min-w-0">
+          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+            <Award size={18} className="text-primary" />
           </div>
-          <div style={{ minWidth: 0 }}>
-            <p style={{ fontSize: 14, fontWeight: 700, color: "var(--text-primary)", margin: "0 0 2px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.title}</p>
-            <p style={{ fontSize: 12, color: ACCENT, margin: 0, fontWeight: 600 }}>{item.platform}</p>
-            <p style={{ fontSize: 11, color: "var(--text-muted)", margin: 0 }}>Mentor: {getMentorName(item.mentorId)}</p>
+          <div className="min-w-0">
+            <p className="text-base font-display font-bold text-foreground truncate">{item.title}</p>
+            <p className="text-[13px] font-bold text-muted-foreground truncate">{item.platform}</p>
+            <p className="text-[10px] font-mono text-muted-foreground uppercase tracking-widest mt-0.5">Mentor: {getMentorName(item.mentorId)}</p>
           </div>
         </div>
-        <StatusBadge status={item.status} />
+        <StatusBadge status={item.feedback ? 'REJECTED' : item.status} />
       </div>
 
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center" }}>
-        <span style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 11, fontWeight: 600, color: "var(--text-muted)", background: "var(--pill-inactive-bg)", padding: "3px 9px", borderRadius: 20 }}>
-          <Calendar size={10} /> {fmtDate(item.from)} — {fmtDate(item.to)}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-mono font-bold tracking-widest uppercase bg-foreground/5 text-muted-foreground">
+          <Calendar size={12} /> {fmtDate(item.from)} — {fmtDate(item.to)}
         </span>
         {days > 0 && (
-          <span style={{ fontSize: 11, fontWeight: 600, color: C.violet, background: `${C.violet}14`, padding: "3px 9px", borderRadius: 20 }}>{days} days</span>
+          <span className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-mono font-bold tracking-widest uppercase bg-foreground/5 text-muted-foreground">{days} days</span>
         )}
       </div>
 
       {item.feedback && (
-        <div style={{ padding: "9px 12px", borderRadius: 10, background: `${C.rose}08`, border: `1px solid ${C.rose}25`, fontSize: 12, color: "var(--text-secondary)", lineHeight: 1.5 }}>
-          <span style={{ fontWeight: 700, color: C.rose }}>Feedback: </span>{item.feedback}
+        <div className="p-3 rounded-xl bg-rose-500/5 border border-rose-500/20 text-xs text-foreground/80 leading-relaxed">
+          <span className="font-bold text-rose-500 font-mono tracking-widest uppercase text-[10px]">Feedback: </span><br />{item.feedback}
         </div>
       )}
 
-      <div style={{ display: "flex", gap: 8, paddingTop: 4, borderTop: "1px solid var(--table-border)", alignItems: "center" }}>
-        <a href={item.platformLink} target="_blank" rel="noreferrer" style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 12px", borderRadius: 8, background: `${ACCENT}14`, color: ACCENT, fontSize: 12, fontWeight: 600, textDecoration: "none" }}>
-          <Link size={11} /> View Cert
-        </a>
-        {item.status === "REJECTED" && (
-          <button onClick={() => onFeedback(item._id)} style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 12px", borderRadius: 8, border: "none", background: `${C.violet}14`, color: C.violet, fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
-            <MessageSquare size={11} /> Feedback
-          </button>
-        )}
-        {item.status === "PENDING" && (
-          <>
-            <button onClick={() => onEdit(item)} style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 12px", borderRadius: 8, border: "none", background: `${ACCENT}14`, color: ACCENT, fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
-              <Edit2 size={11} /> Edit
-            </button>
-            <button onClick={() => onDelete(item)} style={{ display: "flex", alignItems: "center", gap: 5, padding: "6px 12px", borderRadius: 8, border: "none", background: `${C.rose}14`, color: C.rose, fontSize: 12, fontWeight: 600, cursor: "pointer", marginLeft: "auto" }}>
-              <Trash2 size={11} /> Delete
-            </button>
-          </>
-        )}
-      </div>
+      <div className="flex flex-wrap gap-2 pt-3 mt-1 border-t border-border/30 items-center">
+
+  <a
+    href={item.platformLink}
+    target="_blank"
+    rel="noreferrer"
+    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg
+    bg-blue-100 text-blue-700
+    hover:bg-blue-200
+    dark:bg-blue-900/30 dark:text-blue-400
+    text-[10px] font-bold uppercase tracking-widest transition-colors"
+  >
+    <Link size={13} /> View Cert
+  </a>
+
+  {item.feedback && (
+    <Button
+      onClick={() => onFeedback(item._id)}
+      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg
+      bg-muted text-muted-foreground
+      hover:bg-muted/80
+      text-[10px] font-bold  uppercase tracking-widest transition-colors"
+    >
+      <MessageSquare size={13} /> Feedback
+    </Button>   
+  )}
+
+  {item.status === "PENDING" && (
+    <>
+      <button
+        onClick={() => onEdit(item)}
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg
+        bg-amber-100 text-amber-700
+        hover:bg-amber-200
+        dark:bg-amber-900/30 dark:text-amber-400
+        text-[10px] font-bold uppercase tracking-widest transition-colors"
+      >
+        <Edit2 size={13} /> Edit
+      </button>
+
+      <button
+        onClick={() => onDelete(item)}
+        className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg
+        bg-rose-100 text-rose-700
+        hover:bg-rose-200
+        dark:bg-rose-900/30 dark:text-rose-400
+        text-[10px] font-bold uppercase tracking-widest transition-colors"
+      >
+        <Trash2 size={13} /> Delete
+      </button>
+    </>
+  )}
+
+</div>
     </motion.div>
   );
 };
@@ -355,86 +375,85 @@ export default function CertificationsPage() {
   const currentPage = Math.floor(pagination.skip / pagination.limit) + 1;
 
   return (
-    <>
-      <style>{GLOBAL_CSS}</style>
-      <div style={{ width: "100%", minHeight: "100vh", background: "var(--body-bg)" }}>
-        <Header subtitle="Showcase your certifications and earned credentials." HeaderComp={
-          <Button onClick={openCreateModal} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, background: ACCENT, color: "#fff", boxShadow: `0 4px 14px ${ACCENT}44` }}>
-            <Plus size={15} /> Add Certification
-          </Button>
-        } />
+    <div className="w-full min-h-screen bg-background text-foreground">
+      <Header subtitle="Showcase your certifications and earned credentials." HeaderComp={
+        <Button onClick={openCreateModal} className="gap-2 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 font-bold uppercase tracking-wider text-[11px]">
+          <Plus size={16} /> Add Certification
+        </Button>
+      } />
 
-        <div style={{ padding: "24px 24px 48px", display: "flex", flexDirection: "column", gap: 20 }}>
+      <main className="p-6 lg:p-8 max-w-[1600px] mx-auto space-y-6">
 
-          {/* Stats */}
-          <div className="cert-stats" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 14 }}>
-            {[
-              { label: "Total",    val: counts.ALL,      color: ACCENT },
-              { label: "Pending",  val: counts.PENDING,  color: C.amber },
-              { label: "Earned",   val: counts.APPROVED, color: C.emerald },
-              { label: "Rejected", val: counts.REJECTED, color: C.rose },
-            ].map(({ label, val, color }, i) => (
-              <motion.div key={label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
-                style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", borderRadius: 14, padding: "16px 18px", boxShadow: "var(--card-shadow)" }}>
-                <p style={{ fontSize: 11, fontWeight: 700, color: "var(--text-muted)", letterSpacing: "0.05em", textTransform: "uppercase", margin: "0 0 6px" }}>{label}</p>
-                <p style={{ fontSize: 28, fontWeight: 800, color, margin: 0, lineHeight: 1 }}>{val}</p>
-              </motion.div>
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { label: "Total", val: counts.ALL, color: "var(--piq-blue)" },
+            { label: "Pending", val: counts.PENDING, color: "var(--piq-blue)" },
+            { label: "Earned", val: counts.APPROVED, color: "var(--piq-blue)" },
+            { label: "Rejected", val: counts.REJECTED, color: "var(--piq-blue)" },
+          ].map(({ label, val, color }, i) => (
+            <motion.div key={label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
+              className="bg-card-glass/60 backdrop-blur-xl border border-border/40 shadow-sm rounded-2xl p-5">
+              <p className="text-[10px] font-mono font-bold text-muted-foreground tracking-[0.15em] uppercase mb-2">{label}</p>
+              <p className="text-3xl font-display font-bold leading-none text-foreground">{val}</p>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Filters */}
+        <div className="bg-card-glass/60 backdrop-blur-xl border border-border/40 shadow-sm rounded-2xl p-4 flex flex-col lg:flex-row items-center gap-4 justify-between">
+          <div className="flex gap-2 flex-wrap w-full lg:w-auto">
+            {(["ALL", "PENDING", "APPROVED", "REJECTED"] as CertStatusFilter[]).map(f => (
+              <Pill key={f} label={f === "ALL" ? "All" : f === "APPROVED" ? "Earned" : f} active={statusFilter === f} onClick={() => setStatusFilter(f)} count={f === "ALL" ? counts.ALL : counts[f]} />
             ))}
           </div>
-
-          {/* Filters */}
-          <div style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", borderRadius: 16, padding: "16px 20px", boxShadow: "var(--card-shadow)" }}>
-            <div className="filter-flex" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 14 }}>
-              <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-                {(["ALL","PENDING","APPROVED","REJECTED"] as CertStatusFilter[]).map(f => (
-                  <Pill key={f} label={f === "ALL" ? "All" : f === "APPROVED" ? "Earned" : f.charAt(0) + f.slice(1).toLowerCase()} active={statusFilter === f} onClick={() => setStatusFilter(f)} count={f === "ALL" ? counts.ALL : counts[f]} />
-                ))}
-              </div>
-              <div style={{ position: "relative", maxWidth: 240, width: "100%" }}>
-                <Search size={14} style={{ position: "absolute", left: 11, top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} />
-                <input className="form-input" placeholder="Search certifications..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} style={{ paddingLeft: 32 }} />
-              </div>
-            </div>
+          <div className="relative w-full lg:max-w-[280px]">
+            <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <input className="w-full bg-background border border-border/50 rounded-xl py-2 pl-9 pr-4 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Search certifications..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
           </div>
-
-          {/* Cards */}
-          {isLoading ? (
-            <div className="cert-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
-              {[...Array(6)].map((_, i) => <Sk key={i} h={210} style={{ borderRadius: 16 }} />)}
-            </div>
-          ) : filtered.length === 0 ? (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", borderRadius: 16, padding: "60px 24px", textAlign: "center", boxShadow: "var(--card-shadow)" }}>
-              <Award size={40} color="var(--text-muted)" style={{ marginBottom: 12 }} />
-              <p style={{ fontSize: 15, fontWeight: 700, color: "var(--text-primary)", marginBottom: 6 }}>No certifications found</p>
-              <p style={{ fontSize: 13, color: "var(--text-muted)", marginBottom: 20 }}>Add your first certification</p>
-              <button onClick={openCreateModal} style={{ padding: "9px 22px", borderRadius: 10, border: "none", background: ACCENT, color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer" }}>+ Add Certification</button>
-            </motion.div>
-          ) : (
-            <div className="cert-grid" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 16 }}>
-              {filtered.map((item, i) => (
-                <CertCard key={item._id} item={item} index={i} onEdit={openEditModal} onDelete={setDeleteTarget} onFeedback={openFeedbackModal} />
-              ))}
-            </div>
-          )}
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-              <button onClick={() => setPage(pagination.skip - pagination.limit)} disabled={currentPage === 1} style={{ padding: "7px 14px", borderRadius: 8, border: "1.5px solid var(--card-border)", background: "var(--card-bg)", color: "var(--text-secondary)", cursor: currentPage === 1 ? "not-allowed" : "pointer", opacity: currentPage === 1 ? 0.5 : 1, display: "flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 600 }}>
-                <ChevronLeft size={13} /> Prev
-              </button>
-              <span style={{ fontSize: 13, fontWeight: 600, color: "var(--text-secondary)" }}>Page {currentPage} of {totalPages}</span>
-              <button onClick={() => setPage(pagination.skip + pagination.limit)} disabled={currentPage === totalPages} style={{ padding: "7px 14px", borderRadius: 8, border: "1.5px solid var(--card-border)", background: "var(--card-bg)", color: "var(--text-secondary)", cursor: currentPage === totalPages ? "not-allowed" : "pointer", opacity: currentPage === totalPages ? 0.5 : 1, display: "flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 600 }}>
-                Next <ChevronRight size={13} />
-              </button>
-            </div>
-          )}
         </div>
-      </div>
+
+        {/* Cards */}
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+            {[...Array(6)].map((_, i) => <Sk key={i} h={220} className="rounded-2xl" />)}
+          </div>
+        ) : filtered.length === 0 ? (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-card-glass/60 backdrop-blur-xl border border-border/40 shadow-sm rounded-2xl py-20 px-6 text-center flex flex-col items-center">
+            <div className="w-16 h-16 rounded-2xl bg-foreground/5 flex items-center justify-center mb-4">
+              <Award size={28} className="text-muted-foreground" />
+            </div>
+            <p className="text-base font-display font-bold text-foreground mb-1 mt-2">No certifications found</p>
+            <p className="text-sm text-muted-foreground mb-6">Add your first certification</p>
+            <Button onClick={openCreateModal} className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl px-6 font-bold uppercase tracking-wider text-xs gap-2">
+              <Plus size={16} /> Add Certification
+            </Button>
+          </motion.div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {filtered.map((item, i) => (
+              <CertCard key={item._id} item={item} index={i} onEdit={openEditModal} onDelete={setDeleteTarget} onFeedback={openFeedbackModal} />
+            ))}
+          </div>
+        )}
+
+        {/* Pagination bar */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center gap-4 pt-2">
+            <Button variant="outline" size="sm" onClick={() => setPage(pagination.skip - pagination.limit)} disabled={currentPage === 1} className="rounded-xl font-bold uppercase tracking-widest text-[10px] gap-2 h-9 px-4">
+              <ChevronLeft size={14} /> Prev
+            </Button>
+            <span className="text-[11px] font-mono font-bold text-muted-foreground uppercase tracking-widest">Page {currentPage} of {totalPages}</span>
+            <Button variant="outline" size="sm" onClick={() => setPage(pagination.skip + pagination.limit)} disabled={currentPage === totalPages} className="rounded-xl font-bold uppercase tracking-widest text-[10px] gap-2 h-9 px-4">
+              Next <ChevronRight size={14} />
+            </Button>
+          </div>
+        )}
+      </main>
 
       <CertFormModal open={isModalOpen} editing={editingCertification} onClose={closeModal} onSubmit={handleSubmit} isSubmitting={isSubmitting} />
       <FeedbackModal open={isFeedbackModalOpen} feedback={selectedFeedback} onClose={closeFeedbackModal} />
       <ConfirmDialog open={!!deleteTarget} title="Delete Certification" desc={`Delete "${deleteTarget?.title}"? This cannot be undone.`} onConfirm={handleDelete} onCancel={() => setDeleteTarget(null)} loading={isDeleting} />
-    </>
+    </div>
   );
 }

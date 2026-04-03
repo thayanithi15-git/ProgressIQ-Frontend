@@ -24,6 +24,10 @@ import { useProfileStore } from "@/store/student/profile";
 import { useThemeStore } from "@/store/layoutStore";
 import Header from "@/components/layout/header";
 
+// Premium Components
+import { StatCard } from "@/components/dashboard/stat-card";
+
+
 // ─────────────────────────────────────────────────────────────────────────────
 // DESIGN TOKENS
 // ─────────────────────────────────────────────────────────────────────────────
@@ -48,40 +52,53 @@ const HEAT_COLORS_DARK = ["#1A2540", "#1E3A6E", "#2563EB", "#1D4ED8", "#1E40AF"]
 
 const STAT_META = [
   {
-    key: "totalPoints", label: "Total Points", icon: Zap,
-    grad: ["#F59E0B", "#D97706"], stars: "#FCD34D",
+    key: "totalPoints", 
+    label: "Total Points", 
+    icon: Zap,
+    color: C.amber,
     sub: (s: any) => `Rank #${s?.ranking?.overallRank ?? "—"} overall`,
   },
   {
-    key: "totalHoursSpent", label: "Hours Logged", icon: Clock,
-    grad: ["#3B6FD4", "#1D4ED8"], stars: "#93C5FD",
+    key: "totalHoursSpent", 
+    label: "Hours Logged", 
+    icon: Clock,
+    color: C.blue,
     sub: () => "Total activity hours",
   },
   {
-    key: "projects", label: "Projects", icon: Briefcase,
-    grad: ["#7C3AED", "#5B21B6"], stars: "#C4B5FD",
+    key: "projects", 
+    label: "Projects", 
+    icon: Briefcase,
+    color: C.violet,
     sub: (s: any) => `${s?.projects?.completed ?? 0} completed`,
     val: (s: any) => s?.projects?.total,
   },
   {
-    key: "tasks", label: "Tasks", icon: CheckSquare,
-    grad: ["#059669", "#047857"], stars: "#6EE7B7",
+    key: "tasks", 
+    label: "Tasks", 
+    icon: CheckSquare,
+    color: C.emerald,
     sub: (s: any) => `${s?.tasks?.overdue ?? 0} overdue`,
     val: (s: any) => s?.tasks?.total,
   },
   {
-    key: "certifications", label: "Certifications", icon: Award,
-    grad: ["#EC4899", "#DB2777"], stars: "#F9A8D4",
+    key: "certifications", 
+    label: "Certifications", 
+    icon: Award,
+    color: C.rose,
     sub: (s: any) => `${s?.certifications?.completed ?? 0} earned`,
     val: (s: any) => s?.certifications?.total,
   },
   {
-    key: "internships", label: "Internships", icon: GraduationCap,
-    grad: ["#0891B2", "#0E7490"], stars: "#67E8F9",
+    key: "internships", 
+    label: "Internships", 
+    icon: GraduationCap,
+    color: C.cyan,
     sub: (s: any) => `${s?.internships?.completed ?? 0} completed`,
     val: (s: any) => s?.internships?.total,
   },
 ];
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // GLOBAL CSS
@@ -259,54 +276,8 @@ const StarDeco = ({ color, size, style }: any) => (
   </svg>
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
-// STAT CARD (gradient)
-// ─────────────────────────────────────────────────────────────────────────────
-const StatCard = ({ meta, stats, loading, index }: any) => {
-  const Icon = meta.icon;
-  const [g1, g2] = meta.grad;
-  const value = meta.val ? meta.val(stats) : stats?.[meta.key];
-  const subLabel = meta.sub ? meta.sub(stats) : meta.sub;
 
-  if (loading) return (
-    <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }}>
-      <div style={{ borderRadius: 18, padding: "20px 22px", height: 130, background: "var(--card-bg)", border: "1px solid var(--card-border)" }}>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 9, flex: 1 }}>
-            <Sk w="55%" h={11} /><Sk w="38%" h={28} /><Sk w="70%" h={10} />
-          </div>
-          <Sk w={46} h={46} style={{ borderRadius: 12, flexShrink: 0 }} />
-        </div>
-      </div>
-    </motion.div>
-  );
 
-  return (
-    <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.055, duration: 0.38 }}
-      whileHover={{ y: -4, transition: { duration: 0.18 } }}>
-      <div style={{ borderRadius: 18, background: `linear-gradient(135deg,${g1} 0%,${g2} 100%)`, padding: "20px 20px 18px", position: "relative", overflow: "hidden", boxShadow: `0 8px 28px ${g1}55`, minHeight: 130 }}>
-        <StarDeco color={meta.stars} size={18} style={{ top: 10, right: 80, opacity: 0.22, animation: "float-star 2.8s ease-in-out infinite" }} />
-        <StarDeco color={meta.stars} size={11} style={{ top: 30, right: 110, opacity: 0.18, animation: "float-star 3.4s ease-in-out infinite 0.5s" }} />
-        <StarDeco color={meta.stars} size={14} style={{ bottom: 18, left: 16, opacity: 0.15, animation: "float-star 3.1s ease-in-out infinite 1s" }} />
-        <StarDeco color={meta.stars} size={8} style={{ bottom: 30, left: 50, opacity: 0.12, animation: "float-star 2.6s ease-in-out infinite 1.5s" }} />
-
-        <div style={{ position: "absolute", right: -20, top: -20, width: 100, height: 100, borderRadius: "50%", background: "rgba(255,255,255,0.10)", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", right: 10, bottom: -30, width: 80, height: 80, borderRadius: "50%", background: "rgba(255,255,255,0.07)", pointerEvents: "none" }} />
-
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-          <p style={{ fontSize: 11, fontWeight: 700, color: "rgba(255,255,255,0.80)", letterSpacing: "0.05em", textTransform: "uppercase" }}>{meta.label}</p>
-          <div style={{ width: 40, height: 40, borderRadius: 10, flexShrink: 0, background: "rgba(255,255,255,0.18)", display: "flex", alignItems: "center", justifyContent: "center", backdropFilter: "blur(6px)" }}>
-            <Icon size={19} color="rgba(255,255,255,0.95)" strokeWidth={2.2} />
-          </div>
-        </div>
-        <h3 className="font-poppins" style={{ fontSize: 34, fontWeight: 700, lineHeight: 1, color: value == null ? "rgba(255,255,255,0.35)" : "#fff", margin: "10px 0 4px", textShadow: "0 2px 8px rgba(0,0,0,0.15)" }}>
-          {value == null ? "—" : Number(value).toLocaleString()}
-        </h3>
-        <p style={{ fontSize: 11, color: "rgba(255,255,255,0.70)", fontWeight: 500 }}>{subLabel}</p>
-      </div>
-    </motion.div>
-  );
-};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CHART CARD WRAPPER
@@ -687,10 +658,25 @@ export default function StudentDashboard() {
         <div style={{ padding: "24px 24px 48px" }}>
           {/* ── 1. STAT CARDS (TOP ROW) ───────────────────────────── */}
           <div className="stat-grid-student" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 14, marginBottom: 20 }}>
-            {STAT_META.map((meta, i) => (
-              <StatCard key={meta.key} meta={meta} stats={stats} index={i} loading={statsLoading} />
-            ))}
+            {STAT_META.map((meta, i) => {
+              const value = meta.val ? meta.val(stats) : (stats as any)?.[meta.key];
+              const subLabel = typeof meta.sub === "function" ? meta.sub(stats) : meta.sub;
+              
+              return (
+                <StatCard 
+                  key={meta.key} 
+                  label={meta.label}
+                  value={value}
+                  icon={meta.icon}
+                  color={meta.color}
+                  subLabel={subLabel}
+                  index={i}
+                  loading={statsLoading}
+                />
+              );
+            })}
           </div>
+
 
           {/* ── 2. HEATMAP ────────────────────────────────────────── */}
           <motion.div

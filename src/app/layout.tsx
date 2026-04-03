@@ -33,9 +33,9 @@ export const metadata: Metadata = {
   title: "Progress IQ",
   description: "Progress IQ - Smart Activity Reporting Dashboard",
   icons: {
-    icon: "/progress_iq.png",
-    shortcut: "/progress_iq.png",
-    apple: "/progress_iq.png",
+    icon: "/progress_white.png",
+    shortcut: "/progress_white.png",
+    apple: "/progress_white.png",
     // shortcut: "/logo.png",
     // apple: "/logo.png",
   },

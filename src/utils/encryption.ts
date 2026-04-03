@@ -1,6 +1,6 @@
 import CryptoJS from 'crypto-js';
 
-const SECRET_KEY = process.env.NEXT_PUBLIC_SECRET_KEY || 'progress-iq-secret-key-2024';
+const SECRET_KEY = process.env.NEXT_PUBLIC_SECRET_KEY || 'progress-iq-secret-key-2026';
 
 export const encryptData = (data: string): string => {
   if (!SECRET_KEY) {
@@ -26,7 +26,7 @@ export const decryptData = (cipherText: string): string | null => {
 
 export const setEncryptedItem = (key: string, value: string): void => {
   if (typeof window !== 'undefined') {
-    if(key=='token'){
+    if (key == 'token') {
       localStorage.setItem("token", value);
       return;
     }
@@ -37,7 +37,7 @@ export const setEncryptedItem = (key: string, value: string): void => {
 
 export const getEncryptedItem = (key: string): string | null => {
   if (typeof window !== 'undefined') {
-    if(key=='token'){
+    if (key == 'token') {
       return localStorage.getItem("token");
     }
     const encrypted = localStorage.getItem(key);
