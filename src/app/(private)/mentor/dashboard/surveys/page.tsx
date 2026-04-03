@@ -2,28 +2,16 @@
 
 import React, { useEffect, useState } from 'react';
 import {
-  Search,
-  Plus,
-  Eye,
-  Trash2,
-  X,
-  MessageCircle,
-  BarChart3,
-  ChevronLeft,
-  ChevronRight, Download
+  Search, Plus, Eye, Trash2, X,
+  MessageCircle, BarChart3, ChevronLeft, ChevronRight, Loader2, Zap, Send, Clipboard
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useSurveysStore } from '@/store/mentor/survey';
+import Header from '@/components/layout/header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogDescription,
-} from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Select,
   SelectContent,
@@ -31,23 +19,37 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Label } from '@/components/ui/label';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useSurveysStore } from '@/store/mentor/survey';
-// import { MentorHeader } from '@/components/mentor/header';
-import { motion } from 'framer-motion';
-import Header from '@/components/layout/header';
 
-const getStatusColor = (status: string) => {
-  switch (status?.toLowerCase()) {
-    case 'active':
-      return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-    case 'closed':
-      return 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200';
-    default:
-      return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-  }
+// ─── TOKENS ─────────────────────────────────────────────────────────────────
+const STATUS_META: Record<string, { label: string; color: string; bg: string }> = {
+  ACTIVE: {
+    label: "Active",
+    color: "#059669",
+    bg: "rgba(16, 185, 129, 0.12)",
+  },
+  CLOSED: {
+    label: "Closed",
+    color: "#6b7280",
+    bg: "rgba(107, 114, 128, 0.12)",
+  },
+  DRAFT: {
+    label: "Draft",
+    color: "#2563eb",
+    bg: "rgba(59, 130, 246, 0.12)",
+  },
+};
+
+// ─── COMPONENTS ──────────────────────────────────────────────────────────────
+const StatusBadge = ({ status }: { status: string }) => {
+  const meta = STATUS_META[status?.toUpperCase()] ?? STATUS_META.CLOSED;
+  return (
+    <span
+      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider"
+      style={{ backgroundColor: meta.bg, color: meta.color }}
+    >
+      {meta.label}
+    </span>
+  );
 };
 
 const CreateSurveyModal = ({ open, onClose, onCreate, isSubmitting }: any) => {
@@ -55,283 +57,234 @@ const CreateSurveyModal = ({ open, onClose, onCreate, isSubmitting }: any) => {
   const [description, setDescription] = useState('');
   const [questions, setQuestions] = useState(['', '']);
 
+  useEffect(() => {
+    if (!open) {
+      setTitle('');
+      setDescription('');
+      setQuestions(['', '']);
+    }
+  }, [open]);
+
   const handleSubmit = async () => {
     const validQuestions = questions.filter((q) => q.trim());
-    if (!title.trim() || validQuestions.length === 0) {
-      alert('Please fill in title and add at least one question');
-      return;
-    }
-
+    if (!title.trim() || validQuestions.length === 0) return;
     await onCreate(title, description, validQuestions);
-    setTitle('');
-    setDescription('');
-    setQuestions(['', '']);
     onClose();
   };
 
   const addQuestion = () => setQuestions([...questions, '']);
-  const removeQuestion = (idx: number) => {
-    setQuestions(questions.filter((_, i) => i !== idx));
-  };
+  const removeQuestion = (idx: number) => setQuestions(questions.filter((_, i) => i !== idx));
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="font-poppins flex items-center gap-2">
-            <MessageCircle className="w-6 h-6 text-blue-600" />
-            Create New Survey
-          </DialogTitle>
-          <DialogDescription className="font-poppins">
-            Create a survey to gather feedback from your students
-          </DialogDescription>
-        </DialogHeader>
-
-        <div className="space-y-6">
-          {/* Title */}
-          <div>
-            <Label htmlFor="survey-title" className="font-poppins font-semibold mb-2 block">
-              Survey Title <span className="text-red-500">*</span>
-            </Label>
-            <Input
-              id="survey-title"
-              placeholder="e.g., Mentorship Program Feedback"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="font-poppins"
-            />
-          </div>
-
-          {/* Description */}
-          <div>
-            <Label htmlFor="survey-desc" className="font-poppins font-semibold mb-2 block">
-              Description
-            </Label>
-            <Textarea
-              id="survey-desc"
-              placeholder="Optional survey description..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="font-poppins min-h-[80px]"
-            />
-          </div>
-
-          {/* Questions */}
-          <div>
-            <div className="flex justify-between items-center mb-4">
-              <Label className="font-poppins font-semibold">
-                Questions <span className="text-red-500">*</span>
-              </Label>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={addQuestion}
-                className="gap-2 font-poppins"
-              >
-                <Plus className="w-4 h-4" />
-                Add Question
+    <AnimatePresence>
+      {open && (
+        <div className="modal-overlay" onClick={onClose}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            onClick={(e) => e.stopPropagation()}
+            className="modal-sheet max-w-xl p-0 overflow-hidden"
+          >
+            <div className="px-6 py-5 border-b border-border/50 bg-foreground/[0.02] flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-semibold text-foreground">Launch New Survey</h3>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-0.5">Collect qualitative feedback from mentees</p>
+              </div>
+              <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full w-8 h-8">
+                <X className="w-4 h-4" />
               </Button>
             </div>
 
-            <div className="space-y-3">
-              {questions.map((question, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="flex gap-2 items-start"
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-sm font-semibold text-muted-foreground font-poppins">
-                        Q{idx + 1}
-                      </span>
-                    </div>
-                    <Input
-                      placeholder={`Question ${idx + 1}`}
-                      value={question}
-                      onChange={(e) => {
-                        const newQuestions = [...questions];
-                        newQuestions[idx] = e.target.value;
-                        setQuestions(newQuestions);
-                      }}
-                      className="font-poppins"
-                    />
-                  </div>
-                  {questions.length > 2 && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeQuestion(idx)}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950 mt-8"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  )}
-                </motion.div>
-              ))}
-            </div>
-            <p className="text-xs text-muted-foreground mt-3 font-poppins">
-              {questions.filter((q) => q.trim()).length} valid question(s)
-            </p>
-          </div>
-        </div>
+            <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
+              <div>
+                <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5 block">Survey Identifier</label>
+                <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Mid-Term Program Feedback" className="h-11 rounded-xl bg-muted/20 border-border/60" />
+              </div>
+              <div>
+                <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5 block">Strategic Objective</label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Context for respondents..."
+                  className="w-full min-h-[80px] rounded-xl bg-muted/20 border border-border/60 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                />
+              </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={onClose} disabled={isSubmitting} className="font-poppins">
-            Cancel
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={isSubmitting}
-            className="font-poppins bg-blue-600 hover:bg-blue-700"
-          >
-            Create Survey
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+              <div>
+                <div className="flex items-center justify-between mb-3 pt-2 border-t border-border/20">
+                  <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Questionnaire Design</label>
+                  <Button variant="outline" size="sm" onClick={addQuestion} className="h-7 px-3 border-primary/20 text-primary hover:bg-primary/5 text-[10px] font-semibold uppercase tracking-widest gap-2">
+                    <Plus size={12} /> Add Query
+                  </Button>
+                </div>
+                <div className="space-y-3">
+                  {questions.map((q, idx) => (
+                    <div key={idx} className="flex gap-3 items-start group">
+                      <div className="mt-2.5 w-6 text-[10px] font-semibold text-muted-foreground uppercase tracking-tighter">Q{idx + 1}</div>
+                      <Input
+                        placeholder={`Query ${idx + 1}...`}
+                        value={q}
+                        onChange={(e) => {
+                          const nq = [...questions];
+                          nq[idx] = e.target.value;
+                          setQuestions(nq);
+                        }}
+                        className="flex-1 h-10 rounded-xl bg-muted/20 border-border/60"
+                      />
+                      {questions.length > 1 && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => removeQuestion(idx)}
+                          className="h-10 w-10 text-destructive/40 hover:text-destructive hover:bg-destructive/5 rounded-xl transition-all"
+                        >
+                          <Trash2 size={16} />
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 border-t border-border/50 bg-foreground/[0.01] flex justify-end gap-3">
+              <Button variant="outline" onClick={onClose} className="h-10 px-6 rounded-xl text-[11px] font-semibold uppercase tracking-wider">Draft</Button>
+              <Button onClick={handleSubmit} disabled={isSubmitting || !title.trim() || questions.filter(q => q.trim()).length === 0} className="h-10 px-8 rounded-xl text-[11px] font-semibold uppercase tracking-wider gap-2">
+                {isSubmitting && <Loader2 size={14} className="animate-spin" />} Launch Survey
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
   );
 };
 
-const ResponsesModal = ({ surveyDetail, onClose, isLoading }: any) => {
-  const [departmentFilter, setDepartmentFilter] = useState('');
-  const [yearFilter, setYearFilter] = useState('');
+const ResponsesModal = ({ surveyDetail, onClose }: any) => {
+  const [deptFilter, setDeptFilter] = useState('all');
+  const [yearFilter, setYearFilter] = useState('all');
+
+  useEffect(() => {
+    if (!surveyDetail) {
+      setDeptFilter('all');
+      setYearFilter('all');
+    }
+  }, [surveyDetail]);
 
   if (!surveyDetail) return null;
-
   const { survey, responses } = surveyDetail;
 
-  const filteredResponses = responses.filter((r: any) => {
-    if (departmentFilter && r.student.department !== departmentFilter) return false;
-    if (yearFilter && r.student.year !== yearFilter) return false;
+  const filtered = responses.filter((r: any) => {
+    if (deptFilter !== 'all' && r.student.department !== deptFilter) return false;
+    if (yearFilter !== 'all' && r.student.year !== yearFilter) return false;
     return true;
   });
 
   return (
-    <Dialog open={!!surveyDetail} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="font-poppins flex items-center gap-2">
-            <BarChart3 className="w-6 h-6 text-blue-600" />
-            {survey.title}
-          </DialogTitle>
-          <DialogDescription className="font-poppins">
-            {responses.length} response{responses.length !== 1 ? 's' : ''}
-          </DialogDescription>
-        </DialogHeader>
+    <AnimatePresence>
+      {surveyDetail && (
+        <div className="modal-overlay" onClick={onClose}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            onClick={(e) => e.stopPropagation()}
+            className="modal-sheet max-w-3xl p-0 overflow-hidden"
+          >
+            <div className="px-6 py-5 border-b border-border/50 bg-foreground/[0.02] flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-semibold text-foreground">{survey.title}</h3>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-0.5">Aggregated respondent intelligence</p>
+              </div>
+              <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full w-8 h-8">
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
 
-        {/* Filters */}
-        <div className="grid grid-cols-2 gap-3">
-          <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
-            <SelectTrigger className="font-poppins">
-              <SelectValue placeholder="Filter by Department" />
-            </SelectTrigger>
-            <SelectContent className="font-poppins">
-              <SelectItem value="all">All Departments</SelectItem>
-              <SelectItem value="CSE">CSE</SelectItem>
-              <SelectItem value="ECE">ECE</SelectItem>
-              <SelectItem value="ME">ME</SelectItem>
-            </SelectContent>
-          </Select>
+            <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Select value={deptFilter} onValueChange={setDeptFilter}>
+                  <SelectTrigger className="h-10 rounded-xl bg-muted/10 border-border/60 text-xs font-semibold uppercase tracking-wider">
+                    <SelectValue placeholder="All Departments" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Departments</SelectItem>
+                    <SelectItem value="CSE">CSE</SelectItem>
+                    <SelectItem value="ECE">ECE</SelectItem>
+                    <SelectItem value="ME">ME</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={yearFilter} onValueChange={setYearFilter}>
+                  <SelectTrigger className="h-10 rounded-xl bg-muted/10 border-border/60 text-xs font-semibold uppercase tracking-wider">
+                    <SelectValue placeholder="All Years" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Years</SelectItem>
+                    <SelectItem value="1st">1st Year</SelectItem>
+                    <SelectItem value="2nd">2nd Year</SelectItem>
+                    <SelectItem value="3rd">3rd Year</SelectItem>
+                    <SelectItem value="4th">4th Year</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-          <Select value={yearFilter} onValueChange={setYearFilter}>
-            <SelectTrigger className="font-poppins">
-              <SelectValue placeholder="Filter by Year" />
-            </SelectTrigger>
-            <SelectContent className="font-poppins">
-              <SelectItem value="all">All Years</SelectItem>
-              <SelectItem value="1st">1st Year</SelectItem>
-              <SelectItem value="2nd">2nd Year</SelectItem>
-              <SelectItem value="3rd">3rd Year</SelectItem>
-              <SelectItem value="4th">4th Year</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Responses */}
-        <div className="space-y-4 mt-4">
-          {filteredResponses.length === 0 ? (
-            <Card className="border-0 shadow-sm">
-              <CardContent className="py-8 text-center">
-                <MessageCircle className="w-12 h-12 mx-auto mb-3 text-muted-foreground opacity-50" />
-                <p className="text-muted-foreground font-poppins">No responses found</p>
-              </CardContent>
-            </Card>
-          ) : (
-            filteredResponses.map((response: any, idx: number) => (
-              <motion.div
-                key={response.responseId}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.05 }}
-              >
-                <Card className="border-0 shadow-sm hover:shadow-md transition-shadow">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <CardTitle className="text-base font-poppins">
-                          {response.student.name}
-                        </CardTitle>
-                        <CardDescription className="font-poppins text-xs mt-1">
-                          {response.student.department} • Year {response.student.year} •{' '}
-                          {new Date(response.submittedAt).toLocaleDateString()}
-                        </CardDescription>
+              {filtered.length === 0 ? (
+                <div className="py-20 text-center border-2 border-dashed border-border/40 rounded-2xl">
+                  <BarChart3 className="w-10 h-10 text-muted-foreground/30 mx-auto mb-4" />
+                  <p className="text-sm font-semibold text-muted-foreground uppercase tracking-widest">No matching datasets</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {filtered.map((r: any, idx: number) => (
+                    <motion.div
+                      key={r.responseId}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.03 }}
+                      className="p-5 rounded-2xl bg-foreground/[0.01] border border-border/40 group"
+                    >
+                      <div className="flex items-center justify-between mb-4 pb-3 border-b border-border/20">
+                        <div>
+                          <p className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">{r.student.name}</p>
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-0.5">{r.student.department} • Year {r.student.year} • {new Date(r.submittedAt).toLocaleDateString()}</p>
+                        </div>
+                        <div className="w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center">
+                          <Zap size={14} className="text-primary/60" />
+                        </div>
                       </div>
-                      <Badge variant="outline" className="font-poppins">
-                        {response.student.department}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {response.answers.map((answer: any, aIdx: number) => (
-                      <div
-                        key={aIdx}
-                        className="border-l-4 border-blue-500 pl-4 py-2"
-                      >
-                        <p className="font-semibold text-sm text-blue-600 dark:text-blue-400 mb-2 font-poppins">
-                          Q{aIdx + 1}: {answer.question}
-                        </p>
-                        <p className="text-sm text-foreground font-poppins">
-                          {answer.answer || (
-                            <span className="italic text-muted-foreground">No answer provided</span>
-                          )}
-                        </p>
+                      <div className="space-y-4">
+                        {r.answers.map((ans: any, aIdx: number) => (
+                          <div key={aIdx} className="space-y-1.5">
+                            <p className="text-[13px] font-semibold text-foreground/40 ">Query {aIdx + 1}: {ans.question}</p>
+                            <div className="p-3.5 rounded-xl bg-muted/10 border border-border/20 text-xs text-foreground/80 leading-relaxed font-medium">
+                              {ans.answer || <span className="opacity-40 italic">Data not provided</span>}
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))
-          )}
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="p-4 border-t border-border/50 flex justify-end">
+              <Button onClick={onClose} className="h-9 px-6 rounded-xl text-[11px] font-semibold uppercase tracking-wider">Close Analysis</Button>
+            </div>
+          </motion.div>
         </div>
-      </DialogContent>
-    </Dialog>
+      )}
+    </AnimatePresence>
   );
 };
 
+// ─── MAIN COMPONENT ──────────────────────────────────────────────────────────
 export default function MentorSurveysPage() {
   const {
-    surveys,
-    surveyDetail,
-    searchQuery,
-    statusFilter,
-    page,
-    totalPages,
-    isLoading,
-    isLoadingDetail,
-    isSubmitting,
-    fetchSurveys,
-    fetchSurveyResponses,
-    createSurvey,
-    setSearchQuery,
-    setStatusFilter,
-    setPage,
-    resetFilters,
-    closeSurveyDetail,
+    surveys, surveyDetail, searchQuery, statusFilter, page, totalPages,
+    isLoading, isLoadingDetail, isSubmitting,
+    fetchSurveys, fetchSurveyResponses, createSurvey,
+    setSearchQuery, setStatusFilter, setPage, resetFilters, closeSurveyDetail,
   } = useSurveysStore();
 
   const [tempSearch, setTempSearch] = useState(searchQuery);
@@ -339,258 +292,187 @@ export default function MentorSurveysPage() {
 
   useEffect(() => {
     fetchSurveys();
-  }, []);
+  }, [fetchSurveys, searchQuery, statusFilter, page]);
 
   const hasActiveFilters = searchQuery || statusFilter;
 
+  const STATUS_PILLS = [
+    { val: '', label: 'All Indices' },
+    { val: 'Active', label: 'Active' },
+    { val: 'Closed', label: 'Closed' },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
-      {/* Header */}
+    <div className="min-h-screen bg-background">
       <Header
-        title="Mentor Dashboard"
-        subtitle="Monitor your mentorship progress and student activities"
+        title="Surveys"
+        subtitle="Capture qualitative feedback through targeted inquiries"
         HeaderComp={
-          <div style={{ display: "flex", gap: 10 }}>
-
-            {/* Create Survey Button */}
-            <Button
-              onClick={() => setCreateOpen(true)}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                fontSize: 13
-              }}
-            >
-              <Plus size={14} />
-              Create Survey
-            </Button>
-
-            {/* Export Button */}
-            <Button
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                fontSize: 13,
-                background: "var(--primary)",
-                color: "var(--primary-foreground)"
-              }}
-            >
-              <Download size={14} />
-              Export
-            </Button>
-
-          </div>
+          <Button onClick={() => setCreateOpen(true)} className="h-9 px-4 rounded-xl text-[11px] font-semibold uppercase tracking-wider gap-2 shadow-lg shadow-primary/20">
+            <Plus size={14} /> Launch Survey
+          </Button>
         }
       />
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Search & Filters */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-6"
-        >
-          <Card className="border-0 shadow-sm">
-            <CardContent className="p-6">
-              <div className="flex gap-2 mb-4">
-                <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search surveys..."
-                    value={tempSearch}
-                    onChange={(e) => setTempSearch(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && setSearchQuery(tempSearch)}
-                    className="pl-10 font-poppins"
-                  />
-                </div>
-                <Button
-                  onClick={() => setSearchQuery(tempSearch)}
-                  className="gap-2 font-poppins bg-blue-600 hover:bg-blue-700"
-                >
-                  <Search className="w-4 h-4" />
-                </Button>
-              </div>
+      <div className="p-6 lg:p-8 max-w-[1600px] mx-auto space-y-8">
+        {/* Filter Controller */}
+        <div className="bg-card border border-border rounded-2xl p-4 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide w-full md:w-auto">
+            {STATUS_PILLS.map((p) => (
+              <button
+                key={p.val}
+                onClick={() => setStatusFilter(p.val)}
+                className={`px-4 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-wider transition-all whitespace-nowrap ${
+                  statusFilter === p.val
+                    ? 'bg-primary text-primary-foreground shadow-md'
+                    : 'bg-muted/50 text-muted-foreground hover:bg-muted border border-border/40'
+                }`}
+              >
+                {p.label}
+              </button>
+            ))}
+          </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="font-poppins">
-                    <SelectValue placeholder="Filter by Status" />
-                  </SelectTrigger>
-                  <SelectContent className="font-poppins">
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="Active">Active</SelectItem>
-                    <SelectItem value="Closed">Closed</SelectItem>
-                  </SelectContent>
-                </Select>
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            <div className="relative flex-1 md:w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="Search survey indices..."
+                value={tempSearch}
+                onChange={(e) => setTempSearch(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && setSearchQuery(tempSearch)}
+                className="pl-10 h-10 rounded-xl border-border/60 bg-muted/20"
+              />
+            </div>
+            {hasActiveFilters && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  resetFilters();
+                  setTempSearch('');
+                }}
+                className="h-10 rounded-xl text-xs text-muted-foreground hover:text-destructive"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            )}
+          </div>
+        </div>
 
-                {hasActiveFilters && (
-                  <Button
-                    variant="outline"
-                    onClick={resetFilters}
-                    className="gap-2 font-poppins"
-                  >
-                    <X className="w-4 h-4" />
-                    Reset
-                  </Button>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Surveys Grid */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8"
-        >
+        {/* Survey Collection Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {isLoading ? (
-            [...Array(6)].map((_, i) => (
-              <Card key={i} className="border-0 shadow-sm">
-                <CardContent className="pt-6">
-                  <Skeleton className="h-6 w-3/4 mb-4" />
-                  <Skeleton className="h-3 w-full mb-3" />
-                  <Skeleton className="h-3 w-2/3" />
-                </CardContent>
-              </Card>
+            Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="bg-card border border-border rounded-2xl p-6 space-y-4 shadow-sm">
+                <Skeleton className="h-5 w-3/4 rounded-lg" />
+                <Skeleton className="h-12 w-full rounded-xl" />
+                <div className="grid grid-cols-2 gap-3">
+                  <Skeleton className="h-12 rounded-xl" />
+                  <Skeleton className="h-12 rounded-xl" />
+                </div>
+              </div>
             ))
           ) : surveys.length === 0 ? (
-            <Card className="col-span-full border-0 shadow-sm">
-              <CardContent className="py-12 text-center">
-                <MessageCircle className="w-12 h-12 mx-auto mb-4 text-muted-foreground opacity-50" />
-                <p className="text-muted-foreground font-poppins">No surveys found</p>
-                <p className="text-xs text-muted-foreground mt-2 font-poppins">
-                  Create your first survey to get started
-                </p>
-              </CardContent>
-            </Card>
+            <div className="col-span-full py-32 text-center bg-card border border-dashed border-border rounded-3xl">
+              <MessageCircle className="w-12 h-12 text-muted-foreground/20 mx-auto mb-4" />
+              <p className="text-base font-semibold text-muted-foreground uppercase tracking-widest">No Intelligence Surveys Launched</p>
+              <Button onClick={() => setCreateOpen(true)} variant="outline" className="mt-6 border-primary/20 text-primary uppercase font-semibold text-[10px] tracking-widest">Initial Launch</Button>
+            </div>
           ) : (
-            surveys.map((survey, idx) => (
+            surveys.map((survey: any, idx: number) => (
               <motion.div
                 key={survey.id}
-                initial={{ opacity: 0, y: 10 }}
+                initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.05 }}
+                className="group relative bg-card border border-border/60 rounded-3xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
-                <Card className="h-full hover:shadow-lg transition-all duration-300 border-0 shadow-sm group">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-start justify-between gap-2 mb-2">
-                      <CardTitle className="line-clamp-2 text-base font-poppins">
-                        {survey.title}
-                      </CardTitle>
-                      <Badge className={`${getStatusColor(survey.status)} whitespace-nowrap`}>
-                        {survey.status}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    {/* Description */}
-                    <p className="text-sm text-muted-foreground font-poppins line-clamp-2">
-                      {survey.description || 'No description provided'}
-                    </p>
+                <div className="flex items-start justify-between mb-4">
+                  <div className="w-10 h-10 rounded-2xl bg-primary/5 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                    <Clipboard className="w-5 h-5 text-primary" />
+                  </div>
+                  <StatusBadge status={survey.status} />
+                </div>
 
-                    {/* Stats */}
-                    <div className="grid grid-cols-2 gap-3">
-                      <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900 rounded-lg p-3">
-                        <p className="text-2xl font-bold text-blue-600 dark:text-blue-400 font-poppins">
-                          {survey.questions.length}
-                        </p>
-                        <p className="text-xs text-muted-foreground font-poppins">
-                          Question{survey.questions.length !== 1 ? 's' : ''}
-                        </p>
-                      </div>
+                <div className="space-y-2 mb-6">
+                  <h4 className="text-base font-semibold text-foreground leading-snug group-hover:text-primary transition-colors line-clamp-1">{survey.title}</h4>
+                  <p className="text-xs text-muted-foreground/80 leading-relaxed line-clamp-2 min-h-[40px]">
+                    {survey.description || 'Actionable intelligence collection index for assigned mentees.'}
+                  </p>
+                </div>
 
-                      <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900 rounded-lg p-3">
-                        <p className="text-2xl font-bold text-green-600 dark:text-green-400 font-poppins">
-                          {survey.respondents}
-                        </p>
-                        <p className="text-xs text-muted-foreground font-poppins">
-                          Response{survey.respondents !== 1 ? 's' : ''}
-                        </p>
-                      </div>
-                    </div>
+                <div className="grid grid-cols-2 gap-3 mb-6">
+                  <div className="p-3.5 rounded-2xl bg-muted/10 border border-border/40 text-center group-hover:bg-primary/[0.02] transition-colors">
+                    <p className="text-2xl font-black text-foreground/80">{survey.questions?.length || 0}</p>
+                    <p className="text-[9px] text-muted-foreground font-semibold uppercase tracking-widest mt-0.5">Queries</p>
+                  </div>
+                  <div className="p-3.5 rounded-2xl bg-muted/10 border border-border/40 text-center group-hover:bg-primary/[0.02] transition-colors">
+                    <p className="text-2xl font-black text-primary">{survey.respondents || 0}</p>
+                    <p className="text-[9px] text-muted-foreground font-semibold uppercase tracking-widest mt-0.5">Datasets</p>
+                  </div>
+                </div>
 
-                    {/* Actions */}
-                    <div className="flex gap-2 pt-2 border-t">
-                      <Button
-                        onClick={() => fetchSurveyResponses(survey.id)}
-                        disabled={isLoadingDetail}
-                        variant="outline"
-                        size="sm"
-                        className="flex-1 gap-2 font-poppins"
-                      >
-                        <Eye className="w-4 h-4" />
-                        <span className="hidden sm:inline">Responses</span>
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950 font-poppins"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
+                <div className="flex items-center gap-2">
+                  <Button
+                    onClick={() => fetchSurveyResponses(survey.id)}
+                    disabled={isLoadingDetail}
+                    className="flex-1 h-10 rounded-2xl bg-primary/5 text-primary hover:bg-primary/10 border border-primary/10 text-[10px] font-semibold uppercase tracking-widest gap-2"
+                  >
+                    <BarChart3 size={14} /> Analytics
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-10 w-10 rounded-2xl text-destructive/40 hover:text-destructive hover:bg-destructive/5"
+                  >
+                    <Trash2 size={16} />
+                  </Button>
+                </div>
               </motion.div>
             ))
           )}
-        </motion.div>
+        </div>
 
-        {/* Pagination */}
-        {totalPages > 1 && !isLoading && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="flex items-center justify-between"
-          >
-            <p className="text-sm text-muted-foreground font-poppins">
-              Page {page} of {totalPages}
+        {/* Index Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between mt-12 pt-6 border-t border-border/40">
+            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
+              Survey Index: <span className="text-primary">{page}</span> of {totalPages}
             </p>
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setPage(Math.max(1, page - 1))}
                 disabled={page === 1}
-                className="gap-2 font-poppins"
+                className="h-9 px-4 rounded-xl border-border/40 text-[10px] font-semibold uppercase tracking-wider gap-2"
               >
-                <ChevronLeft className="w-4 h-4" />
-                Previous
+                <ChevronLeft size={14} /> Prev
               </Button>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setPage(Math.min(totalPages, page + 1))}
                 disabled={page === totalPages}
-                className="gap-2 font-poppins"
+                className="h-9 px-4 rounded-xl border-border/40 text-[10px] font-semibold uppercase tracking-wider gap-2"
               >
-                Next
-                <ChevronRight className="w-4 h-4" />
+                Next <ChevronRight size={14} />
               </Button>
             </div>
-          </motion.div>
+          </div>
         )}
       </div>
 
-      {/* Create Survey Modal */}
       <CreateSurveyModal
         open={createOpen}
         onClose={() => setCreateOpen(false)}
         onCreate={createSurvey}
         isSubmitting={isSubmitting}
       />
-
-      {/* Responses Modal */}
       <ResponsesModal
         surveyDetail={surveyDetail}
         onClose={closeSurveyDetail}
-        isLoading={isLoadingDetail}
       />
     </div>
   );

@@ -1,17 +1,16 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Search, Eye, ExternalLink, X, Award, Badge as BadgeIcon, ChevronLeft, ChevronRight, Download } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+  Search, Eye, ExternalLink, X, Award, ChevronLeft, ChevronRight, Zap
+} from 'lucide-react';
+import { useMentorCertificationsStore } from '@/store/mentor/certifications';
+import Header from '@/components/layout/header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Select,
   SelectContent,
@@ -19,414 +18,381 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useMentorCertificationsStore } from '@/store/mentor/certifications';
-// import { MentorHeader } from '@/components/mentor/header';
-import { motion } from 'framer-motion';
-import Header from '@/components/layout/header';
 
-const getStatusColor = (status: string) => {
-  switch (status?.toUpperCase()) {
-    case 'APPROVED':
-      return 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900 dark:text-green-200';
-    case 'PENDING':
-      return 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900 dark:text-yellow-200';
-    case 'REJECTED':
-      return 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900 dark:text-red-200';
-    default:
-      return 'bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-800 dark:text-gray-200';
+// ─── TOKENS ─────────────────────────────────────────────────────────────────
+const STATUS_META: Record<string, { label: string; color: string; bg: string }> = {
+  PENDING: {
+    label: "Pending",
+    color: "#6b7280",
+    bg: "rgba(107, 114, 128, 0.12)",
+  },
+  APPROVED: {
+    label: "Approved",
+    color: "#059669",
+    bg: "rgba(16, 185, 129, 0.12)",
+  },
+  REJECTED: {
+    label: "Rejected",
+    color: "#dc2626",
+    bg: "rgba(239, 68, 68, 0.12)",
+  },
+};
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+const fmt = (v?: string) => {
+  if (!v) return '—';
+  try {
+    return new Date(v).toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+  } catch {
+    return v;
   }
 };
 
-const CertificationDetailModal = ({ certification, onClose, isLoading }: any) => {
-  if (!certification) return null;
-
-  const { title, platform, platformLink, from, to, status, student, feedback } = certification;
-
+// ─── COMPONENTS ──────────────────────────────────────────────────────────────
+const StatusBadge = ({ status }: { status: string }) => {
+  const meta = STATUS_META[status?.toUpperCase()] ?? STATUS_META.PENDING;
   return (
-    <Dialog open={!!certification} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="font-poppins text-2xl flex items-center gap-2">
-            <Award className="w-6 h-6 text-amber-600" />
-            {title}
-          </DialogTitle>
-          <DialogDescription className="font-poppins">{platform}</DialogDescription>
-        </DialogHeader>
-
-        {isLoading ? (
-          <div className="space-y-4">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-3/4" />
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {/* Certificate Info */}
-            <div className="bg-muted/40 border rounded-lg p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold font-poppins">Certificate Details</h3>
-                <Badge className={`${getStatusColor(status)}`}>{status}</Badge>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1 font-poppins">Platform</p>
-                  <p className="font-semibold font-poppins">{platform}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1 font-poppins">Date From</p>
-                  <p className="font-semibold font-poppins">{new Date(from).toLocaleDateString()}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground mb-1 font-poppins">Date To</p>
-                  <p className="font-semibold font-poppins">{new Date(to).toLocaleDateString()}</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Student Info */}
-            <div className="border rounded-lg p-4">
-              <h4 className="font-semibold mb-4 font-poppins text-foreground">Student Information</h4>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground font-poppins">Name</span>
-                  <span className="font-medium font-poppins">{student?.name}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground font-poppins">Email</span>
-                  <span className="font-medium text-sm font-poppins">{student?.email}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground font-poppins">Department</span>
-                  <span className="font-medium font-poppins">{student?.department}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground font-poppins">Year</span>
-                  <span className="font-medium font-poppins">{student?.year}</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Platform Link */}
-            {platformLink && (
-            <div className="border rounded-lg p-4 bg-muted/40">
-                <a
-                  href={platformLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-poppins"
-                >
-                  <BadgeIcon className="w-4 h-4" />
-                  View on Platform
-                  <ExternalLink className="w-4 h-4 ml-auto" />
-                </a>
-              </div>
-            )}
-
-            {/* Feedback */}
-            {feedback && (
-              <div className="border-l-4 border-blue-500 bg-blue-50/60 dark:bg-blue-950 rounded p-4">
-                <h4 className="font-semibold mb-2 font-poppins text-blue-900 dark:text-blue-100">
-                  Mentor Notes
-                </h4>
-                <p className="text-sm font-poppins text-blue-800 dark:text-blue-200">{feedback}</p>
-              </div>
-            )}
-          </div>
-        )}
-      </DialogContent>
-    </Dialog>
+    <span
+      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider"
+      style={{ backgroundColor: meta.bg, color: meta.color }}
+    >
+      {meta.label}
+    </span>
   );
 };
 
+const CertificationDetailModal = ({ certification, onClose }: any) => {
+  if (!certification) return null;
+  const { title, platform, platformLink, from, to, status, student, feedback } = certification;
+
+  return (
+    <AnimatePresence>
+      {certification && (
+        <div className="modal-overlay" onClick={onClose}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            onClick={(e) => e.stopPropagation()}
+            className="modal-sheet max-w-xl p-0 overflow-hidden"
+          >
+            <div className="px-6 py-5 border-b border-border/50 bg-foreground/[0.02] flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-semibold text-foreground">Certification Detail</h3>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-0.5">Verified credentials and student context</p>
+              </div>
+              <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full w-8 h-8">
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+
+            <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
+              <div className="flex items-center gap-4 p-4 rounded-2xl bg-primary/5 border border-primary/10">
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Award className="w-6 h-6 text-primary" />
+                </div>
+                <div>
+                  <h4 className="text-base font-semibold text-foreground">{title}</h4>
+                  <p className="text-xs text-muted-foreground uppercase tracking-widest">{platform}</p>
+                </div>
+                <div className="ml-auto">
+                  <StatusBadge status={status} />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 rounded-xl bg-muted/20 border border-border/40">
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1">Issue Date</p>
+                  <p className="text-sm font-semibold">{fmt(from)}</p>
+                </div>
+                <div className="p-4 rounded-xl bg-muted/20 border border-border/40">
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1">Expiry Date</p>
+                  <p className="text-sm font-semibold">{to ? fmt(to) : 'Doesn\'t Expire'}</p>
+                </div>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-foreground/[0.01] border border-border/40">
+                <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-3 block">Student Identification</label>
+                <div className="grid grid-cols-2 gap-y-4">
+                  <div>
+                    <p className="text-[10px] text-muted-foreground uppercase font-semibold">Full Name</p>
+                    <p className="text-sm font-semibold text-foreground">{student?.name}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-muted-foreground uppercase font-semibold">Academic Year</p>
+                    <p className="text-sm font-semibold text-foreground">Year {student?.year}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-muted-foreground uppercase font-semibold">Department</p>
+                    <p className="text-sm font-semibold text-foreground">{student?.department}</p>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-muted-foreground uppercase font-semibold">Contact</p>
+                    <p className="text-sm font-semibold text-foreground truncate">{student?.email}</p>
+                  </div>
+                </div>
+              </div>
+
+              {platformLink && (
+                <a href={platformLink} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between p-4 rounded-xl bg-primary/5 text-primary border border-primary/10 hover:bg-primary/10 transition-colors">
+                  <div className="flex items-center gap-3">
+                    <ExternalLink size={18} />
+                    <span className="text-sm font-semibold uppercase tracking-wider">Verify Credentials</span>
+                  </div>
+                  <ChevronRight size={16} />
+                </a>
+              )}
+
+              {feedback && (
+                <div className="p-4 rounded-xl bg-amber-500/[0.03] border border-amber-500/10">
+                  <label className="text-[10px] font-semibold text-amber-500 uppercase tracking-widest mb-1.5 block">Reviewer Feedback</label>
+                  <p className="text-xs text-muted-foreground italic leading-relaxed">"{feedback}"</p>
+                </div>
+              )}
+            </div>
+            <div className="p-4 border-t border-border/50 flex justify-end">
+              <Button onClick={onClose} className="h-9 px-6 rounded-xl text-[11px] font-semibold uppercase tracking-wider">Close View</Button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+};
+
+// ─── MAIN COMPONENT ──────────────────────────────────────────────────────────
 export default function MentorCertificationsPage() {
   const {
-    certifications,
-    certificationDetail,
-    searchQuery,
-    statusFilter,
-    departmentFilter,
-    yearFilter,
-    sortBy,
-    sortOrder,
-    page,
-    limit,
-    total,
-    totalPages,
-    isLoading,
-    isLoadingDetail,
-    fetchCertifications,
-    fetchCertificationDetail,
-    setSearchQuery,
-    setStatusFilter,
-    setDepartmentFilter,
-    setYearFilter,
-    setSortBy,
-    setSortOrder,
-    setPage,
-    resetFilters,
-    closeDetail,
+    certifications, certificationDetail, searchQuery, statusFilter,
+    departmentFilter, yearFilter, page, total, totalPages,
+    isLoading, isLoadingDetail,
+    fetchCertifications, fetchCertificationDetail, setSearchQuery,
+    setStatusFilter, setDepartmentFilter, setYearFilter, setPage, resetFilters, closeDetail,
   } = useMentorCertificationsStore();
 
   const [tempSearch, setTempSearch] = useState(searchQuery);
 
   useEffect(() => {
     fetchCertifications();
-  }, []);
+  }, [fetchCertifications, searchQuery, statusFilter, departmentFilter, yearFilter, page]);
 
-  const hasActiveFilters = searchQuery || statusFilter || departmentFilter || yearFilter;
+  const hasFilters = searchQuery || statusFilter || departmentFilter || yearFilter;
+
+  const STATUS_PILLS = [
+    { val: '', label: 'All' },
+    { val: 'APPROVED', label: 'Approved' },
+    { val: 'PENDING', label: 'In Review' },
+    { val: 'REJECTED', label: 'Rejected' },
+  ];
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <Header
-                      
-                    title="Mentor Dashboard"
-                    subtitle="Monitor your mentorship progress and student activities"
-                      HeaderComp={
-                        <div style={{ display: "flex", gap: 10 }}>
-                          <Button style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, background: "var(--primary)", color: "var(--primary-foreground)" }}>
-                            <Download size={14} />
-                            Export
-                          </Button>
-                        </div>
-                      }
-                    />
+        title="Certifications"
+        subtitle="Validate and audit student professional development"
+      />
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Filters Card */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-6"
-        >
-          <Card className="shadow-none">
-            <CardContent className="p-6">
-              <div className="flex gap-2 mb-4">
-                <div className="flex-1 relative">
-                  <Search className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search by title, platform, or student..."
-                    value={tempSearch}
-                    onChange={(e) => setTempSearch(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && setSearchQuery(tempSearch)}
-                    className="pl-10 font-poppins"
-                  />
-                </div>
-                <Button
-                  onClick={() => setSearchQuery(tempSearch)}
-                  className="gap-2 font-poppins"
+      <div className="p-6 lg:p-8 max-w-[1600px] mx-auto space-y-6">
+        {/* Filter Section */}
+        <div className="bg-card border border-border rounded-2xl p-6 shadow-sm space-y-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide w-full md:w-auto">
+              {STATUS_PILLS.map((p) => (
+                <button
+                  key={p.val}
+                  onClick={() => setStatusFilter(p.val)}
+                  className={`px-4 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-wider transition-all whitespace-nowrap ${
+                    statusFilter === p.val
+                      ? 'bg-primary text-primary-foreground shadow-md'
+                      : 'bg-muted/50 text-muted-foreground hover:bg-muted border border-border/40'
+                  }`}
                 >
-                  <Search className="w-4 h-4" />
-                  Search
-                </Button>
-              </div>
+                  {p.label}
+                </button>
+              ))}
+            </div>
+            <div className="relative w-full md:w-80">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="Search certificates..."
+                value={tempSearch}
+                onChange={(e) => setTempSearch(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && setSearchQuery(tempSearch)}
+                className="pl-10 h-11 rounded-xl bg-muted/20 border-border/60"
+              />
+            </div>
+          </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="font-poppins">
-                    <SelectValue placeholder="Status" />
-                  </SelectTrigger>
-                  <SelectContent className="font-poppins">
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="APPROVED">Approved</SelectItem>
-                    <SelectItem value="PENDING">Pending</SelectItem>
-                    <SelectItem value="REJECTED">Rejected</SelectItem>
-                  </SelectContent>
-                </Select>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 pt-4 border-t border-border/40">
+            <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
+              <SelectTrigger className="h-10 rounded-xl bg-muted/10 border-border/60 text-xs font-semibold uppercase tracking-wider">
+                <SelectValue placeholder="All Departments" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Departments</SelectItem>
+                <SelectItem value="CSE">Computer Science</SelectItem>
+                <SelectItem value="ECE">Electronics</SelectItem>
+                <SelectItem value="ME">Mechanical</SelectItem>
+                <SelectItem value="CE">Civil</SelectItem>
+              </SelectContent>
+            </Select>
 
-                <Select value={departmentFilter} onValueChange={setDepartmentFilter}>
-                  <SelectTrigger className="font-poppins">
-                    <SelectValue placeholder="Department" />
-                  </SelectTrigger>
-                  <SelectContent className="font-poppins">
-                    <SelectItem value="all">All Departments</SelectItem>
-                    <SelectItem value="CSE">Computer Science</SelectItem>
-                    <SelectItem value="ECE">Electronics</SelectItem>
-                    <SelectItem value="ME">Mechanical</SelectItem>
-                    <SelectItem value="CE">Civil</SelectItem>
-                  </SelectContent>
-                </Select>
+            <Select value={yearFilter} onValueChange={setYearFilter}>
+              <SelectTrigger className="h-10 rounded-xl bg-muted/10 border-border/60 text-xs font-semibold uppercase tracking-wider">
+                <SelectValue placeholder="All Years" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Years</SelectItem>
+                <SelectItem value="1st">1st Year</SelectItem>
+                <SelectItem value="2nd">2nd Year</SelectItem>
+                <SelectItem value="3rd">3rd Year</SelectItem>
+                <SelectItem value="4th">4th Year</SelectItem>
+              </SelectContent>
+            </Select>
 
-                <Select value={yearFilter} onValueChange={setYearFilter}>
-                  <SelectTrigger className="font-poppins">
-                    <SelectValue placeholder="Year" />
-                  </SelectTrigger>
-                  <SelectContent className="font-poppins">
-                    <SelectItem value="all">All Years</SelectItem>
-                    <SelectItem value="1st">1st Year</SelectItem>
-                    <SelectItem value="2nd">2nd Year</SelectItem>
-                    <SelectItem value="3rd">3rd Year</SelectItem>
-                    <SelectItem value="4th">4th Year</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                {hasActiveFilters && (
-                  <Button
-                    variant="outline"
-                    onClick={resetFilters}
-                    className="gap-2 font-poppins"
-                  >
-                    <X className="w-4 h-4" />
-                    Reset
-                  </Button>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+            {hasFilters && (
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  resetFilters();
+                  setTempSearch('');
+                }}
+                className="h-10 rounded-xl text-[10px] font-semibold uppercase tracking-widest text-muted-foreground hover:text-destructive gap-2"
+              >
+                <X className="w-4 h-4" /> Reset Filters
+              </Button>
+            )}
+          </div>
+        </div>
 
         {/* Certifications Table */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <Card className="shadow-none overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-muted/50 border-b">
-                  <tr>
-                    <th className="px-6 py-4 text-left text-sm font-semibold font-poppins text-foreground">
-                      Certificate
+        <div className="bg-card border border-border/40 rounded-2xl overflow-hidden shadow-sm">
+          <div className="overflow-x-auto scrollbar-hide">
+            <table className="w-full border-collapse min-w-[1000px]">
+              <thead>
+                <tr className="bg-foreground/[0.01] border-b border-border/40">
+                  {['Certificate Info', 'Platform', 'Earned By', 'Completion Date', 'Status', 'Actions'].map((h) => (
+                    <th key={h} className="px-6 py-4 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
+                      {h}
                     </th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold font-poppins text-foreground">
-                      Platform
-                    </th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold font-poppins text-foreground">
-                      Student
-                    </th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold font-poppins text-foreground">
-                      Date Earned
-                    </th>
-                    <th className="px-6 py-4 text-center text-sm font-semibold font-poppins text-foreground">
-                      Status
-                    </th>
-                    <th className="px-6 py-4 text-center text-sm font-semibold font-poppins text-foreground">
-                      Action
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {isLoading ? (
-                    [...Array(5)].map((_, i) => (
-                      <tr key={i} className="border-b">
-                        {[...Array(6)].map((_, j) => (
-                          <td key={j} className="px-6 py-4">
-                            <Skeleton className="h-4 w-24" />
-                          </td>
-                        ))}
-                      </tr>
-                    ))
-                  ) : certifications.length === 0 ? (
-                    <tr>
-                      <td colSpan={6} className="px-6 py-8 text-center text-muted-foreground font-poppins">
-                        <Award className="w-12 h-12 mx-auto mb-4 text-muted-foreground opacity-50" />
-                        No certifications found
-                      </td>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {isLoading ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <tr key={i} className="border-b border-border/40">
+                      {Array.from({ length: 6 }).map((_, j) => (
+                        <td key={j} className="px-6 py-5">
+                          <Skeleton className="h-4 w-full rounded-lg" />
+                        </td>
+                      ))}
                     </tr>
-                  ) : (
-                    certifications.map((cert, idx) => (
-                      <motion.tr
-                        key={cert.id}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: idx * 0.02 }}
-                        className="border-b hover:bg-muted/50 transition-colors"
-                      >
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-2">
-                            <Award className="w-4 h-4 text-amber-600" />
-                            <span className="font-medium font-poppins line-clamp-1">
-                              {cert.title}
-                            </span>
+                  ))
+                ) : certifications.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="py-20 text-center text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+                      No Certification Records Located
+                    </td>
+                  </tr>
+                ) : (
+                  certifications.map((cert: any, idx: number) => (
+                    <motion.tr
+                      key={cert.id}
+                      initial={{ opacity: 0, x: -6 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: idx * 0.02 }}
+                      className="group border-b border-border/40 last:border-0 hover:bg-foreground/[0.02] transition-colors cursor-pointer"
+                      onClick={() => fetchCertificationDetail(cert.id)}
+                    >
+                      <td className="px-6 py-4 align-middle min-w-[280px]">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                            <Award className="w-5 h-5 text-primary" />
                           </div>
-                        </td>
-                        <td className="px-6 py-4 text-sm font-poppins text-muted-foreground">
-                          {cert.platform}
-                        </td>
-                        <td className="px-6 py-4">
                           <div>
-                            <p className="font-semibold text-sm font-poppins">
-                              {cert.student.name}
-                            </p>
-                            <p className="text-xs text-muted-foreground font-poppins">
-                              {cert.student.department}
-                            </p>
+                            <p className="text-sm font-semibold truncate max-w-[200px]">{cert.title}</p>
                           </div>
-                        </td>
-                        <td className="px-6 py-4 text-sm font-poppins">
-                          {new Date(cert.to).toLocaleDateString()}
-                        </td>
-                        <td className="px-6 py-4 text-center">
-                          <Badge className={`${getStatusColor(cert.status)}`}>
-                            {cert.status}
-                          </Badge>
-                        </td>
-                        <td className="px-6 py-4 text-center">
-                          <Button
-                            onClick={() => fetchCertificationDetail(cert.id)}
-                            disabled={isLoadingDetail}
-                            variant="ghost"
-                            size="sm"
-                            className="gap-2 font-poppins"
-                          >
-                            <Eye className="w-4 h-4" />
-                            <span className="hidden sm:inline">View</span>
-                          </Button>
-                        </td>
-                      </motion.tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </Card>
-        </motion.div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 align-middle">
+                        <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest border border-border/60 px-2 py-0.5 rounded bg-muted/20">
+                          {cert.platform}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 align-middle">
+                        <div>
+                          <p className="text-sm font-semibold">{cert.student?.name}</p>
+                          <p className="text-[10px] text-muted-foreground uppercase font-medium">{cert.student?.department}</p>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 align-middle text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                        {fmt(cert.to)}
+                      </td>
+                      <td className="px-6 py-4 align-middle">
+                        <StatusBadge status={cert.status} />
+                      </td>
+                      <td className="px-6 py-4 align-middle text-right">
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            fetchCertificationDetail(cert.id);
+                          }}
+                          className="h-8 px-4 rounded-lg bg-primary/5 text-primary hover:bg-primary/10 border border-primary/10 text-[10px] font-semibold uppercase tracking-widest gap-2"
+                        >
+                          <Eye className="w-3.5 h-3.5" /> Details
+                        </Button>
+                      </td>
+                    </motion.tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
 
         {/* Pagination */}
-        {totalPages > 1 && !isLoading && (
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="flex items-center justify-between mt-6"
-          >
-            <p className="text-sm text-muted-foreground font-poppins">
-              Showing {certifications.length} of {total} certifications • Page {page} of {totalPages}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between mt-8 pt-6 border-t border-border/40">
+            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
+              Reviewing <span className="text-primary">{certifications.length}</span> of {total} submissions
             </p>
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setPage(Math.max(1, page - 1))}
                 disabled={page === 1}
-                className="gap-2 font-poppins"
+                className="h-9 px-4 rounded-xl border-border/40 text-[10px] font-semibold uppercase tracking-wider gap-2"
               >
-                <ChevronLeft className="w-4 h-4" />
-                Previous
+                <ChevronLeft size={14} /> Prev
               </Button>
+              <div className="px-4 text-xs font-semibold text-muted-foreground">
+                {page} / {totalPages}
+              </div>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setPage(Math.min(totalPages, page + 1))}
                 disabled={page === totalPages}
-                className="gap-2 font-poppins"
+                className="h-9 px-4 rounded-xl border-border/40 text-[10px] font-semibold uppercase tracking-wider gap-2"
               >
-                Next
-                <ChevronRight className="w-4 h-4" />
+                Next <ChevronRight size={14} />
               </Button>
             </div>
-          </motion.div>
+          </div>
         )}
       </div>
 
-      {/* Detail Modal */}
       <CertificationDetailModal
         certification={certificationDetail}
         onClose={closeDetail}
-        isLoading={isLoadingDetail}
       />
     </div>
   );

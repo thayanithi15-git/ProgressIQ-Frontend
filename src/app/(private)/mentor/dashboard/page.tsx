@@ -44,15 +44,18 @@ import { ChartContainer } from "@/components/dashboard/chart-container";
 // ─────────────────────────────────────────────────────────────────────────────
 const C = {
   blue: "#3B6FD4",
-  violet: "#7C3AED",
+  charcoal: "#1E293B",
+  slate: "#64748B",
+  accent: "#6366F1",
   emerald: "#059669",
   amber: "#D97706",
   rose: "#E11D48",
-  cyan: "#0891B2",
 };
-const PIE_COLORS = [C.blue, C.violet, C.emerald, C.amber, C.rose, C.cyan];
 
-// Mentor stat cards
+// Predominantly Blue/Charcoal for charts
+const PIE_COLORS = [C.blue, C.accent, "#4F46E5", "#4338CA", "#3730A3", "#312E81"];
+
+// Mentor stat cards - Standardized to Blue/Charcoal theme
 const STAT_META = [
   {
     key: "totalAssignedStudents",
@@ -66,49 +69,49 @@ const STAT_META = [
     label: "Active Students",
     icon: UserCheck,
     desc: "Currently active",
-    color: C.emerald,
+    color: C.blue,
   },
   {
     key: "pendingApprovals",
     label: "Pending Reviews",
     icon: ClipboardList,
     desc: "Awaiting approval",
-    color: C.amber,
+    color: C.amber, // Kept amber for attention/pending
   },
   {
     key: "completedProjects",
     label: "Completed Projects",
     icon: FolderCheck,
     desc: "Successfully submitted",
-    color: C.violet,
+    color: C.emerald, // Kept emerald for completion
   },
   {
     key: "totalProjects",
     label: "Projects",
     icon: Layers,
     desc: "Total assigned",
-    color: "#6366F1",
+    color: C.blue,
   },
   {
     key: "totalTasks",
     label: "Tasks",
     icon: ClipboardList,
     desc: "Total tasks",
-    color: "#EC4899",
+    color: C.blue,
   },
   {
     key: "totalInternships",
     label: "Internships",
     icon: Briefcase,
     desc: "Total internships",
-    color: C.cyan,
+    color: C.blue,
   },
   {
     key: "totalCertifications",
     label: "Certifications",
     icon: Award,
     desc: "Total certifications",
-    color: C.emerald,
+    color: C.blue,
   },
 ];
 
@@ -152,7 +155,7 @@ const ChartTooltip = ({ active, payload, label }: any) => {
 };
 
 const RankBadge = ({ rank }: { rank: number }) => {
-  const colors = [C.amber, C.violet, C.cyan, C.blue];
+  const colors = [C.blue, C.accent, C.slate, C.slate];
   const color = colors[Math.min(rank - 1, 3)];
   return (
     <div
@@ -233,7 +236,7 @@ export default function MentorDashboard() {
         </div>
 
         {/* CHARTS ROW 1 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 ">
           <ChartContainer title="Approval Activity" subtitle="Last 30 days approval trends" icon={ClipboardList} loading={isLoadingAny}>
             {!activityData?.length ? (
               <EmptyState />

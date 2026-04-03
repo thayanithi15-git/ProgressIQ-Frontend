@@ -14,7 +14,7 @@ export const DashboardCard = ({ children, className, gradient, ...props }: Dashb
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
       className={cn(
-        "bg-card-glass rounded-[1.5rem] border border-border/50 shadow-sm overflow-hidden",
+        "bg-white rounded-[1.5rem] border border-border/50 shadow-sm overflow-hidden",
         gradient && "bg-brand-gradient text-white border-none shadow-xl",
         className
       )}

@@ -3,117 +3,117 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Search, Plus, Eye, AlertCircle, Calendar, X,
-  CheckCircle, Clock, XCircle, Send, Play, Trash2,
-  Loader2, AlertTriangle, ChevronLeft, ChevronRight, Users, Bell,
+  Search, Plus, Eye, X, Trash2, Calendar,
+  CheckCircle, Clock, Send, Bell, Zap, AlertCircle, AlertTriangle, Loader2,
+  ChevronLeft, ChevronRight, Users
 } from 'lucide-react';
 import { useMentorTasksStore } from '@/store/mentor/tasks';
 import { useAssignedStudentsStore } from '@/store/mentor/assignedStudents';
 import Header from '@/components/layout/header';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { Skeleton } from '@/components/ui/skeleton';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 // ─── TOKENS ─────────────────────────────────────────────────────────────────
-const C = {
-  blue:    '#3B6FD4',
-  violet:  '#7C3AED',
-  emerald: '#059669',
-  amber:   '#D97706',
-  rose:    '#E11D48',
-  indigo:  '#6366F1',
-};
-const ACCENT = C.indigo;
-
-// Map rawStatus → display config
 const STATUS_META: Record<string, { label: string; color: string; bg: string }> = {
-  PENDING:     { label: 'Pending',     color: C.amber,   bg: `${C.amber}18`   },
-  IN_PROGRESS: { label: 'In Progress', color: C.blue,    bg: `${C.blue}18`    },
-  SUBMITTED:   { label: 'Submitted',   color: C.violet,  bg: `${C.violet}18`  },
-  APPROVED:    { label: 'Approved',    color: C.emerald, bg: `${C.emerald}18` },
-  REJECTED:    { label: 'Rejected',    color: C.rose,    bg: `${C.rose}18`    },
+  PENDING: {
+    label: "Pending",
+    color: "#6b7280",
+    bg: "rgba(107, 114, 128, 0.12)",
+  },
+  IN_PROGRESS: {
+    label: "In Progress",
+    color: "#2563eb",
+    bg: "rgba(59, 130, 246, 0.12)",
+  },
+  SUBMITTED: {
+    label: "Submitted",
+    color: "#7c3aed",
+    bg: "rgba(124, 58, 237, 0.12)",
+  },
+  APPROVED: {
+    label: "Approved",
+    color: "#059669",
+    bg: "rgba(16, 185, 129, 0.12)",
+  },
+  REJECTED: {
+    label: "Rejected",
+    color: "#dc2626",
+    bg: "rgba(239, 68, 68, 0.12)",
+  },
 };
-
-// ─── GLOBAL CSS ──────────────────────────────────────────────────────────────
-const GLOBAL_CSS = `
-  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
-  @keyframes spin    { to{transform:rotate(360deg)} }
-  :root {
-    --card-bg:#fff; --card-border:#E8EDF4; --card-shadow:0 2px 12px rgba(0,0,0,0.06);
-    --body-bg:#F7F9FC; --text-primary:#1E293B; --text-secondary:#64748B; --text-muted:#94A3B8;
-    --input-bg:#F8FAFC; --input-border:#E2E8F0;
-    --modal-overlay:rgba(15,23,42,0.55);
-    --sk-from:#EEF2F7; --sk-via:#E2E8F0;
-    --table-border:#F1F5F9; --pill-inactive-bg:#F1F5F9; --pill-inactive-text:#64748B;
-    --table-hover:#F8FAFC;
-  }
-  .dark {
-    --card-bg:#1E2432; --card-border:#2A3349; --card-shadow:0 2px 12px rgba(0,0,0,0.30);
-    --body-bg:#141921; --text-primary:#E8EDF8; --text-secondary:#94A3B8; --text-muted:#64748B;
-    --input-bg:#252E42; --input-border:#2A3349;
-    --modal-overlay:rgba(5,8,14,0.75);
-    --sk-from:#1E2432; --sk-via:#252E42;
-    --table-border:#1E2432; --pill-inactive-bg:#1E2432; --pill-inactive-text:#94A3B8;
-    --table-hover:#1A2030;
-  }
-  .sk  { background:linear-gradient(90deg,var(--sk-from) 25%,var(--sk-via) 50%,var(--sk-from) 75%); background-size:200% 100%; animation:shimmer 1.6s infinite linear; border-radius:10px; }
-  .fi  { width:100%; padding:10px 14px; border-radius:10px; font-size:13px; font-family:inherit; background:var(--input-bg); border:1.5px solid var(--input-border); color:var(--text-primary); outline:none; transition:border-color 0.18s,box-shadow 0.18s; box-sizing:border-box; }
-  .fi:focus { border-color:${ACCENT}; box-shadow:0 0 0 3px ${ACCENT}22; }
-  .fi::placeholder { color:var(--text-muted); }
-  .fi.ta { resize:vertical; min-height:80px; line-height:1.6; }
-  .modal-overlay { position:fixed; inset:0; background:var(--modal-overlay); display:flex; align-items:center; justify-content:center; z-index:1000; padding:20px; backdrop-filter:blur(4px); }
-  .modal-box { background:var(--card-bg); border:1px solid var(--card-border); border-radius:20px; width:100%; max-width:580px; max-height:92vh; overflow-y:auto; box-shadow:0 24px 64px rgba(0,0,0,0.22); }
-  .mtr:hover { background:var(--table-hover) !important; }
-  @media(max-width:600px){ .pill-row{flex-wrap:wrap!important;} }
-`;
 
 // ─── HELPERS ─────────────────────────────────────────────────────────────────
-const Sk = ({ h = 16, style = {} }: { h?: number; style?: React.CSSProperties }) => (
-  <div className="sk" style={{ height: h, ...style }} />
-);
-
 const fmt = (v?: string) => {
   if (!v) return '—';
-  try { return new Date(v).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }); }
-  catch { return v; }
+  try {
+    return new Date(v).toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+  } catch {
+    return v;
+  }
 };
 
 const isOverdueNow = (due: string, raw: string) =>
   !['APPROVED'].includes(raw) && new Date(due) < new Date();
 
-// ─── STATUS BADGE ────────────────────────────────────────────────────────────
+// ─── COMPONENTS ──────────────────────────────────────────────────────────────
 const StatusBadge = ({ raw, due }: { raw: string; due: string }) => {
   const od = isOverdueNow(due, raw);
   if (od && raw === 'PENDING') {
-    return <span style={{ display:'inline-flex', alignItems:'center', gap:4, padding:'3px 10px', borderRadius:20, background:`${C.rose}18`, color:C.rose, fontSize:11, fontWeight:700 }}><AlertCircle size={11} />Overdue</span>;
+    return (
+      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-destructive/10 text-destructive border border-destructive/10 gap-1">
+        <AlertCircle size={10} /> Overdue
+      </span>
+    );
   }
-  const m = STATUS_META[raw] ?? { label: raw, color: C.amber, bg: `${C.amber}18` };
-  return <span style={{ display:'inline-flex', alignItems:'center', gap:4, padding:'3px 10px', borderRadius:20, background:m.bg, color:m.color, fontSize:11, fontWeight:700 }}>{m.label}</span>;
+  const meta = STATUS_META[raw?.toUpperCase()] ?? STATUS_META.PENDING;
+  return (
+    <span
+      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider"
+      style={{ backgroundColor: meta.bg, color: meta.color }}
+    >
+      {meta.label}
+    </span>
+  );
 };
 
-// ─── PILL FILTER ─────────────────────────────────────────────────────────────
-const Pill = ({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) => (
-  <button onClick={onClick} style={{ padding:'5px 13px', borderRadius:20, border:'none', cursor:'pointer', fontSize:12, fontWeight:600, transition:'all 0.18s', background:active ? ACCENT : 'var(--pill-inactive-bg)', color:active ? '#fff' : 'var(--pill-inactive-text)', boxShadow:active ? `0 2px 8px ${ACCENT}40` : 'none', whiteSpace:'nowrap' }}>
-    {label}
-  </button>
-);
-
-// ─── CONFIRM DIALOG ──────────────────────────────────────────────────────────
 const ConfirmDialog = ({ open, title, desc, onConfirm, onCancel, loading }: any) => (
   <AnimatePresence>
     {open && (
       <div className="modal-overlay" onClick={onCancel}>
-        <motion.div initial={{ opacity:0, scale:0.93 }} animate={{ opacity:1, scale:1 }} exit={{ opacity:0, scale:0.93 }}
-          onClick={e => e.stopPropagation()}
-          style={{ background:'var(--card-bg)', border:'1px solid var(--card-border)', borderRadius:18, padding:'28px', maxWidth:400, width:'100%', boxShadow:'0 24px 60px rgba(0,0,0,0.22)' }}>
-          <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:12 }}>
-            <div style={{ width:40, height:40, borderRadius:10, background:`${C.rose}18`, display:'flex', alignItems:'center', justifyContent:'center' }}><AlertTriangle size={18} color={C.rose} /></div>
-            <p style={{ fontSize:15, fontWeight:700, color:'var(--text-primary)', margin:0 }}>{title}</p>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95, y: 10 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          exit={{ opacity: 0, scale: 0.95, y: 10 }}
+          onClick={(e) => e.stopPropagation()}
+          className="modal-sheet max-w-sm p-6"
+        >
+          <div className="flex items-center gap-3 mb-4">
+            <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center">
+              <AlertTriangle size={20} className="text-destructive" />
+            </div>
+            <h3 className="text-base font-semibold text-foreground">{title}</h3>
           </div>
-          <p style={{ fontSize:13, color:'var(--text-secondary)', marginBottom:22, lineHeight:1.6 }}>{desc}</p>
-          <div style={{ display:'flex', gap:10, justifyContent:'flex-end' }}>
-            <button onClick={onCancel} style={{ padding:'8px 18px', borderRadius:10, border:'1.5px solid var(--card-border)', background:'transparent', color:'var(--text-secondary)', fontSize:13, fontWeight:600, cursor:'pointer' }}>Cancel</button>
-            <button onClick={onConfirm} disabled={loading} style={{ padding:'8px 20px', borderRadius:10, border:'none', background:C.rose, color:'#fff', fontSize:13, fontWeight:700, cursor:'pointer', display:'flex', alignItems:'center', gap:6, opacity:loading?0.7:1 }}>
-              {loading && <Loader2 size={13} style={{ animation:'spin 1s linear infinite' }} />} Delete
-            </button>
+          <p className="text-sm text-muted-foreground mb-6 leading-relaxed">{desc}</p>
+          <div className="flex gap-3 justify-end">
+            <Button variant="ghost" onClick={onCancel} className="h-9 px-4 rounded-xl text-[11px] font-semibold uppercase tracking-wider">
+              Cancel
+            </Button>
+            <Button onClick={onConfirm} disabled={loading} variant="destructive" className="h-9 px-5 rounded-xl text-[11px] font-semibold uppercase tracking-wider gap-2">
+              {loading && <Loader2 size={14} className="animate-spin" />} Delete
+            </Button>
           </div>
         </motion.div>
       </div>
@@ -121,22 +121,29 @@ const ConfirmDialog = ({ open, title, desc, onConfirm, onCancel, loading }: any)
   </AnimatePresence>
 );
 
-// ─── CREATE TASK MODAL ───────────────────────────────────────────────────────
 const CreateTaskModal = ({ open, onClose, onCreate, loading, students }: any) => {
-  const [title,       setTitle]       = useState('');
+  const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [dueDate,     setDueDate]     = useState('');
-  const [selected,    setSelected]    = useState<string[]>([]);
-  const [search,      setSearch]      = useState('');
+  const [dueDate, setDueDate] = useState('');
+  const [selected, setSelected] = useState<string[]>([]);
+  const [search, setSearch] = useState('');
 
-  useEffect(() => { if (!open) { setTitle(''); setDescription(''); setDueDate(''); setSelected([]); setSearch(''); } }, [open]);
+  useEffect(() => {
+    if (!open) {
+      setTitle('');
+      setDescription('');
+      setDueDate('');
+      setSelected([]);
+      setSearch('');
+    }
+  }, [open]);
 
   const filtered = students.filter((s: any) => {
     const q = search.toLowerCase();
     return !q || `${s.firstName} ${s.lastName}`.toLowerCase().includes(q) || s.department?.toLowerCase().includes(q);
   });
 
-  const toggle = (id: string) => setSelected(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
+  const toggle = (id: string) => setSelected((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
 
   const handleCreate = async () => {
     if (!title.trim() || !dueDate || selected.length === 0) return;
@@ -144,73 +151,85 @@ const CreateTaskModal = ({ open, onClose, onCreate, loading, students }: any) =>
     onClose();
   };
 
+  const canAssign = title.trim() && dueDate && selected.length > 0;
+
   return (
     <AnimatePresence>
       {open && (
         <div className="modal-overlay" onClick={onClose}>
-          <motion.div initial={{ opacity:0, scale:0.93, y:10 }} animate={{ opacity:1, scale:1, y:0 }} exit={{ opacity:0, scale:0.93, y:10 }}
-            onClick={e => e.stopPropagation()} className="modal-box">
-            {/* Header */}
-            <div style={{ padding:'20px 22px 16px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:'1px solid var(--card-border)' }}>
-              <div style={{ display:'flex', alignItems:'center', gap:10 }}>
-                <div style={{ width:34, height:34, borderRadius:9, background:`${ACCENT}18`, display:'flex', alignItems:'center', justifyContent:'center' }}><Plus size={15} color={ACCENT} /></div>
-                <div>
-                  <p style={{ fontSize:14, fontWeight:700, color:'var(--text-primary)', margin:0 }}>Create &amp; Assign Task</p>
-                  <p style={{ fontSize:11, color:'var(--text-muted)', margin:0 }}>Fill in details and select students</p>
-                </div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            onClick={(e) => e.stopPropagation()}
+            className="modal-sheet max-w-xl p-0 overflow-hidden"
+          >
+            <div className="px-6 py-5 border-b border-border/50 bg-foreground/[0.02] flex items-center justify-between">
+              <div>
+                <h3 className="text-base font-semibold text-foreground">Assign New Task</h3>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-widest mt-0.5">Push tasks to selected students</p>
               </div>
-              <button onClick={onClose} style={{ width:28, height:28, borderRadius:7, border:'none', background:'var(--pill-inactive-bg)', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center' }}><X size={13} color="var(--text-muted)" /></button>
+              <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full w-8 h-8">
+                <X className="w-4 h-4" />
+              </Button>
             </div>
 
-            {/* Form */}
-            <div style={{ padding:'18px 22px 24px', display:'flex', flexDirection:'column', gap:14 }}>
+            <div className="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
               <div>
-                <label style={{ fontSize:12, fontWeight:700, color:'var(--text-secondary)', display:'block', marginBottom:5 }}>Task Title <span style={{ color:C.rose }}>*</span></label>
-                <input className="fi" value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Build Login Authentication" />
+                <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5 block">Task Identifier</label>
+                <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="e.g. Implement Responsive Sidebar" className="h-11 rounded-xl bg-muted/20 border-border/60" />
               </div>
               <div>
-                <label style={{ fontSize:12, fontWeight:700, color:'var(--text-secondary)', display:'block', marginBottom:5 }}>Description</label>
-                <textarea className="fi ta" value={description} onChange={e => setDescription(e.target.value)} placeholder="Describe the task requirements..." />
+                <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5 block">Instructions</label>
+                <textarea
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="What needs to be done?"
+                  className="w-full min-h-[100px] rounded-xl bg-muted/20 border border-border/60 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                />
               </div>
               <div>
-                <label style={{ fontSize:12, fontWeight:700, color:'var(--text-secondary)', display:'block', marginBottom:5 }}>Due Date <span style={{ color:C.rose }}>*</span></label>
-                <input className="fi" type="date" value={dueDate} onChange={e => setDueDate(e.target.value)} />
+                <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5 block">Target Deadline</label>
+                <Input type="date" value={dueDate} onChange={(e) => setDueDate(e.target.value)} className="h-11 rounded-xl bg-muted/20 border-border/60" />
               </div>
 
-              {/* Student Picker */}
               <div>
-                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:8 }}>
-                  <label style={{ fontSize:12, fontWeight:700, color:'var(--text-secondary)' }}>Assign to Students <span style={{ color:C.rose }}>*</span></label>
-                  <span style={{ fontSize:11, color:ACCENT, fontWeight:700 }}>{selected.length} selected</span>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Assign Mentees</label>
+                  <span className="text-[10px] font-semibold text-primary">{selected.length} targeted</span>
                 </div>
-                <div style={{ position:'relative', marginBottom:8 }}>
-                  <Search size={13} style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)', color:'var(--text-muted)' }} />
-                  <input className="fi" placeholder="Search students..." value={search} onChange={e => setSearch(e.target.value)} style={{ paddingLeft:30 }} />
+                <div className="relative mb-3">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                  <Input
+                    placeholder="Search mentees..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="pl-9 h-9 text-xs rounded-lg border-border/40"
+                  />
                 </div>
-                <div style={{ border:'1.5px solid var(--input-border)', borderRadius:10, maxHeight:200, overflowY:'auto', background:'var(--input-bg)' }}>
+                <div className="border border-border/40 rounded-xl max-h-[160px] overflow-y-auto bg-foreground/[0.01]">
                   {filtered.length === 0 ? (
-                    <p style={{ textAlign:'center', padding:'16px', fontSize:12, color:'var(--text-muted)' }}>No students found</p>
-                  ) : filtered.map((s: any) => (
-                    <label key={s.id} style={{ display:'flex', alignItems:'center', gap:10, padding:'9px 12px', cursor:'pointer', borderBottom:'1px solid var(--table-border)', transition:'background 0.12s' }}
-                      onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--table-hover)'}
-                      onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'transparent'}>
-                      <input type="checkbox" checked={selected.includes(s.id)} onChange={() => toggle(s.id)} style={{ width:14, height:14, accentColor:ACCENT }} />
-                      <div style={{ flex:1, minWidth:0 }}>
-                        <p style={{ fontSize:13, fontWeight:600, color:'var(--text-primary)', margin:0 }}>{s.firstName} {s.lastName}</p>
-                        <p style={{ fontSize:11, color:'var(--text-muted)', margin:0 }}>{s.department} • {s.year}</p>
-                      </div>
-                    </label>
-                  ))}
+                    <p className="p-4 text-center text-xs text-muted-foreground">No students located</p>
+                  ) : (
+                    filtered.map((s: any) => (
+                      <label key={s.id} className="flex items-center gap-3 px-4 py-3 hover:bg-foreground/[0.03] transition-colors cursor-pointer border-b border-border/20 last:border-0">
+                        <input type="checkbox" checked={selected.includes(s.id)} onChange={() => toggle(s.id)} className="w-4 h-4 rounded border-border/60 text-primary focus:ring-primary/20" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold truncate">{s.firstName} {s.lastName}</p>
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{s.department} • Year {s.year}</p>
+                        </div>
+                      </label>
+                    ))
+                  )}
                 </div>
               </div>
+            </div>
 
-              <div style={{ display:'flex', gap:10, justifyContent:'flex-end', marginTop:4 }}>
-                <button onClick={onClose} style={{ padding:'9px 18px', borderRadius:10, border:'1.5px solid var(--card-border)', background:'transparent', color:'var(--text-secondary)', fontSize:13, fontWeight:600, cursor:'pointer' }}>Cancel</button>
-                <button onClick={handleCreate} disabled={loading || !title.trim() || !dueDate || selected.length === 0}
-                  style={{ padding:'9px 22px', borderRadius:10, border:'none', background:ACCENT, color:'#fff', fontSize:13, fontWeight:700, cursor:'pointer', display:'flex', alignItems:'center', gap:6, opacity:(loading || !title.trim() || !dueDate || selected.length === 0) ? 0.6 : 1, boxShadow:`0 4px 12px ${ACCENT}44` }}>
-                  {loading && <Loader2 size={13} style={{ animation:'spin 1s linear infinite' }} />} Assign Task
-                </button>
-              </div>
+            <div className="p-6 border-t border-border/50 bg-foreground/[0.01] flex justify-end gap-3">
+              <Button variant="outline" onClick={onClose} className="h-10 px-6 rounded-xl text-[11px] font-semibold uppercase tracking-wider">Cancel</Button>
+              <Button onClick={handleCreate} disabled={loading || !canAssign} className="h-10 px-8 rounded-xl text-[11px] font-semibold uppercase tracking-wider gap-2">
+                {loading && <Loader2 size={14} className="animate-spin" />} Create & Assign
+              </Button>
             </div>
           </motion.div>
         </div>
@@ -219,19 +238,24 @@ const CreateTaskModal = ({ open, onClose, onCreate, loading, students }: any) =>
   );
 };
 
-// ─── TASK DETAIL MODAL (view + verify) ───────────────────────────────────────
 const TaskDetailModal = ({ task, onClose, onVerify, loading }: any) => {
-  const [vNote,   setVNote]   = useState('');
+  const [vNote, setVNote] = useState('');
   const [vPoints, setVPoints] = useState(0);
 
-  useEffect(() => { if (task) { setVNote(''); setVPoints(0); } }, [task]);
+  useEffect(() => {
+    if (task) {
+      setVNote('');
+      setVPoints(0);
+    }
+  }, [task]);
 
   if (!task) return null;
 
   const canVerify = task.rawStatus === 'SUBMITTED';
+  const t = task;
 
   const handleVerify = async (status: 'APPROVED' | 'REJECTED') => {
-    await onVerify(task.id, status, vNote, vPoints);
+    await onVerify(t.id, status, vNote, vPoints);
     onClose();
   };
 
@@ -239,81 +263,97 @@ const TaskDetailModal = ({ task, onClose, onVerify, loading }: any) => {
     <AnimatePresence>
       {task && (
         <div className="modal-overlay" onClick={onClose}>
-          <motion.div initial={{ opacity:0, scale:0.93 }} animate={{ opacity:1, scale:1 }} exit={{ opacity:0, scale:0.93 }}
-            onClick={e => e.stopPropagation()} className="modal-box" style={{ maxWidth:600 }}>
-            {/* Header */}
-            <div style={{ padding:'20px 22px 16px', display:'flex', alignItems:'flex-start', justifyContent:'space-between', borderBottom:'1px solid var(--card-border)' }}>
-              <div style={{ flex:1, minWidth:0 }}>
-                <p style={{ fontSize:15, fontWeight:700, color:'var(--text-primary)', margin:'0 0 4px', lineHeight:1.3 }}>{task.title}</p>
-                <div style={{ display:'flex', alignItems:'center', gap:8, flexWrap:'wrap' }}>
-                  <span style={{ fontSize:12, color:'var(--text-muted)' }}>Assigned to <strong style={{ color:'var(--text-secondary)' }}>{task.assignedTo}</strong></span>
-                  <StatusBadge raw={task.rawStatus} due={task.dueDate} />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            onClick={(e) => e.stopPropagation()}
+            className="modal-sheet max-w-xl p-0 overflow-hidden"
+          >
+            <div className="px-6 py-5 border-b border-border/50 bg-foreground/[0.02] flex items-center justify-between">
+              <div className="flex-1 min-w-0 pr-4">
+                <h3 className="text-base font-semibold text-foreground truncate">{t.title}</h3>
+                <div className="flex items-center gap-2.5 mt-1">
+                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest">Assignee: {t.assignedTo}</span>
+                  <StatusBadge raw={t.rawStatus} due={t.dueDate} />
                 </div>
               </div>
-              <button onClick={onClose} style={{ width:28, height:28, borderRadius:7, border:'none', background:'var(--pill-inactive-bg)', cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}><X size={13} color="var(--text-muted)" /></button>
+              <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full w-8 h-8">
+                <X className="w-4 h-4" />
+              </Button>
             </div>
 
-            <div style={{ padding:'18px 22px 24px', display:'flex', flexDirection:'column', gap:12 }}>
-              {/* Meta */}
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:10 }}>
-                <div style={{ padding:'11px 13px', borderRadius:11, background:'var(--body-bg)', border:'1px solid var(--card-border)' }}>
-                  <p style={{ fontSize:10, fontWeight:700, color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'0.05em', margin:'0 0 3px' }}>Student</p>
-                  <p style={{ fontSize:13, fontWeight:600, color:'var(--text-primary)', margin:0 }}>{task.assignedTo}</p>
-                  <p style={{ fontSize:11, color:'var(--text-muted)', margin:0 }}>{task.student?.department} • {task.student?.year}</p>
+            <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-4 rounded-2xl bg-muted/20 border border-border/40">
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5 text-center">Mentee Information</p>
+                  <div className="text-center">
+                    <p className="text-sm font-semibold">{t.assignedTo}</p>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{t.student?.department} • Year {t.student?.year}</p>
+                  </div>
                 </div>
-                <div style={{ padding:'11px 13px', borderRadius:11, background:'var(--body-bg)', border:'1px solid var(--card-border)' }}>
-                  <p style={{ fontSize:10, fontWeight:700, color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'0.05em', margin:'0 0 3px' }}>Due Date</p>
-                  <p style={{ fontSize:13, fontWeight:600, color:'var(--text-primary)', margin:0 }}>{fmt(task.dueDate)}</p>
-                  {task.pointsAwarded > 0 && <p style={{ fontSize:11, color:C.emerald, fontWeight:700, margin:0 }}>+{task.pointsAwarded} pts awarded</p>}
+                <div className="p-4 rounded-2xl bg-muted/20 border border-border/40 flex flex-col items-center justify-center">
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5 text-center">Due On</p>
+                  <p className={`text-sm font-semibold ${isOverdueNow(t.dueDate, t.rawStatus) ? 'text-destructive' : ''}`}>{fmt(t.dueDate)}</p>
+                  {t.pointsAwarded > 0 && (
+                    <div className="mt-1 flex items-center gap-1 text-emerald-600 font-semibold text-xs">
+                      <Zap className="w-3 h-3 fill-emerald-600" /> +{t.pointsAwarded} pts
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Description */}
-              {task.description && (
-                <div style={{ padding:'11px 13px', borderRadius:11, background:'var(--body-bg)', border:'1px solid var(--card-border)' }}>
-                  <p style={{ fontSize:10, fontWeight:700, color:'var(--text-muted)', textTransform:'uppercase', letterSpacing:'0.05em', margin:'0 0 5px' }}>Description</p>
-                  <p style={{ fontSize:13, color:'var(--text-secondary)', margin:0, lineHeight:1.65, whiteSpace:'pre-wrap' }}>{task.description}</p>
+              {t.description && (
+                <div>
+                  <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-2 block">Task Instructions</label>
+                  <div className="p-4 rounded-xl bg-foreground/[0.01] border border-border/40 text-sm leading-relaxed text-muted-foreground">
+                    {t.description}
+                  </div>
                 </div>
               )}
 
-              {/* Submission Note */}
-              {task.submissionNote && (
-                <div style={{ padding:'11px 13px', borderRadius:11, background:`${C.amber}08`, border:`1px solid ${C.amber}22` }}>
-                  <p style={{ fontSize:10, fontWeight:700, color:C.amber, textTransform:'uppercase', letterSpacing:'0.05em', margin:'0 0 5px' }}>Student's Submission Note</p>
-                  <p style={{ fontSize:13, color:'var(--text-secondary)', margin:0, lineHeight:1.65, whiteSpace:'pre-wrap' }}>{task.submissionNote}</p>
+              {t.submissionNote && (
+                <div className="p-4 rounded-xl bg-amber-500/[0.03] border border-amber-500/10">
+                  <label className="text-[10px] font-semibold text-amber-500 uppercase tracking-widest mb-1.5 block">Student Submission</label>
+                  <p className="text-xs text-muted-foreground italic leading-relaxed">"{t.submissionNote}"</p>
                 </div>
               )}
 
-              {/* Previous verification note */}
-              {task.verificationNote && (
-                <div style={{ padding:'11px 13px', borderRadius:11, background:`${C.emerald}08`, border:`1px solid ${C.emerald}22` }}>
-                  <p style={{ fontSize:10, fontWeight:700, color:C.emerald, textTransform:'uppercase', letterSpacing:'0.05em', margin:'0 0 5px' }}>Your Previous Feedback</p>
-                  <p style={{ fontSize:13, color:'var(--text-secondary)', margin:0, lineHeight:1.65, whiteSpace:'pre-wrap' }}>{task.verificationNote}</p>
-                </div>
-              )}
-
-              {/* Verify Section */}
               {canVerify && (
-                <div style={{ borderTop:'1px solid var(--card-border)', paddingTop:16, display:'flex', flexDirection:'column', gap:12 }}>
-                  <p style={{ fontSize:13, fontWeight:700, color:'var(--text-primary)', margin:0 }}>Verify Submission</p>
-                  <div>
-                    <label style={{ fontSize:12, fontWeight:700, color:'var(--text-secondary)', display:'block', marginBottom:5 }}>Your Feedback / Note</label>
-                    <textarea className="fi ta" value={vNote} onChange={e => setVNote(e.target.value)} placeholder="Provide feedback on the student's submission..." />
+                <div className="pt-6 border-t border-border/50">
+                  <h4 className="text-[11px] font-semibold text-foreground uppercase tracking-widest mb-4">Evaluate Submission</h4>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5 block">Review Comments</label>
+                      <textarea
+                        value={vNote}
+                        onChange={(e) => setVNote(e.target.value)}
+                        placeholder="Feedback for the student..."
+                        className="w-full min-h-[80px] rounded-xl bg-muted/20 border border-border/60 p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                      />
+                    </div>
+                    <div className="flex items-end justify-between gap-4">
+                      <div className="flex-1">
+                        <label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1.5 block">Reward Points</label>
+                        <Input type="number" value={vPoints || ''} onChange={(e) => setVPoints(parseInt(e.target.value) || 0)} className="h-10 rounded-xl bg-muted/20 border-border/60" />
+                      </div>
+                      <div className="flex gap-2">
+                        <Button variant="outline" onClick={() => handleVerify('REJECTED')} disabled={loading} className="h-10 px-5 rounded-xl text-destructive hover:bg-destructive/10 border-destructive/20 text-[11px] font-semibold uppercase tracking-wider">
+                          Reject
+                        </Button>
+                        <Button onClick={() => handleVerify('APPROVED')} disabled={loading} className="h-10 px-5 rounded-xl text-[11px] font-semibold uppercase tracking-wider gap-2 shadow-lg shadow-primary/20">
+                          {loading && <Loader2 size={14} className="animate-spin" />} Approve
+                        </Button>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <label style={{ fontSize:12, fontWeight:700, color:'var(--text-secondary)', display:'block', marginBottom:5 }}>Award Points</label>
-                    <input className="fi" type="number" min={0} value={vPoints || ''} onChange={e => setVPoints(parseInt(e.target.value) || 0)} placeholder="e.g. 50" style={{ maxWidth:160 }} />
-                  </div>
-                  <div style={{ display:'flex', gap:10, justifyContent:'flex-end' }}>
-                    <button onClick={() => handleVerify('REJECTED')} disabled={loading}
-                      style={{ padding:'9px 20px', borderRadius:10, border:'none', background:`${C.rose}18`, color:C.rose, fontSize:13, fontWeight:700, cursor:'pointer', display:'flex', alignItems:'center', gap:6, opacity:loading?0.7:1 }}>
-                      {loading && <Loader2 size={13} style={{ animation:'spin 1s linear infinite' }} />} Reject
-                    </button>
-                    <button onClick={() => handleVerify('APPROVED')} disabled={loading}
-                      style={{ padding:'9px 22px', borderRadius:10, border:'none', background:C.emerald, color:'#fff', fontSize:13, fontWeight:700, cursor:'pointer', display:'flex', alignItems:'center', gap:6, opacity:loading?0.7:1, boxShadow:`0 4px 12px ${C.emerald}40` }}>
-                      {loading && <Loader2 size={13} style={{ animation:'spin 1s linear infinite' }} />} Approve &amp; Award
-                    </button>
-                  </div>
+                </div>
+              )}
+
+              {t.verificationNote && !canVerify && (
+                <div className="p-4 rounded-xl bg-emerald-500/[0.03] border border-emerald-500/10">
+                  <label className="text-[10px] font-semibold text-emerald-500 uppercase tracking-widest mb-1.5 block">Mentor Feedback</label>
+                  <p className="text-xs text-muted-foreground italic leading-relaxed">"{t.verificationNote}"</p>
                 </div>
               )}
             </div>
@@ -324,37 +364,37 @@ const TaskDetailModal = ({ task, onClose, onVerify, loading }: any) => {
   );
 };
 
-// ─── MAIN PAGE ───────────────────────────────────────────────────────────────
+// ─── MAIN COMPONENT ──────────────────────────────────────────────────────────
 export default function MentorTasksPage() {
   const {
-    tasks, searchQuery, statusFilter, departmentFilter, yearFilter,
-    page, totalPages, total, isLoading, isSubmitting,
-    fetchTasks, setSearchQuery, setStatusFilter, setDepartmentFilter,
-    setYearFilter, setPage, resetFilters, createTask, deleteTask, verifyTask, notifyStudents
+    tasks, searchQuery, statusFilter, page, totalPages, total, isLoading, isSubmitting,
+    fetchTasks, setSearchQuery, setStatusFilter, setPage, resetFilters,
+    createTask, deleteTask, verifyTask, notifyStudents
   } = useMentorTasksStore();
 
   const { students, fetchStudents } = useAssignedStudentsStore();
 
-  const [searchDraft,   setSearchDraft]   = useState(searchQuery);
-  const [createOpen,    setCreateOpen]    = useState(false);
-  const [selectedTask,  setSelectedTask]  = useState<any>(null);
-  const [deleteTarget,  setDeleteTarget]  = useState<any>(null);
-  const [isDeleting,    setIsDeleting]    = useState(false);
+  const [searchDraft, setSearchDraft] = useState(searchQuery);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [selectedTask, setSelectedTask] = useState<any>(null);
+  const [deleteTarget, setDeleteTarget] = useState<any>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  // Filter pills
   const STATUS_PILLS = [
-    { val: '',            label: 'All'         },
-    { val: 'PENDING',     label: 'Pending'     },
+    { val: '', label: 'All' },
+    { val: 'PENDING', label: 'Pending' },
     { val: 'IN_PROGRESS', label: 'In Progress' },
-    { val: 'SUBMITTED',   label: 'Submitted'   },
-    { val: 'APPROVED',    label: 'Approved'    },
-    { val: 'REJECTED',    label: 'Rejected'    },
+    { val: 'SUBMITTED', label: 'Submitted' },
+    { val: 'APPROVED', label: 'Approved' },
+    { val: 'REJECTED', label: 'Rejected' },
   ];
 
-  useEffect(() => { fetchTasks(); fetchStudents(); }, []);
+  useEffect(() => {
+    fetchTasks();
+    fetchStudents();
+  }, [fetchTasks, fetchStudents]);
 
-  // Count pending reviews
-  const pendingReview = tasks.filter(t => t.rawStatus === 'SUBMITTED').length;
+  const pendingReview = tasks.filter((t) => t.rawStatus === 'SUBMITTED').length;
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
@@ -364,169 +404,249 @@ export default function MentorTasksPage() {
     setDeleteTarget(null);
   };
 
-  const hasFilters = searchQuery || statusFilter || departmentFilter || yearFilter;
+  const hasFilters = searchQuery || statusFilter;
 
   return (
-    <>
-      <style>{GLOBAL_CSS}</style>
-      <div style={{ width: '100%', minHeight: '100vh', background: 'var(--body-bg)' }}>
-        <Header subtitle="Create tasks, assign to students, and verify submissions." HeaderComp={
-          <Button onClick={() => setCreateOpen(true)}
-            style={{ display:'flex', alignItems:'center', gap:6, fontSize:13, background:ACCENT, color:'#fff', boxShadow:`0 4px 12px ${ACCENT}44` }}>
+    <div className="min-h-screen bg-background">
+      <Header
+        title="Tasks"
+        subtitle="Maintain actionable items for your assigned mentees"
+        HeaderComp={
+          <Button onClick={() => setCreateOpen(true)} className="h-9 px-4 rounded-xl text-[11px] font-semibold uppercase tracking-wider gap-2 shadow-lg shadow-primary/20">
             <Plus size={14} /> Create Task
           </Button>
-        } />
+        }
+      />
 
-        <div style={{ padding:'22px 22px 48px', display:'flex', flexDirection:'column', gap:18 }}>
-
-          {/* Summary bar */}
-          {pendingReview > 0 && (
-            <motion.div initial={{ opacity:0, y:-6 }} animate={{ opacity:1, y:0 }}
-              style={{ padding:'12px 18px', borderRadius:12, background:`${C.violet}10`, border:`1.5px solid ${C.violet}30`, display:'flex', alignItems:'center', gap:10 }}>
-              <div style={{ width:32, height:32, borderRadius:8, background:`${C.violet}20`, display:'flex', alignItems:'center', justifyContent:'center' }}><Send size={14} color={C.violet} /></div>
-              <p style={{ fontSize:13, fontWeight:700, color:C.violet, margin:0 }}>{pendingReview} task{pendingReview > 1 ? 's' : ''} awaiting your review</p>
-            </motion.div>
-          )}
-
-          {/* Filters */}
-          <div style={{ background:'var(--card-bg)', border:'1px solid var(--card-border)', borderRadius:16, padding:'14px 18px', boxShadow:'var(--card-shadow)', display:'flex', alignItems:'center', justifyContent:'space-between', gap:14, flexWrap:'wrap' }}>
-            <div className="pill-row" style={{ display:'flex', gap:6, flexWrap:'wrap', flex:1 }}>
-              {STATUS_PILLS.map(p => <Pill key={p.val} label={p.label} active={statusFilter === p.val} onClick={() => setStatusFilter(p.val)} />)}
-            </div>
-            <div style={{ display:'flex', gap:8 }}>
-              <div style={{ position:'relative', maxWidth:240, width:'100%' }}>
-                <Search size={13} style={{ position:'absolute', left:10, top:'50%', transform:'translateY(-50%)', color:'var(--text-muted)' }} />
-                <input className="fi" placeholder="Search tasks..." value={searchDraft}
-                  onChange={e => setSearchDraft(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && setSearchQuery(searchDraft)}
-                  style={{ paddingLeft:30 }} />
+      <div className="p-6 lg:p-8 max-w-[1600px] mx-auto space-y-6">
+        {/* Status Alert */}
+        {pendingReview > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-4 rounded-2xl bg-primary/5 border border-primary/10 flex items-center justify-between"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <Send className="w-5 h-5 text-primary" />
               </div>
-              {hasFilters && (
-                <button onClick={() => { resetFilters(); setSearchDraft(''); }}
-                  style={{ padding:'8px 12px', borderRadius:10, border:'1.5px solid var(--card-border)', background:'transparent', color:'var(--text-secondary)', fontSize:12, fontWeight:600, cursor:'pointer', display:'flex', alignItems:'center', gap:4, whiteSpace:'nowrap' }}>
-                  <X size={12} /> Reset
-                </button>
-              )}
+              <div>
+                <p className="text-sm font-semibold text-primary">{pendingReview} Tasks Awaiting Review</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-widest mt-0.5">Evaluate submissions to maintain student progress</p>
+              </div>
             </div>
+            <Button variant="ghost" className="h-8 px-4 rounded-lg text-[10px] font-semibold uppercase tracking-widest text-primary hover:bg-primary/5" onClick={() => setStatusFilter('SUBMITTED')}>
+              Review Now
+            </Button>
+          </motion.div>
+        )}
+
+        {/* Filter Bar */}
+        <div className="bg-card border border-border rounded-2xl p-4 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide w-full md:w-auto">
+            {STATUS_PILLS.map((p) => (
+              <button
+                key={p.val}
+                onClick={() => setStatusFilter(p.val)}
+                className={`px-4 py-1.5 rounded-full text-[11px] font-semibold uppercase tracking-wider transition-all whitespace-nowrap ${
+                  statusFilter === p.val
+                    ? 'bg-primary text-primary-foreground shadow-md'
+                    : 'bg-muted/50 text-muted-foreground hover:bg-muted border border-border/40'
+                }`}
+              >
+                {p.label}
+              </button>
+            ))}
           </div>
 
-          {/* Table */}
-          <div style={{ background:'var(--card-bg)', border:'1px solid var(--card-border)', borderRadius:16, boxShadow:'var(--card-shadow)', overflow:'hidden' }}>
-            {isLoading ? (
-              <div style={{ padding:18, display:'flex', flexDirection:'column', gap:10 }}>
-                {Array.from({ length:5 }).map((_, i) => <Sk key={i} h={50} style={{ borderRadius:10 }} />)}
-              </div>
-            ) : tasks.length === 0 ? (
-              <div style={{ padding:'56px 24px', textAlign:'center' }}>
-                <Users size={38} color="var(--text-muted)" style={{ marginBottom:12 }} />
-                <p style={{ fontSize:15, fontWeight:700, color:'var(--text-primary)', marginBottom:6 }}>No tasks found</p>
-                <p style={{ fontSize:13, color:'var(--text-muted)', marginBottom:20 }}>Create a task and assign it to your students</p>
-                <button onClick={() => setCreateOpen(true)}
-                  style={{ padding:'9px 22px', borderRadius:10, border:'none', background:ACCENT, color:'#fff', fontSize:13, fontWeight:700, cursor:'pointer', boxShadow:`0 4px 12px ${ACCENT}44` }}>
-                  + Create Task
-                </button>
-              </div>
-            ) : (
-              <div style={{ overflowX:'auto' }}>
-                <table style={{ width:'100%', borderCollapse:'collapse' }}>
-                  <thead>
-                    <tr style={{ background:'var(--body-bg)', borderBottom:'1px solid var(--table-border)' }}>
-                      {['#','Task','Student','Due Date','Status','Actions'].map(h => (
-                        <th key={h} style={{ padding:'11px 14px', textAlign:'left', fontSize:11, fontWeight:700, color:'var(--text-muted)', letterSpacing:'0.06em', textTransform:'uppercase', whiteSpace:'nowrap' }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {tasks.map((task, i) => {
-                      const od = isOverdueNow(task.dueDate, task.rawStatus);
-                      const needsReview = task.rawStatus === 'SUBMITTED';
-                      return (
-                        <motion.tr key={task.id} className="mtr" initial={{ opacity:0, x:-6 }} animate={{ opacity:1, x:0 }} transition={{ delay:i*0.025 }}
-                          style={{ borderBottom:'1px solid var(--table-border)', transition:'background 0.14s', cursor:'pointer' }}
-                          onClick={() => setSelectedTask(task)}>
-                          <td style={{ padding:'12px 14px', fontSize:12, fontWeight:700, color:'var(--text-muted)', width:40 }}>{((page-1)*20)+i+1}</td>
-                          <td style={{ padding:'12px 14px', minWidth:200 }}>
-                            <div style={{ display:'flex', flexDirection:'column', gap:2 }}>
-                              <p style={{ fontSize:13, fontWeight:700, color:'var(--text-primary)', margin:0, maxWidth:260, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{task.title}</p>
-                              {task.description && <p style={{ fontSize:11, color:'var(--text-muted)', margin:0, maxWidth:260, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{task.description}</p>}
-                            </div>
-                          </td>
-                          <td style={{ padding:'12px 14px' }}>
-                            <p style={{ fontSize:13, fontWeight:600, color:'var(--text-primary)', margin:0 }}>{task.assignedTo}</p>
-                            <p style={{ fontSize:11, color:'var(--text-muted)', margin:0 }}>{task.student?.department} • {task.student?.year}</p>
-                          </td>
-                          <td style={{ padding:'12px 14px', whiteSpace:'nowrap' }}>
-                            <span style={{ fontSize:12, fontWeight:600, color:od?C.rose:'var(--text-secondary)', display:'flex', alignItems:'center', gap:4 }}>
-                              <Calendar size={12} />{fmt(task.dueDate)}
-                            </span>
-                          </td>
-                          <td style={{ padding:'12px 14px' }}>
-                            <StatusBadge raw={task.rawStatus} due={task.dueDate} />
-                            {needsReview && <p style={{ fontSize:10, color:C.violet, fontWeight:700, margin:'2px 0 0' }}>Needs Review</p>}
-                          </td>
-                          <td style={{ padding:'12px 14px' }}>
-                            <div style={{ display:'flex', gap:5, alignItems:'center' }} onClick={e => e.stopPropagation()}>
-                              {needsReview ? (
-                                <button onClick={() => setSelectedTask(task)}
-                                  style={{ padding:'5px 10px', borderRadius:7, border:'none', background:`${C.emerald}18`, color:C.emerald, fontSize:11, fontWeight:700, cursor:'pointer', display:'flex', alignItems:'center', gap:4 }}>
-                                  <CheckCircle size={11} /> Verify
-                                </button>
-                              ) : (
-                                <button onClick={() => setSelectedTask(task)}
-                                  style={{ padding:'5px 10px', borderRadius:7, border:'none', background:`${ACCENT}14`, color:ACCENT, fontSize:11, fontWeight:700, cursor:'pointer', display:'flex', alignItems:'center', gap:4 }}>
-                                  <Eye size={11} /> View
-                                </button>
-                              )}
-                              {(task.rawStatus === 'PENDING' || task.rawStatus === 'REJECTED') && (
-                                <button onClick={() => setDeleteTarget(task)}
-                                  style={{ padding:'5px 8px', borderRadius:7, border:'none', background:`${C.rose}14`, color:C.rose, fontSize:11, fontWeight:700, cursor:'pointer', display:'flex', alignItems:'center' }}>
-                                  <Trash2 size={11} />
-                                </button>
-                              )}
-                              {(task.rawStatus === 'PENDING' || task.rawStatus === 'IN_PROGRESS' || task.rawStatus === 'REJECTED') && (
-                                <button onClick={() => {
-                                  const msg = window.prompt('Enter reminder message for students:', `Reminder: Your task "${task.title}" is due soon!`);
-                                  if (msg) notifyStudents(task.id, msg);
-                                }}
-                                  style={{ padding:'5px 10px', borderRadius:7, border:'none', background:'rgba(59,130,246,0.1)', color:'#3B82F6', fontSize:11, fontWeight:700, cursor:'pointer', display:'flex', alignItems:'center', gap:4 }}>
-                                  <Bell size={11} /> Notify
-                                </button>
-                              )}
-                            </div>
-                          </td>
-                        </motion.tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            <div className="relative flex-1 md:w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="Search tasks..."
+                value={searchDraft}
+                onChange={(e) => setSearchDraft(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && setSearchQuery(searchDraft)}
+                className="pl-10 h-10 rounded-xl border-border/60 bg-muted/20"
+              />
+            </div>
+            {hasFilters && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  resetFilters();
+                  setSearchDraft('');
+                }}
+                className="h-10 rounded-xl text-xs text-muted-foreground hover:text-destructive"
+              >
+                <X className="w-4 h-4" />
+              </Button>
             )}
           </div>
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', paddingTop:4 }}>
-              <p style={{ fontSize:13, color:'var(--text-secondary)', margin:0 }}>Showing {tasks.length} of {total} tasks</p>
-              <div style={{ display:'flex', gap:8 }}>
-                <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1}
-                  style={{ padding:'7px 14px', borderRadius:8, border:'1.5px solid var(--card-border)', background:'var(--card-bg)', color:'var(--text-secondary)', cursor:page===1?'not-allowed':'pointer', opacity:page===1?0.5:1, display:'flex', alignItems:'center', gap:4, fontSize:12, fontWeight:600 }}>
-                  <ChevronLeft size={13} /> Prev
-                </button>
-                <span style={{ padding:'7px 12px', fontSize:13, fontWeight:600, color:'var(--text-secondary)' }}>Page {page} / {totalPages}</span>
-                <button onClick={() => setPage(Math.min(totalPages, page + 1))} disabled={page === totalPages}
-                  style={{ padding:'7px 14px', borderRadius:8, border:'1.5px solid var(--card-border)', background:'var(--card-bg)', color:'var(--text-secondary)', cursor:page===totalPages?'not-allowed':'pointer', opacity:page===totalPages?0.5:1, display:'flex', alignItems:'center', gap:4, fontSize:12, fontWeight:600 }}>
-                  Next <ChevronRight size={13} />
-                </button>
-              </div>
-            </div>
-          )}
         </div>
+
+        {/* Tasks Table */}
+        <div className="bg-card border border-border/40 rounded-2xl overflow-hidden shadow-sm">
+          <div className="overflow-x-auto scrollbar-hide">
+            <table className="w-full border-collapse min-w-[1000px]">
+              <thead>
+                <tr className="bg-foreground/[0.01] border-b border-border/40">
+                  {['#', 'Task Identity', 'Assignee', 'Deadline', 'Status', 'Actions'].map((h) => (
+                    <th key={h} className="px-6 py-4 text-left text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {isLoading ? (
+                  Array.from({ length: 5 }).map((_, i) => (
+                    <tr key={i} className="border-b border-border/40">
+                      {Array.from({ length: 6 }).map((_, j) => (
+                        <td key={j} className="px-6 py-5">
+                          <Skeleton className="h-4 w-full rounded-lg" />
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                ) : tasks.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="py-20 text-center text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+                      No Task Records Found
+                    </td>
+                  </tr>
+                ) : (
+                  tasks.map((task: any, idx: number) => {
+                    const needsReview = task.rawStatus === 'SUBMITTED';
+                    const od = isOverdueNow(task.dueDate, task.rawStatus);
+                    return (
+                      <motion.tr
+                        key={task.id}
+                        initial={{ opacity: 0, x: -6 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: idx * 0.02 }}
+                        className="group border-b border-border/40 last:border-0 hover:bg-foreground/[0.02] transition-colors cursor-pointer"
+                        onClick={() => setSelectedTask(task)}
+                      >
+                        <td className="px-6 py-4 align-middle text-[11px] font-mono text-muted-foreground font-semibold">
+                          {((page - 1) * 20) + idx + 1}
+                        </td>
+                        <td className="px-6 py-4 align-middle min-w-[300px]">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-primary/5 border border-primary/10 flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                              <Calendar className="w-5 h-5 text-primary" />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-sm font-semibold truncate max-w-[240px] tracking-tight">{task.title}</p>
+                              {task.description && <p className="text-[10px] text-muted-foreground truncate max-w-[240px]">{task.description}</p>}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 align-middle">
+                          <div>
+                            <p className="text-sm font-semibold">{task.assignedTo}</p>
+                            <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">{task.student?.department}</p>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 align-middle">
+                          <div className={`flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider ${od ? 'text-destructive' : 'text-muted-foreground'}`}>
+                            <Clock size={12} /> {fmt(task.dueDate)}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 align-middle">
+                          <StatusBadge raw={task.rawStatus} due={task.dueDate} />
+                        </td>
+                        <td className="px-6 py-4 align-middle">
+                          <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                            {needsReview ? (
+                              <Button
+                                size="sm"
+                                onClick={() => setSelectedTask(task)}
+                                className="h-8 px-4 rounded-lg bg-primary/5 text-primary hover:bg-primary/10 border border-primary/10 text-[10px] font-semibold uppercase tracking-widest gap-2"
+                              >
+                                <Zap className="w-3.5 h-3.5" /> Evaluate
+                              </Button>
+                            ) : (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => setSelectedTask(task)}
+                                className="h-8 px-4 rounded-lg text-[10px] font-semibold uppercase tracking-widest gap-2"
+                              >
+                                <Eye className="w-3.5 h-3.5" /> Details
+                              </Button>
+                            )}
+                            {(task.rawStatus === 'PENDING' || task.rawStatus === 'REJECTED') && (
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                onClick={() => setDeleteTarget(task)}
+                                className="h-8 w-8 rounded-lg text-destructive hover:bg-destructive/10"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            )}
+                            {['PENDING', 'IN_PROGRESS', 'REJECTED'].includes(task.rawStatus) && (
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                onClick={() => {
+                                  const msg = window.prompt('Message for student:', `Action Required: "${task.title}"`);
+                                  if (msg) notifyStudents(task.id, msg);
+                                }}
+                                className="h-8 w-8 rounded-lg text-primary hover:bg-primary/10"
+                              >
+                                <Bell className="w-4 h-4" />
+                              </Button>
+                            )}
+                          </div>
+                        </td>
+                      </motion.tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between mt-8 pt-6 border-t border-border/40">
+            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
+              Showing <span className="text-primary">{tasks.length}</span> of {total} items
+            </p>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage(Math.max(1, page - 1))}
+                disabled={page === 1}
+                className="h-9 px-4 rounded-xl border-border/40 text-[10px] font-semibold uppercase tracking-wider gap-2"
+              >
+                <ChevronLeft size={14} /> Prev
+              </Button>
+              <div className="px-4 text-xs font-semibold text-muted-foreground">
+                {page} / {totalPages}
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage(Math.min(totalPages, page + 1))}
+                disabled={page === totalPages}
+                className="h-9 px-4 rounded-xl border-border/40 text-[10px] font-semibold uppercase tracking-wider gap-2"
+              >
+                Next <ChevronRight size={14} />
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Modals */}
-      <CreateTaskModal  open={createOpen} onClose={() => setCreateOpen(false)} onCreate={createTask} loading={isSubmitting} students={students} />
-      <TaskDetailModal  task={selectedTask} onClose={() => setSelectedTask(null)} onVerify={verifyTask} loading={isSubmitting} />
-      <ConfirmDialog    open={!!deleteTarget} title="Delete Task" desc={`Delete "${deleteTarget?.title}"? This cannot be undone.`} onConfirm={handleDelete} onCancel={() => setDeleteTarget(null)} loading={isDeleting} />
-    </>
+      <CreateTaskModal open={createOpen} onClose={() => setCreateOpen(false)} onCreate={createTask} loading={isSubmitting} students={students} />
+      <TaskDetailModal task={selectedTask} onClose={() => setSelectedTask(null)} onVerify={verifyTask} loading={isSubmitting} />
+      <ConfirmDialog open={!!deleteTarget} title="Delete Task" desc={`Remove "${deleteTarget?.title}"? This cannot be undone.`} onConfirm={handleDelete} onCancel={() => setDeleteTarget(null)} loading={isDeleting} />
+    </div>
   );
 }

@@ -27,7 +27,7 @@ export const ChartContainer = ({
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.4 }}
       className={cn(
-        "bg-card-glass p-6 rounded-[1.5rem] border border-border/50 shadow-sm flex flex-col h-full",
+        "bg-white p-6 rounded-[1.5rem] border border-border/50 shadow-sm flex flex-col h-full",
         className
       )}
       {...props}
