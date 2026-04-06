@@ -16,6 +16,7 @@ import { FooterSection } from "@/components/landingSection/components/landing/fo
 export default function Home() {
   return (
     <main className="relative min-h-screen overflow-x-hidden noise-overlay">
+      
       <Navigation />
       <HeroSection />
       <FeaturesSection />
