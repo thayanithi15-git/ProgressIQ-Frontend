@@ -3,10 +3,6 @@ import api from '@/utils/api';
 import { useNotificationStore } from '@/utils/notification';
 import { setStoredMentorProfile } from '@/utils/mentorSession';
 
-// ==========================================
-// TYPES
-// ==========================================
-
 export interface PersonalInfo {
   id: string;
   firstName: string;
@@ -85,10 +81,6 @@ export interface UpdateProfilePayload {
   goodAt?: string[];
 }
 
-// ==========================================
-// STORE
-// ==========================================
-
 interface ProfileState {
   profile: CompleteProfile | null;
   socials: SocialLinks | null;
@@ -99,12 +91,10 @@ interface ProfileState {
   editForm: UpdateProfilePayload;
   socialsForm: SocialLinks;
 
-  // Actions
   fetchProfile: () => Promise<void>;
   updateProfile: (payload: UpdateProfilePayload) => Promise<boolean>;
   updateSocials: (payload: SocialLinks) => Promise<boolean>;
 
-  // UI
   setEditMode: (v: boolean) => void;
   setSocialsEditMode: (v: boolean) => void;
   setEditField: (key: keyof UpdateProfilePayload, value: string) => void;
@@ -123,7 +113,6 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
   editForm: {},
   socialsForm: {},
 
-  // ─── FETCH PROFILE ────────────────────────────────────────
   fetchProfile: async () => {
     const { showNotification } = useNotificationStore.getState();
     try {
@@ -143,7 +132,6 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
     }
   },
 
-  // ─── UPDATE PROFILE ───────────────────────────────────────
   updateProfile: async (payload) => {
     const { showNotification } = useNotificationStore.getState();
     try {
@@ -164,7 +152,6 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
     }
   },
 
-  // ─── UPDATE SOCIALS ───────────────────────────────────────
   updateSocials: async (payload) => {
     const { showNotification } = useNotificationStore.getState();
     try {
@@ -184,7 +171,6 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
     }
   },
 
-  // ─── UI ───────────────────────────────────────────────────
   setEditMode: (v) => {
     if (v) get().initEditForm();
     set({ isEditMode: v });

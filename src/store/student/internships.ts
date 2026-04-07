@@ -2,11 +2,6 @@ import { create } from 'zustand';
 import api from '@/utils/api';
 import { useNotificationStore } from '@/utils/notification';
 import { getStoredMentorId } from '@/utils/mentorSession';
-
-// ==========================================
-// TYPES
-// ==========================================
-
 export interface Internship {
   _id: string;
   studentId: string;
@@ -29,7 +24,6 @@ export interface Internship {
   createdAt: string;
   updatedAt: string;
 }
-
 export interface CreateInternshipPayload {
   mentorId?: string;
   companyName: string;
@@ -41,9 +35,7 @@ export interface CreateInternshipPayload {
   to: string;
   description?: string;
 }
-
 export interface UpdateInternshipPayload extends Partial<CreateInternshipPayload> {}
-
 export interface InternshipFeedback {
   id: string;
   mentor: string;
@@ -51,20 +43,13 @@ export interface InternshipFeedback {
   message: string;
   createdAt: string;
 }
-
 export type InternshipStatusFilter = 'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED';
 export type InternshipTypeFilter = 'ALL' | 'REMOTE' | 'ONSITE' | 'HYBRID';
-
 interface Pagination {
   total: number;
   limit: number;
   skip: number;
 }
-
-// ==========================================
-// STORE
-// ==========================================
-
 interface InternshipsState {
   internships: Internship[];
   selectedInternship: Internship | null;
@@ -78,16 +63,12 @@ interface InternshipsState {
   isModalOpen: boolean;
   isFeedbackModalOpen: boolean;
   editingInternship: Internship | null;
-
-  // Actions
   fetchInternships: (status?: InternshipStatusFilter, type?: InternshipTypeFilter) => Promise<void>;
   fetchInternshipById: (id: string) => Promise<void>;
   createInternship: (payload: CreateInternshipPayload) => Promise<boolean>;
   updateInternship: (id: string, payload: UpdateInternshipPayload) => Promise<boolean>;
   deleteInternship: (id: string) => Promise<boolean>;
   fetchFeedback: (id: string) => Promise<void>;
-
-  // UI
   setStatusFilter: (filter: InternshipStatusFilter) => void;
   setTypeFilter: (filter: InternshipTypeFilter) => void;
   setSearchQuery: (q: string) => void;
@@ -98,7 +79,6 @@ interface InternshipsState {
   openFeedbackModal: (id: string) => Promise<void>;
   closeFeedbackModal: () => void;
 }
-
 export const useInternshipsStore = create<InternshipsState>((set, get) => ({
   internships: [],
   selectedInternship: null,
@@ -112,23 +92,19 @@ export const useInternshipsStore = create<InternshipsState>((set, get) => ({
   isModalOpen: false,
   isFeedbackModalOpen: false,
   editingInternship: null,
-
   fetchInternships: async (status?, type?) => {
     const { showNotification } = useNotificationStore.getState();
     const { pagination, statusFilter, typeFilter } = get();
     const activeStatus = status ?? statusFilter;
     const activeType = type ?? typeFilter;
-
     try {
       set({ isLoading: true });
-
       const params = new URLSearchParams({
         limit: String(pagination.limit),
         skip: String(pagination.skip),
       });
       if (activeStatus !== 'ALL') params.append('status', activeStatus);
       if (activeType !== 'ALL') params.append('type', activeType);
-
       const res = await api.get(`/api/student/internships?${params}`);
       if (res.data.success) {
         set({
@@ -142,7 +118,6 @@ export const useInternshipsStore = create<InternshipsState>((set, get) => ({
       set({ isLoading: false });
     }
   },
-
   fetchInternshipById: async (id) => {
     const { showNotification } = useNotificationStore.getState();
     try {
@@ -152,7 +127,6 @@ export const useInternshipsStore = create<InternshipsState>((set, get) => ({
       showNotification(error.response?.data?.message || 'Failed to fetch internship', 'error');
     }
   },
-
   createInternship: async (payload) => {
     const { showNotification } = useNotificationStore.getState();
     try {
@@ -177,7 +151,6 @@ export const useInternshipsStore = create<InternshipsState>((set, get) => ({
       set({ isSubmitting: false });
     }
   },
-
   updateInternship: async (id, payload) => {
     const { showNotification } = useNotificationStore.getState();
     try {
@@ -197,7 +170,6 @@ export const useInternshipsStore = create<InternshipsState>((set, get) => ({
       set({ isSubmitting: false });
     }
   },
-
   deleteInternship: async (id) => {
     const { showNotification } = useNotificationStore.getState();
     try {
@@ -213,7 +185,6 @@ export const useInternshipsStore = create<InternshipsState>((set, get) => ({
       return false;
     }
   },
-
   fetchFeedback: async (id) => {
     const { showNotification } = useNotificationStore.getState();
     try {
@@ -223,34 +194,25 @@ export const useInternshipsStore = create<InternshipsState>((set, get) => ({
       showNotification(error.response?.data?.message || 'No feedback found', 'error');
     }
   },
-
   setStatusFilter: (filter) => {
     set({ statusFilter: filter, pagination: { ...get().pagination, skip: 0 } });
     get().fetchInternships(filter);
   },
-
   setTypeFilter: (filter) => {
     set({ typeFilter: filter, pagination: { ...get().pagination, skip: 0 } });
     get().fetchInternships(undefined, filter);
   },
-
   setSearchQuery: (q) => set({ searchQuery: q }),
-
   setPage: (skip) => {
     set({ pagination: { ...get().pagination, skip } });
     get().fetchInternships();
   },
-
   openCreateModal: () => set({ isModalOpen: true, editingInternship: null }),
-
   openEditModal: (internship) => set({ isModalOpen: true, editingInternship: internship }),
-
   closeModal: () => set({ isModalOpen: false, editingInternship: null }),
-
   openFeedbackModal: async (id) => {
     await get().fetchFeedback(id);
     set({ isFeedbackModalOpen: true });
   },
-
   closeFeedbackModal: () => set({ isFeedbackModalOpen: false, selectedFeedback: null }),
 }));

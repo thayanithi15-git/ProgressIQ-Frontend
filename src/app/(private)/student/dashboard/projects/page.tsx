@@ -13,7 +13,6 @@ import Header from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
 import { getStoredMentorId } from "@/utils/mentorSession";
 
-// ─── TOKENS ────────────────────────────────────────────────────────────────────
 const C = {
   blue:    "var(--piq-blue)",
   violet:  "#7C3AED",
@@ -57,7 +56,6 @@ const STATUS_META: Record<string, { label: string; color: string; bg: string }> 
   },
 };
 
-// ─── HELPERS ───────────────────────────────────────────────────────────────────
 const Sk = ({ h = 16, className = "" }: { h?: number; className?: string }) => (
   <div className={`animate-pulse bg-foreground/5 rounded-lg ${className}`} style={{ height: h }} />
 );
@@ -71,7 +69,6 @@ const fmt = (v?: string) => {
 const mentorName = (m: any) =>
   m && typeof m === "object" ? `${m.firstName ?? ""} ${m.lastName ?? ""}`.trim() || "—" : "—";
 
-// ─── STATUS BADGE ──────────────────────────────────────────────────────────────
 const StatusBadge = ({ status }: { status: string }) => {
   const m = STATUS_META[status] ?? { label: status, color: C.amber, bg: `${C.amber}18` };
   return (
@@ -81,7 +78,6 @@ const StatusBadge = ({ status }: { status: string }) => {
   );
 };
 
-// ─── PILL ──────────────────────────────────────────────────────────────────────
 const Pill = ({ label, active, onClick, count }: any) => (
   <button onClick={onClick} className={`px-4 py-1.5 rounded-full border text-xs font-semibold flex items-center gap-2 whitespace-nowrap transition-all duration-300 ${active ? 'bg-primary text-primary-foreground border-primary shadow-md' : 'bg-card/50 text-muted-foreground border-transparent hover:bg-foreground/5'}`}>
     {label}
@@ -89,7 +85,6 @@ const Pill = ({ label, active, onClick, count }: any) => (
   </button>
 );
 
-// ─── CONFIRM DIALOG ────────────────────────────────────────────────────────────
 const ConfirmDialog = ({ open, title, desc, confirmLabel = "Confirm", confirmColor = C.rose, onConfirm, onCancel, loading }: any) => (
   <AnimatePresence>
     {open && (
@@ -116,7 +111,6 @@ const ConfirmDialog = ({ open, title, desc, confirmLabel = "Confirm", confirmCol
   </AnimatePresence>
 );
 
-// ─── SUBMIT MODAL ─────────────────────────────────────────────────────────────
 const SubmitModal = ({ open, onConfirm, onCancel, loading }: any) => {
   const [note, setNote] = useState("");
   useEffect(() => { if (!open) setNote(""); }, [open]);
@@ -149,7 +143,6 @@ const SubmitModal = ({ open, onConfirm, onCancel, loading }: any) => {
   );
 };
 
-// ─── DETAILS MODAL ────────────────────────────────────────────────────────────
 const DetailsModal = ({ project, onClose }: { project: Project | null; onClose: () => void }) => (
   <AnimatePresence>
     {project && (
@@ -174,7 +167,7 @@ const DetailsModal = ({ project, onClose }: { project: Project | null; onClose: 
               </div>
               <div className="bg-background/40 border border-border/50 rounded-xl p-3.5">
                 <p className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-[0.15em] mb-2">Status</p>
-                <StatusBadge status={project.status} />  
+                <StatusBadge status={project.status} />
               </div>
             </div>
 
@@ -183,7 +176,6 @@ const DetailsModal = ({ project, onClose }: { project: Project | null; onClose: 
               <p className="text-sm text-muted-foreground leading-relaxed">{project.description}</p>
             </div>
 
-            {/* Links */}
             {(project.githubLink || project.websiteLink) && (
               <div className="flex gap-3">
                 {project.githubLink  && <a href={project.githubLink}  target="_blank" rel="noreferrer" className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-500/10 text-blue-600 text-xs font-bold hover:bg-blue-500/20 transition-colors"><Github size={14} />GitHub</a>}
@@ -220,7 +212,6 @@ const DetailsModal = ({ project, onClose }: { project: Project | null; onClose: 
   </AnimatePresence>
 );
 
-// ─── PROJECT FORM MODAL ───────────────────────────────────────────────────────
 const ProjectFormModal = ({ open, editing, onClose, onSubmit, loading }: any) => {
   const [form, setForm] = useState({ title:"", description:"", githubLink:"", websiteLink:"" });
   useEffect(() => {
@@ -278,7 +269,6 @@ const ProjectFormModal = ({ open, editing, onClose, onSubmit, loading }: any) =>
   );
 };
 
-// ─── PROJECT ROW ─────────────────────────────────────────────────────────────
 const ProjectRow = ({ project, idx, onEdit, onDelete, onStart, onSubmit, onDetails }: {
   project: Project; idx: number;
   onEdit:(p:Project)=>void; onDelete:(p:Project)=>void;
@@ -330,7 +320,6 @@ const ProjectRow = ({ project, idx, onEdit, onDelete, onStart, onSubmit, onDetai
   );
 };
 
-// ─── MAIN PAGE ─────────────────────────────────────────────────────────────────
 export default function ProjectsPage() {
   const {
     projects, pagination, statusFilter, searchQuery,
@@ -421,7 +410,6 @@ export default function ProjectsPage() {
 
       <main className="p-6 lg:padding-8 max-w-[1600px] mx-auto space-y-6">
 
-        {/* No mentor warning */}
         {!hasMentor && (
           <div className="p-4 rounded-xl bg-foreground/5 border border-border/40 flex items-center gap-3">
             <AlertCircle size={18} className="text-muted-foreground" />
@@ -429,7 +417,6 @@ export default function ProjectsPage() {
           </div>
         )}
 
-        {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {STATS.map(({ label, val, color }, i) => (
             <motion.div key={label} initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} transition={{ delay:i*0.04 }}
@@ -440,7 +427,6 @@ export default function ProjectsPage() {
           ))}
         </div>
 
-        {/* Filters */}
         <div className="bg-card-glass/60 backdrop-blur-xl border border-border/40 shadow-sm rounded-2xl p-4 flex flex-col items-start md:flex-row md:items-center justify-between gap-4">
           <div className="flex gap-2 flex-wrap">
             {FILTERS.map(f => (
@@ -453,7 +439,6 @@ export default function ProjectsPage() {
           </div>
         </div>
 
-        {/* Table */}
         <div className="bg-card-glass/60 backdrop-blur-xl border border-border/40 shadow-sm rounded-2xl overflow-hidden">
           {isLoading ? (
             <div className="p-6 flex flex-col gap-3">
@@ -494,7 +479,6 @@ export default function ProjectsPage() {
           )}
         </div>
 
-        {/* Pagination bar */}
         {totalPages > 1 && (
           <div className="flex items-center justify-center gap-4 pt-2">
             <Button variant="outline" size="sm" onClick={() => setPage(pagination.skip - pagination.limit)} disabled={currentPage === 1} className="rounded-xl font-bold uppercase tracking-widest text-[10px] gap-2 h-9 px-4">
@@ -508,7 +492,6 @@ export default function ProjectsPage() {
         )}
       </main>
 
-      {/* Modals */}
       <ProjectFormModal open={isModalOpen} editing={editingProject} onClose={closeModal} onSubmit={handleFormSubmit} loading={isSubmitting} />
       <SubmitModal      open={isSubmitModalOpen} onConfirm={handleSubmit} onCancel={closeSubmitModal} loading={isSubmitting} />
       <DetailsModal     project={detailProject} onClose={() => setDetailProject(null)} />

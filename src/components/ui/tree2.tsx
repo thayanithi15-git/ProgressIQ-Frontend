@@ -1,20 +1,16 @@
 "use client";
-
 import React, { useState, useCallback } from "react";
 import { ChevronRight, Folder, File, FolderOpen, FolderX } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-
-// Types
 export type TreeNode = {
   id: string;
   label: string;
   icon?: React.ReactNode;
   children?: TreeNode[];
   data?: any;
-  isEmpty?: boolean; // Flag to indicate if folder is empty
+  isEmpty?: boolean;
 };
-
 export type TreeViewProps = {
   data: TreeNode[];
   className?: string;
@@ -30,8 +26,6 @@ export type TreeViewProps = {
   indent?: number;
   animateExpand?: boolean;
 };
-
-// Main TreeView component
 export function EnhancedTreeView({
   data,
   className,
@@ -52,11 +46,9 @@ export function EnhancedTreeView({
   );
   const [internalSelectedIds, setInternalSelectedIds] =
     useState<string[]>(selectedIds);
-
   const isControlled =
     selectedIds !== undefined && onSelectionChange !== undefined;
   const currentSelectedIds = isControlled ? selectedIds : internalSelectedIds;
-
   const toggleExpanded = useCallback(
     (nodeId: string) => {
       setExpandedIds((prev) => {
@@ -69,13 +61,10 @@ export function EnhancedTreeView({
     },
     [onNodeExpand],
   );
-
   const handleSelection = useCallback(
     (nodeId: string, ctrlKey = false) => {
       if (!selectable) return;
-
       let newSelection: string[];
-
       if (multiSelect && ctrlKey) {
         newSelection = currentSelectedIds.includes(nodeId)
           ? currentSelectedIds.filter((id) => id !== nodeId)
@@ -83,7 +72,6 @@ export function EnhancedTreeView({
       } else {
         newSelection = currentSelectedIds.includes(nodeId) ? [] : [nodeId];
       }
-
       isControlled
         ? onSelectionChange?.(newSelection)
         : setInternalSelectedIds(newSelection);
@@ -96,7 +84,6 @@ export function EnhancedTreeView({
       onSelectionChange,
     ],
   );
-
   const renderEmptyState = (level: number) => (
     <motion.div
       className="flex items-center py-2 px-3 text-muted-foreground/60 text-sm italic"
@@ -110,7 +97,6 @@ export function EnhancedTreeView({
       <span>No subfolders</span>
     </motion.div>
   );
-
   const renderNode = (
     node: TreeNode,
     level = 0,
@@ -122,7 +108,6 @@ export function EnhancedTreeView({
     const isSelected = currentSelectedIds.includes(node.id);
     const currentPath = [...parentPath, isLast];
     const showEmptyState = node.data?.isFolder && isExpanded && !hasChildren && node.data?.childrenLoaded;
-
     const getDefaultIcon = () => {
       if (node.data?.isFolder) {
         return isExpanded ? (
@@ -133,7 +118,6 @@ export function EnhancedTreeView({
       }
       return <File className="h-4 w-4 text-gray-500" />;
     };
-
     return (
       <div key={node.id} className="select-none">
         <motion.div
@@ -151,7 +135,6 @@ export function EnhancedTreeView({
           }}
           whileTap={{ scale: 0.98, transition: { duration: 0.1 } }}
         >
-          {/* Tree Lines */}
           {showLines && level > 0 && (
             <div className="absolute left-0 top-0 bottom-0 pointer-events-none">
               {currentPath.map((isLastInPath, pathIndex) => (
@@ -186,8 +169,6 @@ export function EnhancedTreeView({
               )}
             </div>
           )}
-
-          {/* Expand Icon */}
           <motion.div
             className="flex items-center justify-center w-4 h-4 mr-1"
             animate={{ rotate: node.data?.isFolder && isExpanded ? 90 : 0 }}
@@ -197,8 +178,6 @@ export function EnhancedTreeView({
               <ChevronRight className="h-3 w-3 text-muted-foreground" />
             )}
           </motion.div>
-
-          {/* Node Icon */}
           {showIcons && (
             <motion.div
               className="flex items-center justify-center w-4 h-4 mr-2"
@@ -208,21 +187,15 @@ export function EnhancedTreeView({
               {node.icon || getDefaultIcon()}
             </motion.div>
           )}
-
-          {/* Label */}
           <span className="text-sm font truncate flex-1">
             {node.label}
           </span>
-
-          {/* Folder Info */}
           {node.data?.isFolder && node.data?._count && (
             <span className="text-xs text-muted-foreground bg-gray-100 px-2 py-1 rounded-full ml-2">
               {node.data._count.drawings || 0}
             </span>
           )}
         </motion.div>
-
-        {/* Children */}
         <AnimatePresence>
           {node.data?.isFolder && isExpanded && (
             <motion.div
@@ -263,7 +236,6 @@ export function EnhancedTreeView({
       </div>
     );
   };
-
   return (
     <motion.div
       className={cn(

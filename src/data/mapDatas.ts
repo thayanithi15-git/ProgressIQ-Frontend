@@ -1,7 +1,4 @@
-// utils/touristData.ts
-
 export type TouristStatus = 'online' | 'women' | 'idle' | 'offline' | 'emergency';
-
 export type Tourist = {
   id: string;
   name: string;
@@ -25,8 +22,6 @@ export type Tourist = {
   safetyScore: number;
   riskLevel: 'low' | 'medium' | 'high';
 };
-
-// Indian cities with coordinates for realistic distribution
 const indianCities = [
   { name: 'New Delhi', lat: 28.6139, lng: 77.2090 },
   { name: 'Mumbai', lat: 19.0760, lng: 72.8777 },
@@ -78,7 +73,6 @@ const indianCities = [
   { name: 'Guwahati', lat: 26.1445, lng: 91.7362 },
   { name: 'Solapur', lat: 17.6599, lng: 75.9064 },
   { name: 'Hubli-Dharwad', lat: 15.3647, lng: 75.1240 },
-  // Tourist destinations
   { name: 'Goa (Panaji)', lat: 15.2993, lng: 74.1240 },
   { name: 'Shimla', lat: 31.1048, lng: 77.1734 },
   { name: 'Manali', lat: 32.2396, lng: 77.1887 },
@@ -106,7 +100,6 @@ const indianCities = [
   { name: 'Ajanta Caves', lat: 20.5319, lng: 75.7033 },
   { name: 'Ellora Caves', lat: 20.0269, lng: 75.1793 }
 ];
-
 const countries = [
   'USA', 'UK', 'Canada', 'Australia', 'Germany', 'France', 'Japan', 'South Korea',
   'Singapore', 'Malaysia', 'Thailand', 'Indonesia', 'Philippines', 'Vietnam',
@@ -115,7 +108,6 @@ const countries = [
   'South Africa', 'Egypt', 'Morocco', 'Nigeria', 'Kenya', 'Bangladesh', 'Sri Lanka',
   'Nepal', 'Bhutan', 'Myanmar', 'Cambodia', 'Laos', 'New Zealand', 'Fiji'
 ];
-
 const interests = [
   'Photography', 'History', 'Food', 'Culture', 'Art', 'Music', 'Dance', 'Festivals',
   'Temples', 'Architecture', 'Heritage', 'Spirituality', 'Yoga', 'Meditation',
@@ -125,7 +117,6 @@ const interests = [
   'Languages', 'Philosophy', 'Religion', 'Astrology', 'Martial Arts', 'Cricket',
   'Social Work', 'Education', 'Business', 'Startups', 'Innovation'
 ];
-
 const accommodationTypes = [
   'Hotel Taj Palace', 'Backpacker Hostel', 'Heritage Hotel', 'Resort & Spa',
   'Boutique Hotel', 'Homestay', 'Guest House', 'Luxury Resort', 'Beach Resort',
@@ -133,7 +124,6 @@ const accommodationTypes = [
   'Budget Hotel', 'Capsule Hotel', 'Serviced Apartment', 'Villa', 'Cottage',
   'Treehouse', 'Houseboat', 'Tent Resort', 'Monastery Stay', 'Farm Stay'
 ];
-
 const firstNames = [
   'Alice', 'Bob', 'Charlie', 'Diana', 'Evan', 'Fiona', 'George', 'Hannah',
   'Ivan', 'Julia', 'Kevin', 'Lisa', 'Mike', 'Nina', 'Oscar', 'Paula',
@@ -148,7 +138,6 @@ const firstNames = [
   'Gina', 'Henry', 'Ivy', 'Jack', 'Kate', 'Leo', 'Mia', 'Noah',
   'Olivia', 'Peter', 'Queen', 'Ryan', 'Sofia', 'Tom', 'Ursula', 'Vince'
 ];
-
 const lastNames = [
   'Johnson', 'Smith', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis',
   'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson',
@@ -163,23 +152,16 @@ const lastNames = [
   'Kim', 'Park', 'Lee', 'Choi', 'Jung', 'Kang', 'Cho', 'Yoon', 'Jang',
   'Mueller', 'Schmidt', 'Fischer', 'Weber', 'Meyer', 'Wagner', 'Becker'
 ];
-
-// Generate random coordinates with slight variation around city centers
 const getRandomCoordinate = (baseCoord: number, variance: number = 0.05): number => {
   return baseCoord + (Math.random() - 0.5) * variance;
 };
-
-// Generate random tourist data
 const generateTourists = (count: number): Tourist[] => {
   const tourists: Tourist[] = [];
-  
   for (let i = 0; i < count; i++) {
     const city = indianCities[Math.floor(Math.random() * indianCities.length)];
     const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
     const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
     const country = countries[Math.floor(Math.random() * countries.length)];
-    
-    // Assign status with realistic distribution
     const statusRandom = Math.random();
     let status: TouristStatus;
     if (statusRandom < 0.55) status = 'online';
@@ -187,57 +169,46 @@ const generateTourists = (count: number): Tourist[] => {
     else if (statusRandom < 0.85) status = 'idle';
     else if (statusRandom < 0.88) status = 'offline';
     else status = 'emergency';
-    
-    // Generate interests (2-5 random interests)
     const numberOfInterests = Math.floor(Math.random() * 4) + 2;
     const touristInterests = [];
     const shuffledInterests = [...interests].sort(() => Math.random() - 0.5);
     for (let j = 0; j < numberOfInterests; j++) {
       touristInterests.push(shuffledInterests[j]);
     }
-    
-    // Generate realistic timestamps based on status
     const getLastSeenTime = (status: TouristStatus): string => {
       const now = new Date();
       let minutesAgo: number;
-      
       switch (status) {
         case 'online':
-          minutesAgo = Math.floor(Math.random() * 10); // 0-10 minutes
+          minutesAgo = Math.floor(Math.random() * 10);
           break;
         case 'women':
-          minutesAgo = Math.floor(Math.random() * 30) + 20; // 0-10 minutes
+          minutesAgo = Math.floor(Math.random() * 30) + 20;
           break;
         case 'idle':
-          minutesAgo = Math.floor(Math.random() * 40) + 10; // 10-70 minutes
+          minutesAgo = Math.floor(Math.random() * 40) + 10;
           break;
         case 'offline':
-          minutesAgo = Math.floor(Math.random() * 240) + 60; // 1-5 hours
+          minutesAgo = Math.floor(Math.random() * 240) + 60;
           break;
         case 'emergency':
-          minutesAgo = Math.floor(Math.random() * 5); // 0-5 minutes (recent)
+          minutesAgo = Math.floor(Math.random() * 5);
           break;
         default:
           minutesAgo = 5;
       }
-      
       if (minutesAgo === 0) return 'Just now';
       if (minutesAgo < 60) return `${minutesAgo} minute${minutesAgo !== 1 ? 's' : ''} ago`;
       const hours = Math.floor(minutesAgo / 60);
       return `${hours} hour${hours !== 1 ? 's' : ''} ago`;
     };
-    
-    // Generate safety score based on various factors
-    const baseSafetyScore = Math.floor(Math.random() * 40) + 60; // 60-100
+    const baseSafetyScore = Math.floor(Math.random() * 40) + 60;
     const statusPenalty = status === 'emergency' ? -30 : status === 'offline' ? -10 : 0;
     const safetyScore = Math.max(0, Math.min(100, baseSafetyScore + statusPenalty));
-    
-    // Determine risk level
     let riskLevel: 'low' | 'medium' | 'high';
     if (safetyScore >= 80) riskLevel = 'low';
     else if (safetyScore >= 60) riskLevel = 'medium';
     else riskLevel = 'high';
-    
     const tourist: Tourist = {
       id: `tourist-${String(i + 1).padStart(3, '0')}`,
       name: `${firstName} ${lastName}`,
@@ -245,7 +216,7 @@ const generateTourists = (count: number): Tourist[] => {
       lng: getRandomCoordinate(city.lng),
       status,
       lastSeen: getLastSeenTime(status),
-      age: Math.floor(Math.random() * 50) + 18, // 18-67 years
+      age: Math.floor(Math.random() * 50) + 18,
       country,
       avatar: `https://i.pravatar.cc/150?img=${(i % 70) + 1}`,
       interests: touristInterests,
@@ -261,37 +232,26 @@ const generateTourists = (count: number): Tourist[] => {
       safetyScore,
       riskLevel
     };
-    
     tourists.push(tourist);
   }
-  
   return tourists;
 };
-
-// Export the generated data
 export const touristData = generateTourists(120);
-
-// Helper functions for filtering and analysis
 export const getTouristsByStatus = (status: TouristStatus) => {
   return touristData.filter(tourist => tourist.status === status);
 };
-
 export const getTouristsByCountry = (country: string) => {
   return touristData.filter(tourist => tourist.country === country);
 };
-
 export const getTouristsByRiskLevel = (riskLevel: 'low' | 'medium' | 'high') => {
   return touristData.filter(tourist => tourist.riskLevel === riskLevel);
 };
-
 export const getEmergencyTourists = () => {
   return touristData.filter(tourist => tourist.status === 'emergency');
 };
-
 export const getHighRiskTourists = () => {
   return touristData.filter(tourist => tourist.riskLevel === 'high' || tourist.status === 'emergency');
 };
-
 export const getTouristStats = () => {
   const total = touristData.length;
   const online = getTouristsByStatus('online').length;
@@ -302,7 +262,6 @@ export const getTouristStats = () => {
   const lowRisk = getTouristsByRiskLevel('low').length;
   const mediumRisk = getTouristsByRiskLevel('medium').length;
   const highRisk = getTouristsByRiskLevel('high').length;
-  
   return {
     total,
     online,
@@ -321,8 +280,6 @@ export const getTouristStats = () => {
     }
   };
 };
-
-// Real-time update simulation
 export const updateTouristStatus = (id: string, newStatus: TouristStatus) => {
   const tourist = touristData.find(t => t.id === id);
   if (tourist) {
@@ -330,24 +287,20 @@ export const updateTouristStatus = (id: string, newStatus: TouristStatus) => {
     tourist.lastSeen = newStatus === 'online' ? 'Just now' : tourist.lastSeen;
   }
 };
-
 export const simulateRealTimeUpdates = () => {
-  // Randomly update a few tourists every few seconds
   setInterval(() => {
     const randomTourists = touristData
       .sort(() => Math.random() - 0.5)
       .slice(0, Math.floor(Math.random() * 5) + 1);
-    
     randomTourists.forEach(tourist => {
       const statusChange = Math.random();
-      if (statusChange < 0.1) { // 10% chance of status change
+      if (statusChange < 0.1) {
         const newStatus = ['online', 'women', 'idle', 'offline'][Math.floor(Math.random() * 3)] as TouristStatus;
         updateTouristStatus(tourist.id, newStatus);
       }
     });
-  }, 5000); // Update every 5 seconds
+  }, 5000);
 };
-
 export const featuredDestinations = [
     {
       id: 1,

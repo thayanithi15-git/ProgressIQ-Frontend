@@ -20,14 +20,10 @@ import { useAdminDashboardStore } from "@/store/admin/dashboard";
 import { useThemeStore } from "@/store/layoutStore";
 import Header from "@/components/layout/header";
 
-// Premium Components
 import { DashboardCard } from "@/components/dashboard/dashboard-card";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { ChartContainer } from "@/components/dashboard/chart-container";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// DESIGN TOKENS
-// ─────────────────────────────────────────────────────────────────────────────
 const C = {
   blue:    "#3B6FD4",
   violet:  "#7C3AED",
@@ -49,9 +45,6 @@ const STAT_META = [
   { key:"avgPoints", label:"Avg Points", icon:Zap, desc:"System-wide average", color:"#EC4899" },
 ];
 
-// ─────────────────────────────────────────────────────────────────────────────
-// HELPERS
-// ─────────────────────────────────────────────────────────────────────────────
 const fmtDate = (v: any, mode = "day") => {
   try {
     const d = new Date(v);
@@ -224,12 +217,10 @@ export default function AdminDashboard() {
       />
 
       <main className="p-6 lg:p-8 max-w-[1600px] mx-auto space-y-8">
-        
-        {/* STAT GRID */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {STAT_META.map((meta, i) => (
-            <StatCard 
-              key={meta.key} 
+            <StatCard
+              key={meta.key}
               label={meta.label}
               icon={meta.icon}
               color={meta.color}
@@ -241,7 +232,6 @@ export default function AdminDashboard() {
           ))}
         </div>
 
-        {/* LEADERBOARD TABLE */}
         <DashboardCard className="p-0 border-border/40 overflow-hidden">
           <div className="p-6 border-b border-border/40 bg-foreground/[0.01] flex items-center justify-between flex-wrap gap-4">
             <div className="flex items-center gap-3">
@@ -283,10 +273,10 @@ export default function AdminDashboard() {
                   <tr><td colSpan={8} className="p-20 text-center text-xs font-bold uppercase tracking-widest text-muted-foreground">No Records Found</td></tr>
                 ) : (
                   topStudents.map((s: any, i: number) => (
-                    <motion.tr 
-                      key={s.rank || i} 
-                      initial={{ opacity:0, x: -10 }} 
-                      animate={{ opacity:1, x:0 }} 
+                    <motion.tr
+                      key={s.rank || i}
+                      initial={{ opacity:0, x: -10 }}
+                      animate={{ opacity:1, x:0 }}
                       className="border-b border-border/40 last:border-0 hover:bg-foreground/[0.02] transition-colors group"
                     >
                       <td className="px-6 py-4 text-center">
@@ -330,13 +320,12 @@ export default function AdminDashboard() {
           </div>
         </DashboardCard>
 
-        {/* ACTIVITY CHARTS */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <ChartContainer 
+          <ChartContainer
             title="Daily Activity" subtitle="Institutional activity volume" icon={Zap} loading={isLoadingCharts}
             actions={["week","month","year"].map(v => (
-              <button 
-                key={v} 
+              <button
+                key={v}
                 onClick={() => setActivityFilter(v)}
                 className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-lg transition-colors ${activityFilter === v ? "bg-foreground text-background" : "text-muted-foreground hover:bg-foreground/5"}`}
               >
@@ -363,11 +352,11 @@ export default function AdminDashboard() {
             )}
           </ChartContainer>
 
-          <ChartContainer 
+          <ChartContainer
             title="Points Growth" subtitle="System-wide points tracking" icon={TrendingUp} loading={isLoadingCharts}
             actions={["week","month","year"].map(v => (
-              <button 
-                key={v} 
+              <button
+                key={v}
                 onClick={() => setPointsFilter(v)}
                 className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-lg transition-colors ${pointsFilter === v ? "bg-foreground text-background" : "text-muted-foreground hover:bg-foreground/5"}`}
               >
@@ -389,7 +378,6 @@ export default function AdminDashboard() {
           </ChartContainer>
         </div>
 
-        {/* DONUTS ROW */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           <ChartContainer title="Departments" subtitle="Distribution" loading={isLoadingCharts}>
             <DonutPanel data={departmentDistribution} dataKey="students" nameKey="department" loading={isLoadingCharts} />
@@ -397,7 +385,7 @@ export default function AdminDashboard() {
           <ChartContainer title="Academic Years" subtitle="Breakdown" loading={isLoadingCharts}>
             <DonutPanel data={yearDistribution} dataKey="students" nameKey="year" loading={isLoadingCharts} />
           </ChartContainer>
-          <ChartContainer 
+          <ChartContainer
             title="Project Status" subtitle="Overview" loading={isLoadingCharts}
             actions={
               <Select value={projectStatusFilter} onValueChange={v => setProjectStatusFilter(v)}>
@@ -419,12 +407,11 @@ export default function AdminDashboard() {
           </ChartContainer>
         </div>
 
-        {/* SUBMISSION TRENDS */}
-        <ChartContainer 
+        <ChartContainer
           title="Submission Trends" subtitle="Long-term performance comparison" icon={Briefcase} loading={isLoadingCharts}
           actions={["6months","year","all"].map(v => (
-            <button 
-              key={v} 
+            <button
+              key={v}
               onClick={() => setSubmissionFilter(v)}
               className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-lg transition-colors ${submissionFilter === v ? "bg-foreground text-background" : "text-muted-foreground hover:bg-foreground/5"}`}
             >

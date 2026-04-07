@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import api from '@/utils/api';
 import { useNotificationStore } from '@/utils/notification';
-
 export interface Submission {
   id: string;
   entityId: string;
@@ -12,7 +11,6 @@ export interface Submission {
   submittedDate: string;
   status: 'Pending' | 'Approved' | 'Rejected';
 }
-
 export interface SubmissionDetail {
   entityType: string;
   submission: any;
@@ -32,7 +30,6 @@ export interface SubmissionDetail {
   points: any[];
   approval: any;
 }
-
 export interface SubmissionStats {
   total: number;
   pending: number;
@@ -45,30 +42,20 @@ export interface SubmissionStats {
     certification: number;
   };
 }
-
 interface ApprovalsState {
-  // Data
   submissions: Submission[];
   submissionDetail: SubmissionDetail | null;
   stats: SubmissionStats | null;
-
-  // Filters
   searchQuery: string;
   statusFilter: string;
   entityTypeFilter: string;
-
-  // Pagination
   page: number;
   limit: number;
   total: number;
   totalPages: number;
-
-  // Loading
   isLoading: boolean;
   isLoadingDetail: boolean;
   isSubmitting: boolean;
-
-  // Actions
   fetchSubmissions: () => Promise<void>;
   fetchSubmissionDetail: (entityType: string, id: string) => Promise<void>;
   setSearchQuery: (query: string) => void;
@@ -79,36 +66,25 @@ interface ApprovalsState {
   closeDetail: () => void;
   updateApproval: (id: string, entityType: string, status: string, points?: number, feedback?: string) => Promise<void>;
 }
-
 export const useApprovalsStore = create<ApprovalsState>((set, get) => ({
-  // Initial States
   submissions: [],
   submissionDetail: null,
   stats: null,
-
   searchQuery: '',
   statusFilter: '',
   entityTypeFilter: '',
-
   page: 1,
   limit: 20,
   total: 0,
   totalPages: 0,
-
   isLoading: false,
   isLoadingDetail: false,
   isSubmitting: false,
-
-  // =====================================
-  // FETCH SUBMISSIONS
-  // =====================================
   fetchSubmissions: async () => {
     const { showNotification } = useNotificationStore.getState();
     const state = get();
-
     try {
       set({ isLoading: true });
-
       const params = new URLSearchParams({
         page: state.page.toString(),
         limit: state.limit.toString(),
@@ -116,9 +92,7 @@ export const useApprovalsStore = create<ApprovalsState>((set, get) => ({
         ...(state.statusFilter && { status: state.statusFilter }),
         ...(state.entityTypeFilter && { entityType: state.entityTypeFilter }),
       });
-
       const response = await api.get(`/api/mentor/approvals?${params}`);
-
       if (response.data.success) {
         set({
           submissions: response.data.data,
@@ -135,18 +109,11 @@ export const useApprovalsStore = create<ApprovalsState>((set, get) => ({
       set({ isLoading: false });
     }
   },
-
-  // =====================================
-  // FETCH SUBMISSION DETAIL
-  // =====================================
   fetchSubmissionDetail: async (entityType: string, id: string) => {
     const { showNotification } = useNotificationStore.getState();
-
     try {
       set({ isLoadingDetail: true });
-
       const response = await api.get(`/api/mentor/submissions/${entityType}/${id}`);
-
       if (response.data.success) {
         set({ submissionDetail: response.data.data });
       }
@@ -158,27 +125,19 @@ export const useApprovalsStore = create<ApprovalsState>((set, get) => ({
       set({ isLoadingDetail: false });
     }
   },
-
-  // =====================================
-  // UPDATE APPROVAL
-  // =====================================
   updateApproval: async (id: string, entityType: string, status: string, points?: number, feedback?: string) => {
     const { showNotification } = useNotificationStore.getState();
-
     try {
       set({ isSubmitting: true });
-
       const storedUser = localStorage.getItem("credxUser");
       const user = storedUser ? JSON.parse(storedUser) : null;
       const userId = user?.userId;
-
       const response = await api.put(`/api/mentor/approvals/${id}`, {
         entityType,
         status,
         points: points || 0,
         feedback: feedback || '',
       });
-
       if (response.data.success) {
         showNotification('Submission updated successfully', 'success');
         get().fetchSubmissions();
@@ -192,30 +151,22 @@ export const useApprovalsStore = create<ApprovalsState>((set, get) => ({
       set({ isSubmitting: false });
     }
   },
-
-  // =====================================
-  // FILTER ACTIONS
-  // =====================================
   setSearchQuery: (query: string) => {
     set({ searchQuery: query, page: 1 });
     get().fetchSubmissions();
   },
-
   setStatusFilter: (status: string) => {
     set({ statusFilter: status, page: 1 });
     get().fetchSubmissions();
   },
-
   setEntityTypeFilter: (type: string) => {
     set({ entityTypeFilter: type, page: 1 });
     get().fetchSubmissions();
   },
-
   setPage: (page: number) => {
     set({ page });
     get().fetchSubmissions();
   },
-
   resetFilters: () => {
     set({
       searchQuery: '',
@@ -225,7 +176,6 @@ export const useApprovalsStore = create<ApprovalsState>((set, get) => ({
     });
     get().fetchSubmissions();
   },
-
   closeDetail: () => {
     set({ submissionDetail: null });
   },

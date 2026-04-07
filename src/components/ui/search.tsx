@@ -3,13 +3,11 @@ import { cn } from '@/lib/utils'
 import { useSearchStore } from '@/store/useSearchStore'
 import { Button } from '@/components/ui/button'
 import { SearchCheck } from 'lucide-react'
-
 interface Props {
   className?: string
   type?: React.HTMLInputTypeAttribute
   placeholder?: string
 }
-
 export function Search({ className = '', placeholder = 'Search' }: Props) {
   const { open, setOpen } = useSearchStore()
   return (

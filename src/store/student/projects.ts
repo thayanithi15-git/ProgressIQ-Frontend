@@ -3,10 +3,6 @@ import api from '@/utils/api';
 import { useNotificationStore } from '@/utils/notification';
 import { getStoredMentorId } from '@/utils/mentorSession';
 
-// ==========================================
-// TYPES
-// ==========================================
-
 export interface Project {
   _id: string;
   studentId: string;
@@ -51,10 +47,6 @@ interface Pagination {
   skip: number;
 }
 
-// ==========================================
-// STORE
-// ==========================================
-
 interface ProjectsState {
   projects: Project[];
   selectedProject: Project | null;
@@ -68,7 +60,6 @@ interface ProjectsState {
   editingProject: Project | null;
   submittingProjectId: string | null;
 
-  // Actions
   fetchProjects: (status?: ProjectStatusFilter) => Promise<void>;
   fetchProjectById: (id: string) => Promise<void>;
   createProject: (payload: CreateProjectPayload) => Promise<boolean>;
@@ -77,7 +68,6 @@ interface ProjectsState {
   startProject: (id: string) => Promise<boolean>;
   submitProject: (id: string, submissionNote?: string) => Promise<boolean>;
 
-  // UI
   setStatusFilter: (filter: ProjectStatusFilter) => void;
   setSearchQuery: (q: string) => void;
   setPage: (skip: number) => void;
@@ -102,7 +92,6 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
   editingProject: null,
   submittingProjectId: null,
 
-  // ─── FETCH LIST ───────────────────────────────────────────
   fetchProjects: async (status?) => {
     const { showNotification } = useNotificationStore.getState();
     const { pagination, statusFilter } = get();
@@ -130,7 +119,6 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
     }
   },
 
-  // ─── FETCH SINGLE ─────────────────────────────────────────
   fetchProjectById: async (id) => {
     const { showNotification } = useNotificationStore.getState();
     try {
@@ -141,7 +129,6 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
     }
   },
 
-  // ─── CREATE ───────────────────────────────────────────────
   createProject: async (payload) => {
     const { showNotification } = useNotificationStore.getState();
     try {
@@ -167,7 +154,6 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
     }
   },
 
-  // ─── UPDATE ───────────────────────────────────────────────
   updateProject: async (id, payload) => {
     const { showNotification } = useNotificationStore.getState();
     try {
@@ -188,7 +174,6 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
     }
   },
 
-  // ─── DELETE ───────────────────────────────────────────────
   deleteProject: async (id) => {
     const { showNotification } = useNotificationStore.getState();
     try {
@@ -205,7 +190,6 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
     }
   },
 
-  // ─── START ────────────────────────────────────────────────
   startProject: async (id) => {
     const { showNotification } = useNotificationStore.getState();
     try {
@@ -225,7 +209,6 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
     }
   },
 
-  // ─── SUBMIT ───────────────────────────────────────────────
   submitProject: async (id, submissionNote) => {
     const { showNotification } = useNotificationStore.getState();
     try {
@@ -249,7 +232,6 @@ export const useProjectsStore = create<ProjectsState>((set, get) => ({
     }
   },
 
-  // ─── UI ACTIONS ───────────────────────────────────────────
   setStatusFilter: (filter) => {
     set({ statusFilter: filter, pagination: { ...get().pagination, skip: 0 } });
     get().fetchProjects(filter);

@@ -28,7 +28,6 @@ export const useStudentAuthStore = create<StudentAuthState>((set) => ({
 
   login: async (email: string, password: string) => {
     const { showNotification } = useNotificationStore.getState();
-    
     try {
       set({ isLoading: true });
       showNotification('Signing in...', 'pending');
@@ -44,12 +43,10 @@ export const useStudentAuthStore = create<StudentAuthState>((set) => ({
         throw new Error('Unauthorized: Student access only');
       }
 
-      // Encrypt and store sensitive data
       setEncryptedItem('token', token);
       setEncryptedItem('role', role);
       setEncryptedItem('userId', userId);
 
-      // Store user session for UI (try profile, fallback to email prefix)
       if (typeof window !== 'undefined') {
         let displayName = email.split('@')[0] || 'Student';
         try {
@@ -101,17 +98,14 @@ export const useStudentAuthStore = create<StudentAuthState>((set) => ({
       showNotification('Login successful! Welcome Student.', 'success');
     } catch (error: any) {
       set({ isLoading: false, user: null, isAuthenticated: false });
-      
       const errorMessage = error.response?.data?.message || error.message || 'Login failed. Please try again.';
       showNotification(errorMessage, 'error');
-      
       throw error;
     }
   },
 
   googleLogin: async (credential: string) => {
     const { showNotification } = useNotificationStore.getState();
-    
     try {
       set({ isLoading: true });
       showNotification('Signing in with Google...', 'pending');
@@ -167,7 +161,6 @@ export const useStudentAuthStore = create<StudentAuthState>((set) => ({
 
   logout: () => {
     const { showNotification } = useNotificationStore.getState();
-    
     removeEncryptedItem('token');
     removeEncryptedItem('role');
     removeEncryptedItem('userId');

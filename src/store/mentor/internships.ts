@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import api from '@/utils/api';
 import { useNotificationStore } from '@/utils/notification';
-
 export interface MentorInternship {
   id: string;
   companyName: string;
@@ -22,13 +21,9 @@ export interface MentorInternship {
   };
   feedback?: string;
 }
-
 interface InternshipsState {
-  // Data
   internships: MentorInternship[];
   internshipDetail: MentorInternship | null;
-
-  // Filters
   searchQuery: string;
   statusFilter: string;
   typeFilter: string;
@@ -37,18 +32,12 @@ interface InternshipsState {
   yearFilter: string;
   sortBy: 'company' | 'student' | 'status' | 'from';
   sortOrder: 'asc' | 'desc';
-
-  // Pagination
   page: number;
   limit: number;
   total: number;
   totalPages: number;
-
-  // Loading
   isLoading: boolean;
   isLoadingDetail: boolean;
-
-  // Actions
   fetchInternships: () => Promise<void>;
   fetchInternshipDetail: (id: string) => Promise<void>;
   setSearchQuery: (query: string) => void;
@@ -63,12 +52,9 @@ interface InternshipsState {
   resetFilters: () => void;
   closeDetail: () => void;
 }
-
 export const useMentorInternshipsStore = create<InternshipsState>((set, get) => ({
-  // Initial States
   internships: [],
   internshipDetail: null,
-
   searchQuery: '',
   statusFilter: '',
   typeFilter: '',
@@ -77,25 +63,17 @@ export const useMentorInternshipsStore = create<InternshipsState>((set, get) => 
   yearFilter: '',
   sortBy: 'from',
   sortOrder: 'desc',
-
   page: 1,
   limit: 20,
   total: 0,
   totalPages: 0,
-
   isLoading: false,
   isLoadingDetail: false,
-
-  // =====================================
-  // FETCH INTERNSHIPS
-  // =====================================
   fetchInternships: async () => {
     const { showNotification } = useNotificationStore.getState();
     const state = get();
-
     try {
       set({ isLoading: true });
-
       const params = new URLSearchParams({
         page: state.page.toString(),
         limit: state.limit.toString(),
@@ -108,9 +86,7 @@ export const useMentorInternshipsStore = create<InternshipsState>((set, get) => 
         sortBy: state.sortBy,
         sortOrder: state.sortOrder,
       });
-
       const response = await api.get(`/api/mentor/internships?${params}`);
-
       if (response.data.success) {
         set({
           internships: response.data.data,
@@ -126,18 +102,11 @@ export const useMentorInternshipsStore = create<InternshipsState>((set, get) => 
       set({ isLoading: false });
     }
   },
-
-  // =====================================
-  // FETCH INTERNSHIP DETAIL
-  // =====================================
   fetchInternshipDetail: async (id: string) => {
     const { showNotification } = useNotificationStore.getState();
-
     try {
       set({ isLoadingDetail: true });
-
       const response = await api.get(`/api/mentor/internships/${id}`);
-
       if (response.data.success) {
         set({ internshipDetail: response.data.data });
       }
@@ -149,58 +118,42 @@ export const useMentorInternshipsStore = create<InternshipsState>((set, get) => 
       set({ isLoadingDetail: false });
     }
   },
-
-  // =====================================
-  // FILTER ACTIONS
-  // =====================================
   setSearchQuery: (query: string) => {
     set({ searchQuery: query, page: 1 });
     get().fetchInternships();
   },
-
   setStatusFilter: (status: string) => {
     set({ statusFilter: status, page: 1 });
     get().fetchInternships();
   },
-
   setTypeFilter: (type: string) => {
     set({ typeFilter: type, page: 1 });
     get().fetchInternships();
   },
-
   setPaidFilter: (paid: string) => {
     set({ paidFilter: paid, page: 1 });
     get().fetchInternships();
   },
-
   setDepartmentFilter: (dept: string) => {
     set({ departmentFilter: dept, page: 1 });
     get().fetchInternships();
   },
-
   setYearFilter: (year: string) => {
     set({ yearFilter: year, page: 1 });
     get().fetchInternships();
   },
-
   setSortBy: (by: 'company' | 'student' | 'status' | 'from') => {
     set({ sortBy: by, page: 1 });
     get().fetchInternships();
   },
-
   setSortOrder: (order: 'asc' | 'desc') => {
     set({ sortOrder: order, page: 1 });
     get().fetchInternships();
   },
-
   setPage: (page: number) => {
     set({ page });
     get().fetchInternships();
   },
-
-  // =====================================
-  // RESET FILTERS
-  // =====================================
   resetFilters: () => {
     set({
       searchQuery: '',
@@ -215,10 +168,6 @@ export const useMentorInternshipsStore = create<InternshipsState>((set, get) => 
     });
     get().fetchInternships();
   },
-
-  // =====================================
-  // CLOSE DETAIL
-  // =====================================
   closeDetail: () => {
     set({ internshipDetail: null });
   },

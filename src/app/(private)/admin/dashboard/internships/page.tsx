@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Building2, Briefcase, Clock, XCircle, Search, RefreshCw, 
+import {
+  Building2, Briefcase, Clock, XCircle, Search, RefreshCw,
   ChevronLeft, ChevronRight, User, ArrowUpRight, ExternalLink,
   ShieldCheck, Upload, FileSpreadsheet, Database
 } from "lucide-react";
@@ -26,7 +26,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useAdminInternshipsStore } from "@/store/admin/internships";
 
-// ─── TOKENS ─────────────────────────────────────────────────────────────────
 const STATUS_META: Record<string, { label: string; color: string; bg: string; icon: any }> = {
   "APPROVED": {
     label: "Verified",
@@ -48,7 +47,6 @@ const STATUS_META: Record<string, { label: string; color: string; bg: string; ic
   }
 };
 
-// ─── COMPONENTS ──────────────────────────────────────────────────────────────
 const StatusBadge = ({ status }: { status: string }) => {
   const meta = STATUS_META[status?.toUpperCase()] || { label: status, color: "#6b7280", bg: "rgba(107, 114, 128, 0.12)", icon: Clock };
   const Icon = meta.icon;
@@ -98,18 +96,8 @@ export default function AdminInternshipsPage() {
       />
 
       <div className="p-4 lg:p-8 max-w-[1600px] mx-auto space-y-8">
-        
-        {/* Advanced Search & Filtering Terminal */}
         <div className="flex flex-col space-y-4">
             <div className="flex flex-col lg:flex-row items-center gap-4">
-                {/* <div className="flex items-center gap-3 w-full lg:w-auto">
-                    <Button 
-                        onClick={() => setIsBulkUploadDialogOpen(true)}
-                        className="h-11 rounded-xl px-6 bg-primary text-primary-foreground font-semibold uppercase tracking-widest text-[10px] flex items-center gap-2 shadow-md hover:shadow-lg transition-all"
-                    >
-                        <Upload size={16} /> Bulk Upload
-                    </Button>
-                </div> */}
 
                 <div className="relative w-full lg:flex-1">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -119,14 +107,13 @@ export default function AdminInternshipsPage() {
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="pl-11 h-12 rounded-2xl bg-muted/20 border-border/60 focus-visible:ring-primary/20 transition-all font-medium text-sm"
                     />
-                    <Button 
+                    <Button
                         onClick={() => fetchInternships()}
                         className="absolute right-1.5 top-1.5 h-9 rounded-xl bg-primary text-primary-foreground font-semibold uppercase tracking-widest text-[10px] px-4"
                     >
                         Sync
                     </Button>
                 </div>
-                
                 <div className="flex items-center gap-3 w-full lg:w-auto overflow-x-auto pb-1 scrollbar-hide">
                     <Select value={statusFilter || "all"} onValueChange={(v) => { setStatusFilter(v === "all" ? "" : v); fetchInternships(); }}>
                         <SelectTrigger className="h-12 w-[140px] rounded-2xl bg-muted/20 border-border/60 text-[10px] font-semibold uppercase tracking-widest">
@@ -147,7 +134,6 @@ export default function AdminInternshipsPage() {
             </div>
         </div>
 
-        {/* Global Registry Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             <AnimatePresence mode="popLayout">
                 {isLoading ? (
@@ -257,13 +243,11 @@ export default function AdminInternshipsPage() {
             </AnimatePresence>
         </div>
 
-        {/* Global Pagination Bar */}
         {totalPages > 1 && (
             <div className="flex flex-col sm:flex-row items-center justify-between pt-10 border-t border-border/40 gap-4">
                 <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">
                     Registry Focus: <span className="text-foreground font-black">{internships.length}</span> of <span className="text-primary font-black">{total}</span> placements
                 </p>
-                
                 <div className="flex items-center gap-3 bg-muted/20 p-1.5 rounded-2xl border border-border/40">
                     <Button
                         variant="ghost"
@@ -274,7 +258,6 @@ export default function AdminInternshipsPage() {
                     >
                         <ChevronLeft size={16} />
                     </Button>
-                    
                     <div className="w-[1px] h-4 bg-border/40 mx-1" />
                     <span className="text-xs font-black text-foreground px-4 tabular-nums">{page} <span className="text-muted-foreground/50 mx-1">/</span> {totalPages}</span>
                     <div className="w-[1px] h-4 bg-border/40 mx-1" />
@@ -293,7 +276,6 @@ export default function AdminInternshipsPage() {
         )}
       </div>
 
-      {/* Bulk Upload Dialog */}
       <Dialog open={isBulkUploadDialogOpen} onOpenChange={setIsBulkUploadDialogOpen}>
         <DialogContent className="modal-sheet max-w-2xl p-0 overflow-hidden">
           <div className="px-6 py-5 border-b border-border/40 bg-foreground/[0.02] flex items-center justify-between">
@@ -315,7 +297,6 @@ export default function AdminInternshipsPage() {
               <Database size={14} /> Template
             </Button>
           </div>
-          
           <div className="p-8 text-center space-y-6">
              <div className="mb-2">
                 <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-4 text-left">Protocol Map (Required Headers)</p>
@@ -345,14 +326,12 @@ export default function AdminInternshipsPage() {
                 </div>
                 <h4 className="text-sm font-semibold text-foreground mb-1 uppercase tracking-tight">Drop Manifest Here</h4>
                 <p className="text-[11px] text-muted-foreground font-medium mb-6">Select a .xlsx or .csv placement manifest</p>
-                
                 <Input type="file" accept=".xlsx,.xls,.csv" className="hidden" id="internship-bulk-file" />
                 <label htmlFor="internship-bulk-file" className="h-11 px-8 rounded-xl bg-primary text-primary-foreground font-black uppercase tracking-widest text-[10px] flex items-center cursor-pointer hover:shadow-lg transition-all shadow-md">
                     Select Manifest
                 </label>
              </div>
           </div>
-          
           <div className="p-4 border-t border-border/40 bg-foreground/[0.01] flex justify-end">
             <Button variant="ghost" onClick={() => setIsBulkUploadDialogOpen(false)} className="rounded-xl h-10 px-6 uppercase text-[10px] font-semibold tracking-widest">Abort Intake</Button>
           </div>

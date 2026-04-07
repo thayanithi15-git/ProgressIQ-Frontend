@@ -12,9 +12,6 @@ import {
 import { useProfileStore, UpdateProfilePayload, SocialLinks } from "@/store/student/profile";
 import Header from "@/components/layout/header";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TOKENS
-// ─────────────────────────────────────────────────────────────────────────────
 const C = {
   blue:    "#3B6FD4",
   violet:  "#7C3AED",
@@ -28,9 +25,6 @@ const C = {
   slate:   "#475569",
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// GLOBAL CSS
-// ─────────────────────────────────────────────────────────────────────────────
 const GLOBAL_CSS = `
   @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
   @keyframes spin    { to{transform:rotate(360deg)} }
@@ -66,9 +60,6 @@ const GLOBAL_CSS = `
   @media(max-width:460px){ .stats-row-p{grid-template-columns:1fr!important;} }
 `;
 
-// ─────────────────────────────────────────────────────────────────────────────
-// HELPERS
-// ─────────────────────────────────────────────────────────────────────────────
 const Sk = ({ w = "100%", h = 16, style = {} }: any) =>
   <div className="sk" style={{ width: w, height: h, ...style }} />;
 
@@ -81,9 +72,6 @@ const fmtDate = (v?: string) => {
 const initials = (f?: string, l?: string) =>
   `${(f ?? " ")[0]}${(l ?? " ")[0]}`.toUpperCase();
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SECTION CARD WRAPPER
-// ─────────────────────────────────────────────────────────────────────────────
 const SectionCard = ({ title, icon: Icon, color, children, delay = 0, action }: any) => (
   <motion.div
     initial={{ opacity: 0, y: 14 }}
@@ -94,7 +82,6 @@ const SectionCard = ({ title, icon: Icon, color, children, delay = 0, action }: 
       borderRadius: 18, boxShadow: "var(--card-shadow)", overflow: "hidden",
     }}
   >
-    {/* Section header */}
     <div style={{
       padding: "16px 22px", borderBottom: "1px solid var(--divider)",
       display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -111,9 +98,6 @@ const SectionCard = ({ title, icon: Icon, color, children, delay = 0, action }: 
   </motion.div>
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
-// INFO ROW
-// ─────────────────────────────────────────────────────────────────────────────
 const InfoRow = ({ icon: Icon, label, value, color = "var(--text-muted)", link = false }: any) => (
   <div className="info-row">
     <div style={{ width: 30, height: 30, borderRadius: 8, background: `var(--body-bg)`, border: "1px solid var(--card-border)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 1 }}>
@@ -134,9 +118,6 @@ const InfoRow = ({ icon: Icon, label, value, color = "var(--text-muted)", link =
   </div>
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
-// EDIT FORM FIELD
-// ─────────────────────────────────────────────────────────────────────────────
 const FormField = ({ label, required, children }: any) => (
   <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
     <label className="font-mono" style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", letterSpacing: ".04em", textTransform: "uppercase" }}>
@@ -146,9 +127,6 @@ const FormField = ({ label, required, children }: any) => (
   </div>
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SKELETON LAYOUT
-// ─────────────────────────────────────────────────────────────────────────────
 const ProfileSkeleton = () => (
   <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
     <Sk h={200} style={{ borderRadius: 20 }} />
@@ -161,9 +139,6 @@ const ProfileSkeleton = () => (
   </div>
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
-// HERO BANNER
-// ─────────────────────────────────────────────────────────────────────────────
 const ProfileHero = ({ profile, onEdit }: any) => {
   const pi = profile.personalInfo;
   const ai = profile.academicInfo;
@@ -184,7 +159,6 @@ const ProfileHero = ({ profile, onEdit }: any) => {
         position: "relative", overflow: "hidden",
         boxShadow: "0 16px 48px rgba(0,0,0,0.28)",
       }}>
-        {/* Decorative circles */}
         {[
           { size: 200, right: -50, top: -50, opacity: 0.07 },
           { size: 140, right: 100, bottom: -70, opacity: 0.05 },
@@ -198,10 +172,8 @@ const ProfileHero = ({ profile, onEdit }: any) => {
           }} />
         ))}
 
-        {/* Main row */}
         <div className="hero-inner" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 22, position: "relative" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-            {/* Avatar */}
             <div className="font-display" style={{
               width: 76, height: 76, borderRadius: "50%", flexShrink: 0,
               background: `linear-gradient(135deg,${C.blue},${C.violet})`,
@@ -226,14 +198,12 @@ const ProfileHero = ({ profile, onEdit }: any) => {
               </p>
             </div>
           </div>
-          {/* Edit btn */}
           <button onClick={onEdit}
             style={{ display: "flex", alignItems: "center", gap: 7, padding: "9px 20px", borderRadius: 11, border: "1.5px solid rgba(255,255,255,0.18)", background: "rgba(255,255,255,0.08)", color: "#fff", fontSize: 13, fontWeight: 700, cursor: "pointer", backdropFilter: "blur(4px)", flexShrink: 0 }}>
             <Edit2 size={14} /> Edit Profile
           </button>
         </div>
 
-        {/* Stats bar */}
         <div className="stats-row-p" style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 12, marginTop: 24 }}>
           {[
             { label: "Reward Points", value: ach.rewardPoints.toLocaleString(), icon: <Zap size={14} fill={C.amber} />, color: C.amber },
@@ -255,9 +225,6 @@ const ProfileHero = ({ profile, onEdit }: any) => {
   );
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// EDIT PROFILE MODAL
-// ─────────────────────────────────────────────────────────────────────────────
 const EditModal = ({ isOpen, editForm, setField, onSave, onCancel, isUpdating }: any) => (
   <AnimatePresence>
     {isOpen && (
@@ -270,7 +237,6 @@ const EditModal = ({ isOpen, editForm, setField, onSave, onCancel, isUpdating }:
           onClick={e => e.stopPropagation()}
           style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", borderRadius: 20, width: "100%", maxWidth: 560, maxHeight: "92vh", overflowY: "auto", boxShadow: "0 24px 64px rgba(0,0,0,0.28)" }}
         >
-          {/* Modal header */}
           <div style={{ padding: "20px 24px 16px", borderBottom: "1px solid var(--divider)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <div style={{ width: 36, height: 36, borderRadius: 10, background: `${C.blue}16`, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -287,9 +253,7 @@ const EditModal = ({ isOpen, editForm, setField, onSave, onCancel, isUpdating }:
             </button>
           </div>
 
-          {/* Form */}
           <div style={{ padding: "20px 24px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
-            {/* Personal */}
             <p style={{ fontSize: 11, fontWeight: 800, color: "var(--text-muted)", letterSpacing: ".06em", textTransform: "uppercase", margin: 0 }}>Personal Details</p>
             <div className="edit-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
               <FormField label="Gender">
@@ -311,7 +275,6 @@ const EditModal = ({ isOpen, editForm, setField, onSave, onCancel, isUpdating }:
               </FormField>
             </div>
 
-            {/* Family */}
             <p style={{ fontSize: 11, fontWeight: 800, color: "var(--text-muted)", letterSpacing: ".06em", textTransform: "uppercase", margin: "4px 0 0" }}>Family Details</p>
             <div className="edit-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
               <FormField label="Parent / Guardian Name">
@@ -325,7 +288,6 @@ const EditModal = ({ isOpen, editForm, setField, onSave, onCancel, isUpdating }:
               </FormField>
             </div>
 
-            {/* Academic Extras */}
             <p style={{ fontSize: 11, fontWeight: 800, color: "var(--text-muted)", letterSpacing: ".06em", textTransform: "uppercase", margin: "4px 0 0" }}>Academic Details</p>
             <div className="edit-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
               <FormField label="Roll Number">
@@ -343,7 +305,6 @@ const EditModal = ({ isOpen, editForm, setField, onSave, onCancel, isUpdating }:
               <input className="edit-input" placeholder="e.g. Fullstack, AI, DSA" value={editForm.goodAt?.join(", ") || ""} onChange={e => setField("goodAt", e.target.value.split(",").map(sh => sh.trim()).filter(sh => sh))} />
             </FormField>
 
-            {/* Actions */}
             <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", paddingTop: 6, borderTop: "1px solid var(--divider)" }}>
               <button onClick={onCancel}
                 style={{ padding: "9px 22px", borderRadius: 10, border: "1.5px solid var(--card-border)", background: "transparent", color: "var(--text-secondary)", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
@@ -362,9 +323,6 @@ const EditModal = ({ isOpen, editForm, setField, onSave, onCancel, isUpdating }:
   </AnimatePresence>
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
-// EDIT SOCIALS MODAL
-// ─────────────────────────────────────────────────────────────────────────────
 const EditSocialsModal = ({ isOpen, form, setField, onSave, onCancel, isUpdating }: any) => (
   <AnimatePresence>
     {isOpen && (
@@ -377,7 +335,6 @@ const EditSocialsModal = ({ isOpen, form, setField, onSave, onCancel, isUpdating
           onClick={e => e.stopPropagation()}
           style={{ background: "var(--card-bg)", border: "1px solid var(--card-border)", borderRadius: 20, width: "100%", maxWidth: 500, maxHeight: "92vh", overflowY: "auto", boxShadow: "0 24px 64px rgba(0,0,0,0.28)" }}
         >
-          {/* Modal header */}
           <div style={{ padding: "20px 24px 16px", borderBottom: "1px solid var(--divider)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <div style={{ width: 36, height: 36, borderRadius: 10, background: `${C.indigo}16`, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -394,9 +351,7 @@ const EditSocialsModal = ({ isOpen, form, setField, onSave, onCancel, isUpdating
             </button>
           </div>
 
-          {/* Form */}
           <div style={{ padding: "20px 24px 24px", display: "flex", flexDirection: "column", gap: 16 }}>
-            
             <FormField label="LinkedIn URL">
               <input className="edit-input" placeholder="https://linkedin.com/in/username" value={form.linkedin ?? ""} onChange={e => setField("linkedin", e.target.value)} />
             </FormField>
@@ -413,7 +368,6 @@ const EditSocialsModal = ({ isOpen, form, setField, onSave, onCancel, isUpdating
               <input className="edit-input" placeholder="https://username.dev" value={form.portfolio ?? ""} onChange={e => setField("portfolio", e.target.value)} />
             </FormField>
 
-            {/* Actions */}
             <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", paddingTop: 6, borderTop: "1px solid var(--divider)", marginTop: 8 }}>
               <button onClick={onCancel}
                 style={{ padding: "9px 22px", borderRadius: 10, border: "1.5px solid var(--card-border)", background: "transparent", color: "var(--text-secondary)", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
@@ -432,15 +386,12 @@ const EditSocialsModal = ({ isOpen, form, setField, onSave, onCancel, isUpdating
   </AnimatePresence>
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
-// MAIN PAGE
-// ─────────────────────────────────────────────────────────────────────────────
 export default function ProfilePage() {
   const {
     profile, socials, isLoading, isUpdating, isEditMode, editForm, isSocialsEditMode, socialsForm,
     fetchProfile, updateProfile, setEditMode, setEditField, cancelEdit,
     setSocialsEditMode, setSocialsField, updateSocials
-  } = useProfileStore() as any; // Cast as any to bypass temporary type issues if store was just updated
+  } = useProfileStore() as any;
 
   useEffect(() => { fetchProfile(); }, []);
 
@@ -480,13 +431,10 @@ export default function ProfilePage() {
 
         <div style={{ padding: "24px 24px 56px", display: "flex", flexDirection: "column", gap: 20 }}>
 
-          {/* ── Hero */}
           <ProfileHero profile={profile} onEdit={() => setEditMode(true)} />
 
-          {/* ── 2-col layout */}
           <div className="profile-layout" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 18 }}>
 
-            {/* ── Personal Info */}
             <SectionCard title="Personal Information" icon={User} color={C.blue} delay={0.06}>
               <InfoRow icon={Mail}     label="Email Address" value={pi.email}  color={C.blue} />
               <InfoRow icon={Phone}    label="Phone Number"  value={pi.phone}  color={C.cyan} />
@@ -503,7 +451,6 @@ export default function ProfilePage() {
               />
             </SectionCard>
 
-            {/* ── Academic Info */}
             <div>
               <SectionCard title="Academic Information" icon={GraduationCap} color={C.violet} delay={0.09}>
                 <InfoRow icon={Building2}  label="Department"    value={ai.department}  color={C.violet} />
@@ -524,7 +471,6 @@ export default function ProfilePage() {
                 />
               </SectionCard>
 
-              {/* ── Good At */}
               {ai.goodAt && ai.goodAt.length > 0 && (
                 <div style={{ marginTop: 18 }}>
                   <SectionCard title="Areas of Expertise" icon={CheckCircle} color={C.emerald} delay={0.10}>
@@ -539,12 +485,11 @@ export default function ProfilePage() {
                 </div>
               )}
 
-              {/* ── Social Profiles */}
               <div style={{ marginTop: 18 }}>
-                <SectionCard 
-                  title="Online Profiles" 
-                  icon={Globe} 
-                  color={C.indigo} 
+                <SectionCard
+                  title="Online Profiles"
+                  icon={Globe}
+                  color={C.indigo}
                   delay={0.11}
                   action={
                     <button onClick={() => setSocialsEditMode(true)}
@@ -562,14 +507,12 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* ── Family Info */}
             <SectionCard title="Family Information" icon={Heart} color={C.pink} delay={0.12}>
               <InfoRow icon={User}  label="Parent / Guardian" value={fi.parentName}  color={C.pink} />
               <InfoRow icon={Phone} label="Parent Phone"      value={fi.parentPhone} color={C.rose} />
               <InfoRow icon={Award} label="Family Income"     value={fi.familyIncome} color={C.amber} />
             </SectionCard>
 
-            {/* ── Account Info */}
             <SectionCard title="Account Details" icon={Shield} color={C.teal} delay={0.13}>
               <InfoRow icon={Clock}    label="Joined On"     value={fmtDate(acc.createdAt)}   color={C.teal} />
               <InfoRow icon={Clock}    label="Last Updated"  value={fmtDate(acc.lastUpdated)} color={C.cyan} />
@@ -577,11 +520,9 @@ export default function ProfilePage() {
             </SectionCard>
           </div>
 
-          {/* ── Mentor Card (full width) */}
           {mi && (
             <SectionCard title="My Mentor" icon={UserCheck} color={C.emerald} delay={0.15}>
               <div style={{ paddingTop: 6 }}>
-                {/* Mentor hero row */}
                 <div style={{ display: "flex", alignItems: "center", gap: 16, padding: "14px 0 16px", borderBottom: "1px solid var(--divider)", marginBottom: 4 }}>
                   <div className="font-display" style={{ width: 56, height: 56, borderRadius: "50%", background: `linear-gradient(135deg,${C.emerald},${C.cyan})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, fontWeight: 900, color: "#fff", flexShrink: 0 }}>
                     {mi.fullName?.split(" ").map((p: any) => p[0]).join("").toUpperCase().slice(0, 2)}
@@ -589,7 +530,6 @@ export default function ProfilePage() {
                   <div>
                     <p className="font-display" style={{ fontSize: 16, fontWeight: 800, color: "var(--text-primary)", margin: "0 0 3px" }}>{mi.fullName}</p>
                     <p style={{ fontSize: 12, color: "var(--text-muted)", margin: "0 0 8px" }}>{mi.email}</p>
-                    {/* Expertise tags */}
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
                       {(mi.expertise ?? []).map((tag: string) => (
                         <span key={tag} className="font-mono" style={{ fontSize: 9, fontWeight: 700, padding: "3px 9px", borderRadius: 20, background: `${C.emerald}14`, color: C.emerald, textTransform: "uppercase", letterSpacing: "0.05em" }}>
@@ -611,7 +551,6 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      {/* Edit Modals */}
       <EditModal
         isOpen={isEditMode}
         editForm={editForm}

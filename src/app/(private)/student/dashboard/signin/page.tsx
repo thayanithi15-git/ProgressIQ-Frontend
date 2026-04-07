@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -12,50 +11,39 @@ import { Lock, Mail, Shield, ArrowRight, Eye, EyeOff } from "lucide-react";
 import { useStudentAuthStore } from "@/store/auth/student";
 import GlobalNotification from "@/components/notify/notification";
 import Banner from "@/assets/loginBanner.jpg";
-
 export default function StudentLoginPage() {
   const router = useRouter();
   const { login, isLoading, isAuthenticated, checkAuth } = useStudentAuthStore();
-
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
-
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
-
   useEffect(() => {
     if (isAuthenticated) {
-      // router.push("/student/dashboard");
     }
   }, [isAuthenticated, router]);
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!form.email || !form.password) {
       return;
     }
-
     try {
       await login(form.email, form.password);
     } catch (error) {
       console.error("Login error:", error);
     }
   };
-
   return (
     <>
       <GlobalNotification />
       <div className="min-h-screen grid lg:grid-cols-2 font-poppins bg-background">
-        
         <div className="flex items-center justify-center p-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -76,7 +64,6 @@ export default function StudentLoginPage() {
               </div>
               <p className="text-secondary font-semibold">Student Portal</p>
             </div>
-
             <Card className="border-2 border-border shadow-2xl shadow-border/50 p-8">
               <CardHeader className="space-y-3 pb-8">
                 <CardTitle className="text-3xl font-black text-foreground text-center">
@@ -86,7 +73,6 @@ export default function StudentLoginPage() {
                   Enter your credentials to access the control panel
                 </CardDescription>
               </CardHeader>
-
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div className="space-y-2">
@@ -104,7 +90,6 @@ export default function StudentLoginPage() {
                       />
                     </div>
                   </div>
-
                   <div className="space-y-2">
                     <Label className="text-sm font-semibold text-foreground">Password</Label>
                     <div className="relative group">
@@ -127,13 +112,11 @@ export default function StudentLoginPage() {
                       </button>
                     </div>
                   </div>
-
                   <div className="flex items-center justify-between text-sm pt-2">
                     <a className="text-primary hover:text-secondary font-semibold cursor-pointer hover:underline transition-colors">
                       Forgot password?
                     </a>
                   </div>
-
                   <Button
                     type="submit"
                     className="w-full h-12 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground font-bold text-base shadow-lg shadow-primary/30 transition-all hover:shadow-xl hover:shadow-primary/40"
@@ -151,7 +134,6 @@ export default function StudentLoginPage() {
                       </>
                     )}
                   </Button>
-
                   <div className="text-center pt-4">
                     <p className="text-xs text-muted-foreground flex items-center justify-center gap-1">
                       <Shield className="w-3 h-3" />
@@ -163,9 +145,7 @@ export default function StudentLoginPage() {
             </Card>
           </motion.div>
         </div>
-
         <div className="hidden lg:flex relative overflow-hidden bg-gradient-to-br from-primary via-secondary to-primary">
-
           <Image
             src={Banner}
             alt="Login Banner"
@@ -173,14 +153,11 @@ export default function StudentLoginPage() {
             className="object-cover opacity-30"
             priority
           />
-
           <div className="absolute inset-0 bg-gradient-to-br from-primary/40 via-secondary/0 to-primary/40" />
-
           <div className="absolute inset-0 opacity-10">
             <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-secondary to-primary rounded-full blur-3xl animate-pulse" />
             <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-tl from-primary to-secondary rounded-full blur-3xl animate-pulse delay-1000" />
           </div>
-
           <div
             className="absolute inset-0 opacity-[0.03]"
             style={{
@@ -189,7 +166,6 @@ export default function StudentLoginPage() {
               backgroundSize: '50px 50px'
             }}
           />
-
           <div className="relative z-10 p-16 flex flex-col justify-between text-white w-full">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
@@ -210,7 +186,6 @@ export default function StudentLoginPage() {
                 </div>
               </div>
             </motion.div>
-
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
@@ -223,7 +198,6 @@ export default function StudentLoginPage() {
               <p className="text-white/90 text-lg max-w-md leading-relaxed">
                 Secure access to system administration, user management, and comprehensive analytics dashboard.
               </p>
-
               <div className="flex gap-4 pt-4">
                 <div className="flex-1 p-4 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20">
                   <div className="text-3xl font-bold text-white">100%</div>
@@ -237,7 +211,6 @@ export default function StudentLoginPage() {
             </motion.div>
           </div>
         </div>
-
       </div>
     </>
   );

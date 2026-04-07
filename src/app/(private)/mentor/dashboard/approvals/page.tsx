@@ -21,7 +21,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-// ─── TOKENS ─────────────────────────────────────────────────────────────────
 const STATUS_META: Record<string, { label: string; color: string; bg: string }> = {
   PENDING: {
     label: "Pending",
@@ -45,7 +44,6 @@ const STATUS_META: Record<string, { label: string; color: string; bg: string }> 
   },
 };
 
-// ─── HELPERS ─────────────────────────────────────────────────────────────────
 const getEntityIcon = (type: string) => {
   switch (type?.toUpperCase()) {
     case 'PROJECT': return FolderKanban;
@@ -56,7 +54,6 @@ const getEntityIcon = (type: string) => {
   }
 };
 
-// ─── COMPONENTS ──────────────────────────────────────────────────────────────
 const StatusBadge = ({ status }: { status: string }) => {
   const meta = STATUS_META[status?.toUpperCase()] ?? STATUS_META.PENDING;
   return (
@@ -248,7 +245,6 @@ const ReviewModal = ({ submission, onClose, onApprove, isSubmitting }: any) => {
   );
 };
 
-// ─── MAIN COMPONENT ──────────────────────────────────────────────────────────
 export default function MentorApprovalsPage() {
   const {
     submissions, submissionDetail, stats, searchQuery, statusFilter,
@@ -280,14 +276,12 @@ export default function MentorApprovalsPage() {
       />
 
       <div className="p-6 lg:p-8 max-w-[1600px] mx-auto space-y-8">
-        {/* Statistics Grid */}
         {stats && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             <StatCard icon={MessageSquare} label="Total Records" value={stats.total} subtext="Full submission history" />
             <StatCard icon={Clock} label="Pending Review" value={stats.pending} subtext="Requires immediate attention" />
             <StatCard icon={CheckCircle} label="Validated" value={stats.approved} subtext="Successfully audited" />
             <StatCard icon={XCircle} label="Rejected" value={stats.rejected} subtext="Compliance issues" />
-            
             <div className="bg-card border border-border rounded-2xl p-5 shadow-sm">
                 <p className="text-[10px] text-muted-foreground font-semibold uppercase tracking-widest mb-4">Functional Split</p>
                 <div className="grid grid-cols-2 gap-x-6 gap-y-3">
@@ -308,7 +302,6 @@ export default function MentorApprovalsPage() {
           </div>
         )}
 
-        {/* Filter Controller */}
         <div className="bg-card border border-border rounded-2xl p-6 shadow-sm space-y-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide w-full md:w-auto">
@@ -367,7 +360,6 @@ export default function MentorApprovalsPage() {
           </div>
         </div>
 
-        {/* Approvals Table */}
         <div className="bg-card border border-border/40 rounded-2xl overflow-hidden shadow-sm">
           <div className="overflow-x-auto scrollbar-hide">
             <table className="w-full border-collapse min-w-[1000px]">
@@ -460,7 +452,6 @@ export default function MentorApprovalsPage() {
           </div>
         </div>
 
-        {/* Audit Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between mt-8 pt-6 border-t border-border/40">
             <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">

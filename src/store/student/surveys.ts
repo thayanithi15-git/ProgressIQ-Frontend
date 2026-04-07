@@ -1,11 +1,6 @@
 import { create } from 'zustand';
 import api from '@/utils/api';
 import { useNotificationStore } from '@/utils/notification';
-
-// ==========================================
-// TYPES
-// ==========================================
-
 export interface SurveyQuestion {
   _id?: string;
   question: string;
@@ -13,7 +8,6 @@ export interface SurveyQuestion {
   options?: string[];
   required?: boolean;
 }
-
 export interface Survey {
   _id: string;
   title: string;
@@ -28,34 +22,25 @@ export interface Survey {
   hasResponded: boolean;
   postedBy: string;
 }
-
 export interface SurveyWithResponse extends Survey {
   previousAnswer?: Record<number, string | string[]> | null;
 }
-
 export interface QuestionWithAnswer {
   question: SurveyQuestion;
   answer: string | string[];
   questionIndex: number;
 }
-
 export interface SurveyResponseDetail {
   surveyId: string;
   surveyTitle: string;
   questionsWithAnswers: QuestionWithAnswer[];
   submittedAt: string;
 }
-
 interface Pagination {
   total: number;
   limit: number;
   skip: number;
 }
-
-// ==========================================
-// STORE
-// ==========================================
-
 interface SurveysState {
   surveys: Survey[];
   selectedSurvey: SurveyWithResponse | null;
@@ -63,27 +48,17 @@ interface SurveysState {
   pagination: Pagination;
   searchQuery: string;
   filterAnswered: 'ALL' | 'PENDING' | 'ANSWERED';
-
-  // Modal state
   isAnswerModalOpen: boolean;
   isViewResponseModalOpen: boolean;
-
-  // Answers being filled
   currentAnswers: Record<number, string | string[]>;
-
-  // Loading
   isLoading: boolean;
   isLoadingSurvey: boolean;
   isSubmitting: boolean;
-
-  // Actions
   fetchSurveys: () => Promise<void>;
   fetchSurveyById: (id: string) => Promise<void>;
   submitResponse: (id: string, answers: Record<number, string | string[]>) => Promise<boolean>;
   updateResponse: (id: string, answers: Record<number, string | string[]>) => Promise<boolean>;
   fetchMyResponse: (id: string) => Promise<void>;
-
-  // UI
   setSearchQuery: (q: string) => void;
   setFilterAnswered: (f: 'ALL' | 'PENDING' | 'ANSWERED') => void;
   setPage: (skip: number) => void;
@@ -125,7 +100,6 @@ const normalizeSurvey = (survey: any): Survey => ({
   questions: normalizeQuestions(survey?.questions || []),
   postedBy: getPostedBy(survey),
 });
-
 export const useSurveysStore = create<SurveysState>((set, get) => ({
   surveys: [],
   selectedSurvey: null,
@@ -139,20 +113,15 @@ export const useSurveysStore = create<SurveysState>((set, get) => ({
   isLoading: false,
   isLoadingSurvey: false,
   isSubmitting: false,
-
-  // ─── FETCH LIST ───────────────────────────────────────────
   fetchSurveys: async () => {
     const { showNotification } = useNotificationStore.getState();
     const { pagination } = get();
-
     try {
       set({ isLoading: true });
-
       const params = new URLSearchParams({
         limit: String(pagination.limit),
         skip: String(pagination.skip),
       });
-
       const res = await api.get(`/api/student/surveys?${params}`);
       if (res.data.success) {
         set({
@@ -166,8 +135,6 @@ export const useSurveysStore = create<SurveysState>((set, get) => ({
       set({ isLoading: false });
     }
   },
-
-  // ─── FETCH SINGLE ─────────────────────────────────────────
   fetchSurveyById: async (id) => {
     const { showNotification } = useNotificationStore.getState();
     try {
@@ -180,8 +147,6 @@ export const useSurveysStore = create<SurveysState>((set, get) => ({
       set({ isLoadingSurvey: false });
     }
   },
-
-  // ─── SUBMIT RESPONSE ──────────────────────────────────────
   submitResponse: async (id, answers) => {
     const { showNotification } = useNotificationStore.getState();
     try {
@@ -189,7 +154,6 @@ export const useSurveysStore = create<SurveysState>((set, get) => ({
       const res = await api.post(`/api/student/surveys/${id}/respond`, { answers });
       if (res.data.success) {
         showNotification('Survey response submitted!', 'success');
-        // Update survey in list as responded
         set(state => ({
           surveys: state.surveys.map(s => s._id === id ? { ...s, hasResponded: true } : s),
           isAnswerModalOpen: false,
@@ -204,8 +168,6 @@ export const useSurveysStore = create<SurveysState>((set, get) => ({
       set({ isSubmitting: false });
     }
   },
-
-  // ─── UPDATE RESPONSE ──────────────────────────────────────
   updateResponse: async (id, answers) => {
     const { showNotification } = useNotificationStore.getState();
     try {
@@ -224,32 +186,23 @@ export const useSurveysStore = create<SurveysState>((set, get) => ({
       set({ isSubmitting: false });
     }
   },
-
-  // ─── FETCH MY RESPONSE ────────────────────────────────────
   fetchMyResponse: async (id) => {
     const { showNotification } = useNotificationStore.getState();
     try {
       const res = await api.get(`/api/student/surveys/${id}/responses`);
       if (res.data.success) set({ myResponse: res.data.data });
     } catch (error: any) {
-      // Silently fail — response might not exist
       set({ myResponse: null });
     }
   },
-
-  // ─── UI ACTIONS ───────────────────────────────────────────
   setSearchQuery: (q) => set({ searchQuery: q }),
-
   setFilterAnswered: (f) => set({ filterAnswered: f }),
-
   setPage: (skip) => {
     set({ pagination: { ...get().pagination, skip } });
     get().fetchSurveys();
   },
-
   openAnswerModal: async (id) => {
     await get().fetchSurveyById(id);
-    // Pre-fill answers if already responded
     const survey = get().selectedSurvey;
     if (survey?.previousAnswer) {
       set({ currentAnswers: survey.previousAnswer as any });
@@ -258,19 +211,14 @@ export const useSurveysStore = create<SurveysState>((set, get) => ({
     }
     set({ isAnswerModalOpen: true });
   },
-
   closeAnswerModal: () => set({ isAnswerModalOpen: false, selectedSurvey: null, currentAnswers: {} }),
-
   openViewResponseModal: async (id) => {
     await get().fetchMyResponse(id);
     set({ isViewResponseModalOpen: true });
   },
-
   closeViewResponseModal: () => set({ isViewResponseModalOpen: false, myResponse: null }),
-
   setCurrentAnswer: (qIndex, value) => set(state => ({
     currentAnswers: { ...state.currentAnswers, [qIndex]: value },
   })),
-
   resetAnswers: () => set({ currentAnswers: {} }),
 }));

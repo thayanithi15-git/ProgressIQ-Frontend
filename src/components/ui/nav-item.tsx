@@ -1,5 +1,4 @@
 "use client"
-
 import Link from 'next/link'
 import { ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -26,16 +25,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu'
-
 interface NavItemProps {
   item: NavItemType
   pathname: string
 }
-
 export function NavItem({ item, pathname }: NavItemProps) {
   const { state, setOpenMobile } = useSidebar()
   const isCollapsed = state === 'collapsed'
-
   if (!item.items) {
     return (
       <SidebarMenuItem>
@@ -47,19 +43,18 @@ export function NavItem({ item, pathname }: NavItemProps) {
             "group relative h-10 rounded-lg transition-all duration-200 ",
             "hover:bg-accent/40 hover:text-accent-foreground",
             "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-            // Better icon centering for collapsed state
             isCollapsed
             ? "justify-center ml-2 my-3"
-            : "justify-start px-3", 
+            : "justify-start px-3",
             checkIsActive(pathname, item) && [
               "bg-primary/10 text-primary font-medium",
               "before:absolute before:left-0 before:top-0 before:h-full before:w-1 before:bg-primary before:rounded-r-full "
             ]
           )}
         >
-          <Link 
-            href={item.url} 
-            onClick={() => setOpenMobile(false)} 
+          <Link
+            href={item.url}
+            onClick={() => setOpenMobile(false)}
             className={cn(
               "flex items-center w-full ",
               isCollapsed ? "justify-center" : "gap-4"
@@ -82,7 +77,6 @@ export function NavItem({ item, pathname }: NavItemProps) {
       </SidebarMenuItem>
     )
   }
-
   if (isCollapsed) {
     return (
       <SidebarMenuItem>
@@ -95,10 +89,10 @@ export function NavItem({ item, pathname }: NavItemProps) {
                 "group relative h-10 rounded-lg transition-all duration-200 ",
                 "hover:bg-accent/80 hover:text-accent-foreground",
                 "data-[state=open]:bg-accent/50",
-                "justify-center px-2", // Center the icon in collapsed state
+                "justify-center px-2",
                 isCollapsed
             ? "justify-center ml-2"
-            : "justify-start px-3", 
+            : "justify-start px-3",
                 checkIsActive(pathname, item) && [
                   "bg-primary/10 text-primary font-medium",
                   "before:absolute before:left-0 before:top-0 before:h-full before:w-1 before:bg-primary before:rounded-r-full"
@@ -113,9 +107,9 @@ export function NavItem({ item, pathname }: NavItemProps) {
               )}
             </SidebarMenuButton>
           </DropdownMenuTrigger>
-          <DropdownMenuContent 
-            side="right" 
-            align="start" 
+          <DropdownMenuContent
+            side="right"
+            align="start"
             sideOffset={8}
             className="w-56 p-2 shadow-lg border-border/50"
           >
@@ -154,9 +148,7 @@ export function NavItem({ item, pathname }: NavItemProps) {
       </SidebarMenuItem>
     )
   }
-
   const isOpen = checkIsActive(pathname, item, true)
-
   return (
     <Collapsible
       asChild
@@ -165,7 +157,7 @@ export function NavItem({ item, pathname }: NavItemProps) {
     >
       <SidebarMenuItem>
         <CollapsibleTrigger asChild>
-          <SidebarMenuButton 
+          <SidebarMenuButton
             tooltip={item.title}
             className={cn(
               "group relative h-10 rounded-lg transition-all duration-200",
@@ -227,20 +219,18 @@ export function NavItem({ item, pathname }: NavItemProps) {
     </Collapsible>
   )
 }
-
 interface NavBadgeProps {
   children: React.ReactNode
   variant?: "default" | "secondary" | "outline"
   size?: "default" | "sm"
 }
-
 const NavBadge = ({ children, variant = "default", size = "default" }: NavBadgeProps) => (
-  <Badge 
+  <Badge
     variant={variant}
     className={cn(
       "shrink-0 font-medium transition-colors",
-      size === "sm" 
-        ? "h-4 px-1.5 text-xs" 
+      size === "sm"
+        ? "h-4 px-1.5 text-xs"
         : "h-5 px-2 text-xs",
       variant === "secondary" && "bg-muted/80 text-muted-foreground hover:bg-muted",
       variant === "outline" && "border-border/60"
@@ -249,7 +239,6 @@ const NavBadge = ({ children, variant = "default", size = "default" }: NavBadgeP
     {children}
   </Badge>
 )
-
 function checkIsActive(pathname: string, item: NavItemType, mainNav = false) {
   return (
     pathname === item.url ||

@@ -34,14 +34,10 @@ import { Button } from "@/components/ui/button";
 import Header from "@/components/layout/header";
 import { useMentorDashboardStore } from "@/store/mentor/dashboard";
 
-// Premium Components
 import { DashboardCard } from "@/components/dashboard/dashboard-card";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { ChartContainer } from "@/components/dashboard/chart-container";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// DESIGN TOKENS
-// ─────────────────────────────────────────────────────────────────────────────
 const C = {
   blue: "#3B6FD4",
   charcoal: "#1E293B",
@@ -52,10 +48,8 @@ const C = {
   rose: "#E11D48",
 };
 
-// Predominantly Blue/Charcoal for charts
 const PIE_COLORS = [C.blue, C.accent, "#4F46E5", "#4338CA", "#3730A3", "#312E81"];
 
-// Mentor stat cards - Standardized to Blue/Charcoal theme
 const STAT_META = [
   {
     key: "totalAssignedStudents",
@@ -76,14 +70,14 @@ const STAT_META = [
     label: "Pending Reviews",
     icon: ClipboardList,
     desc: "Awaiting approval",
-    color: C.amber, // Kept amber for attention/pending
+    color: C.amber,
   },
   {
     key: "completedProjects",
     label: "Completed Projects",
     icon: FolderCheck,
     desc: "Successfully submitted",
-    color: C.emerald, // Kept emerald for completion
+    color: C.emerald,
   },
   {
     key: "totalProjects",
@@ -115,9 +109,6 @@ const STAT_META = [
   },
 ];
 
-// ─────────────────────────────────────────────────────────────────────────────
-// HELPERS
-// ─────────────────────────────────────────────────────────────────────────────
 const fmtDate = (v: string, mode: "day" | "month" = "day") => {
   const d = new Date(v);
   if (Number.isNaN(d.getTime())) return v;
@@ -216,7 +207,6 @@ export default function MentorDashboard() {
 
       <main className="p-6 lg:p-8 max-w-[1600px] mx-auto space-y-8">
 
-        {/* STAT TILES */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {STAT_META.map((meta, i) => {
             const statValue = stats ? (stats as any)[meta.key] : null;
@@ -235,7 +225,6 @@ export default function MentorDashboard() {
           })}
         </div>
 
-        {/* CHARTS ROW 1 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 ">
           <ChartContainer title="Approval Activity" subtitle="Last 30 days approval trends" icon={ClipboardList} loading={isLoadingAny}>
             {!activityData?.length ? (
@@ -285,7 +274,6 @@ export default function MentorDashboard() {
           </ChartContainer>
         </div>
 
-        {/* WORK PROGRESS AREA CHART */}
         <ChartContainer title="Work Progress" subtitle="Submissions by type (6 Months)" icon={Briefcase} loading={isLoadingAny}>
           {!workProgressData?.length ? (
             <EmptyState />
@@ -317,7 +305,6 @@ export default function MentorDashboard() {
           )}
         </ChartContainer>
 
-        {/* TOP STUDENTS TABLE */}
         <DashboardCard className="p-0 border-border/40">
           <div className="p-6 border-b border-border/40 bg-foreground/[0.01] flex items-center justify-between">
             <div className="flex items-center gap-3">

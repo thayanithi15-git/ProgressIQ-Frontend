@@ -1,11 +1,6 @@
 import { create } from 'zustand';
 import api from '@/utils/api';
 import { getStoredMentorId } from '@/utils/mentorSession';
-
-// ==========================================
-// TYPES & INTERFACES
-// ==========================================
-
 export interface Student {
   id: string;
   name: string;
@@ -17,7 +12,6 @@ export interface Student {
   status: string;
   academicYear: string;
 }
-
 export interface Mentor {
   id: string;
   name: string;
@@ -25,7 +19,6 @@ export interface Mentor {
   department: string;
   expertise: string[];
 }
-
 export interface Project {
   _id: string;
   title: string;
@@ -38,7 +31,6 @@ export interface Project {
   mentorId?: { firstName: string; lastName: string };
   createdAt?: string;
 }
-
 export interface Task {
   _id: string;
   title: string;
@@ -50,7 +42,6 @@ export interface Task {
   feedback?: string;
   mentorId?: { firstName: string; lastName: string };
 }
-
 export interface Certification {
   _id: string;
   title: string;
@@ -61,7 +52,6 @@ export interface Certification {
   to: string;
   feedback?: string;
 }
-
 export interface Internship {
   _id: string;
   companyName: string;
@@ -76,7 +66,6 @@ export interface Internship {
   durationDays?: number;
   feedback?: string;
 }
-
 export interface Survey {
   _id: string;
   title: string;
@@ -85,7 +74,6 @@ export interface Survey {
   postedBy: string;
   createdAt: string;
 }
-
 export interface Ranking {
   rank: number;
   name: string;
@@ -97,7 +85,6 @@ export interface Ranking {
   departmentRank: number;
   isCurrentStudent: boolean;
 }
-
 export interface DashboardStats {
   totalPoints: number;
   totalHoursSpent: number;
@@ -130,19 +117,11 @@ export interface DashboardStats {
     departmentRank: number;
   };
 }
-
-// ==========================================
-// STORE
-// ==========================================
-
 interface StudentStore {
-  // Dashboard
   dashboard: any | null;
   dashboardLoading: boolean;
   dashboardError: string | null;
   fetchDashboard: () => Promise<void>;
-
-  // Projects
   projects: Project[];
   projectsLoading: boolean;
   projectsError: string | null;
@@ -151,8 +130,6 @@ interface StudentStore {
   updateProject: (id: string, data: Partial<Project>) => Promise<void>;
   deleteProject: (id: string) => Promise<void>;
   getProjectById: (id: string) => Promise<Project | null>;
-
-  // Tasks
   tasks: Task[];
   tasksLoading: boolean;
   tasksError: string | null;
@@ -161,8 +138,6 @@ interface StudentStore {
   updateTask: (id: string, data: Partial<Task>) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
   completeTask: (id: string) => Promise<void>;
-
-  // Certifications
   certifications: Certification[];
   certificationsLoading: boolean;
   certificationsError: string | null;
@@ -170,8 +145,6 @@ interface StudentStore {
   createCertification: (data: Partial<Certification>) => Promise<void>;
   updateCertification: (id: string, data: Partial<Certification>) => Promise<void>;
   deleteCertification: (id: string) => Promise<void>;
-
-  // Internships
   internships: Internship[];
   internshipsLoading: boolean;
   internshipsError: string | null;
@@ -179,42 +152,30 @@ interface StudentStore {
   createInternship: (data: Partial<Internship>) => Promise<void>;
   updateInternship: (id: string, data: Partial<Internship>) => Promise<void>;
   deleteInternship: (id: string) => Promise<void>;
-
-  // Surveys
   surveys: Survey[];
   surveysLoading: boolean;
   surveysError: string | null;
   fetchSurveys: () => Promise<void>;
   respondToSurvey: (surveyId: string, answers: any[]) => Promise<void>;
-
-  // Profile
   profile: any | null;
   profileLoading: boolean;
   profileError: string | null;
   fetchProfile: () => Promise<void>;
   updateProfile: (data: Partial<Student>) => Promise<void>;
-
-  // Rankings
   rankings: Ranking[];
   rankingsLoading: boolean;
   rankingsError: string | null;
   currentStudentRanking: any | null;
   fetchRankings: (department?: boolean) => Promise<void>;
   getDepartmentRankings: () => Promise<void>;
-
-  // Activity Logs
   activityLogs: any[];
   activityLogsLoading: boolean;
   activityLogsError: string | null;
   fetchActivityLogs: (month?: string, year?: string) => Promise<void>;
   submitActivityLog: (data: any) => Promise<void>;
-
-  // Feedback
   getFeedback: (type: string, id: string) => Promise<any>;
 }
-
 export const useStudentStore = create<StudentStore>((set, get) => ({
-  // ========== DASHBOARD ==========
   dashboard: null,
   dashboardLoading: false,
   dashboardError: null,
@@ -231,8 +192,6 @@ export const useStudentStore = create<StudentStore>((set, get) => ({
       set({ dashboardError: message, dashboardLoading: false });
     }
   },
-
-  // ========== PROJECTS ==========
   projects: [],
   projectsLoading: false,
   projectsError: null,
@@ -298,8 +257,6 @@ export const useStudentStore = create<StudentStore>((set, get) => ({
       return null;
     }
   },
-
-  // ========== TASKS ==========
   tasks: [],
   tasksLoading: false,
   tasksError: null,
@@ -369,8 +326,6 @@ export const useStudentStore = create<StudentStore>((set, get) => ({
       throw error;
     }
   },
-
-  // ========== CERTIFICATIONS ==========
   certifications: [],
   certificationsLoading: false,
   certificationsError: null,
@@ -428,8 +383,6 @@ export const useStudentStore = create<StudentStore>((set, get) => ({
       throw error;
     }
   },
-
-  // ========== INTERNSHIPS ==========
   internships: [],
   internshipsLoading: false,
   internshipsError: null,
@@ -485,8 +438,6 @@ export const useStudentStore = create<StudentStore>((set, get) => ({
       throw error;
     }
   },
-
-  // ========== SURVEYS ==========
   surveys: [],
   surveysLoading: false,
   surveysError: null,
@@ -517,8 +468,6 @@ export const useStudentStore = create<StudentStore>((set, get) => ({
       throw error;
     }
   },
-
-  // ========== PROFILE ==========
   profile: null,
   profileLoading: false,
   profileError: null,
@@ -547,8 +496,6 @@ export const useStudentStore = create<StudentStore>((set, get) => ({
       throw error;
     }
   },
-
-  // ========== RANKINGS ==========
   rankings: [],
   rankingsLoading: false,
   rankingsError: null,
@@ -580,8 +527,6 @@ export const useStudentStore = create<StudentStore>((set, get) => ({
       throw error;
     }
   },
-
-  // ========== ACTIVITY LOGS ==========
   activityLogs: [],
   activityLogsLoading: false,
   activityLogsError: null,
@@ -614,8 +559,6 @@ export const useStudentStore = create<StudentStore>((set, get) => ({
       throw error;
     }
   },
-
-  // ========== FEEDBACK ==========
   getFeedback: async (type: string, id: string) => {
     try {
       const urlMap: any = {

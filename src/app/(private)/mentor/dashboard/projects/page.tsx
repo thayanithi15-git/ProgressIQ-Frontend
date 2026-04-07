@@ -22,7 +22,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-// ─── TOKENS ─────────────────────────────────────────────────────────────────
 const STATUS_META: Record<string, { label: string; color: string; bg: string }> = {
   PENDING: {
     label: "Pending",
@@ -51,7 +50,6 @@ const STATUS_META: Record<string, { label: string; color: string; bg: string }> 
   },
 };
 
-// ─── HELPERS ─────────────────────────────────────────────────────────────────
 const fmt = (v?: string) => {
   if (!v) return '—';
   try {
@@ -65,7 +63,6 @@ const fmt = (v?: string) => {
   }
 };
 
-// ─── COMPONENTS ──────────────────────────────────────────────────────────────
 const StatusBadge = ({ status }: { status: string }) => {
   const meta = STATUS_META[status?.toUpperCase()] ?? STATUS_META.PENDING;
   return (
@@ -380,7 +377,6 @@ const ProjectDetailModal = ({ project, onClose, onVerify, loading }: any) => {
   );
 };
 
-// ─── MAIN COMPONENT ──────────────────────────────────────────────────────────
 export default function MentorProjectsPage() {
   const {
     projects, searchQuery, statusFilter, page, totalPages, total,
@@ -436,7 +432,6 @@ export default function MentorProjectsPage() {
       />
 
       <div className="p-6 lg:p-8 max-w-[1600px] mx-auto space-y-6">
-        {/* Status Alert */}
         {pendingReview > 0 && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -458,7 +453,6 @@ export default function MentorProjectsPage() {
           </motion.div>
         )}
 
-        {/* Filter Bar */}
         <div className="bg-card border border-border rounded-2xl p-4 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide w-full md:w-auto">
             {STATUS_PILLS.map((p) => (
@@ -503,7 +497,6 @@ export default function MentorProjectsPage() {
           </div>
         </div>
 
-        {/* Projects Grid/Table */}
         <div className="bg-card border border-border/40 rounded-2xl overflow-hidden shadow-sm">
           <div className="overflow-x-auto scrollbar-hide">
             <table className="w-full border-collapse min-w-[1000px]">
@@ -631,7 +624,6 @@ export default function MentorProjectsPage() {
           </div>
         </div>
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between mt-8 pt-6 border-t border-border/40">
             <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">

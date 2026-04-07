@@ -12,9 +12,6 @@ import { useRankingsStore, RankingEntry, DepartmentRankingEntry } from "@/store/
 import { useThemeStore } from "@/store/layoutStore";
 import Header from "@/components/layout/header";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TOKENS
-// ─────────────────────────────────────────────────────────────────────────────
 const C = {
   blue:    "var(--piq-blue)",
   violet:  "#7C3AED",
@@ -36,9 +33,6 @@ const RANK_COLORS = [
 
 const PIE_COLORS = ["var(--piq-blue)", "#7C3AED", "#059669", "#D97706"];
 
-// ─────────────────────────────────────────────────────────────────────────────
-// HELPERS
-// ─────────────────────────────────────────────────────────────────────────────
 const Sk = ({ h = 16, className = "" }: { h?: number; className?: string }) => (
   <div className={`animate-pulse bg-foreground/5 rounded-lg ${className}`} style={{ height: h }} />
 );
@@ -51,9 +45,6 @@ const Pill = ({ label, active, onClick, color = "var(--piq-blue)" }: any) => (
   </button>
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
-// RANK MEDAL
-// ─────────────────────────────────────────────────────────────────────────────
 const RankCell = ({ rank, isMe }: { rank: number; isMe: boolean }) => {
   if (rank === 1) return <span className="text-2xl drop-shadow-sm">🥇</span>;
   if (rank === 2) return <span className="text-2xl drop-shadow-sm">🥈</span>;
@@ -65,9 +56,6 @@ const RankCell = ({ rank, isMe }: { rank: number; isMe: boolean }) => {
   );
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// MY POSITION BANNER
-// ─────────────────────────────────────────────────────────────────────────────
 const MyPositionBanner = ({ myPosition, loading }: any) => {
   if (loading) return (
     <div className="bg-card-glass/60 backdrop-blur-xl border border-border/40 shadow-sm rounded-2xl p-6 flex flex-col gap-3">
@@ -82,7 +70,6 @@ const MyPositionBanner = ({ myPosition, loading }: any) => {
   return (
     <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
       <div className="bg-gradient-to-br from-slate-900 to-slate-950 rounded-3xl p-6 lg:p-8 relative overflow-hidden shadow-2xl shadow-blue-900/10 border border-slate-800">
-        {/* Decorative */}
         <div className="absolute -top-[30px] -right-[30px] w-[140px] h-[140px] rounded-full bg-white/[0.03] pointer-events-none" />
         <div className="absolute -bottom-[50px] right-[40px] w-[110px] h-[110px] rounded-full bg-white/[0.02] pointer-events-none" />
 
@@ -93,7 +80,6 @@ const MyPositionBanner = ({ myPosition, loading }: any) => {
             <p className="text-sm font-mono text-white/50">{studentInfo.department} • {studentInfo.year}</p>
           </div>
 
-          {/* Percentile ring */}
           <div className="text-center lg:ml-auto">
             <div className="w-[76px] h-[76px] rounded-full flex items-center justify-center mx-auto mb-2" style={{ background: `conic-gradient(var(--piq-blue) ${percentile * 3.6}deg, rgba(255,255,255,0.1) 0deg)` }}>
               <div className="w-[58px] h-[58px] rounded-full bg-slate-900 flex flex-col items-center justify-center">
@@ -105,7 +91,6 @@ const MyPositionBanner = ({ myPosition, loading }: any) => {
           </div>
         </div>
 
-        {/* Stats row */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 lg:gap-4 mt-6 lg:mt-8">
           {[
             { label: "Overall Rank",   val: `#${ranking.overallRank}`,     color: C.gold },
@@ -124,17 +109,14 @@ const MyPositionBanner = ({ myPosition, loading }: any) => {
   );
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TOP 3 PODIUM
-// ─────────────────────────────────────────────────────────────────────────────
 const Top3Podium = ({ top3, isMe }: { top3: (RankingEntry | DepartmentRankingEntry)[]; isMe: (id: string) => boolean }) => (
   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-fr items-end" style={{ minHeight: '260px' }}>
-    {[1, 0, 2].map((idx) => { // 2nd, 1st, 3rd (rendered order)
+    {[1, 0, 2].map((idx) => {
       const entry = top3[idx];
       if (!entry) return <div key={`empty-${idx}`} />;
       const meta = RANK_COLORS[idx];
       const isCurrentUser = isMe(entry.studentId);
-      const podiumHeightClass = idx === 0 ? "h-32" : idx === 1 ? "h-24" : "h-20"; // Adjust podium heights
+      const podiumHeightClass = idx === 0 ? "h-32" : idx === 1 ? "h-24" : "h-20";
       return (
         <motion.div key={entry.studentId} initial={{ opacity: 0, y: 16 + idx * 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.09, duration: 0.4 }}
           className={`flex flex-col text-center relative rounded-[1.5rem] p-5 shadow-lg ${isCurrentUser ? 'ring-2 ring-primary shadow-primary/20' : ''}`} style={{ background: meta.bg, border: `1px solid ${meta.border}` }}>
@@ -149,7 +131,6 @@ const Top3Podium = ({ top3, isMe }: { top3: (RankingEntry | DepartmentRankingEnt
           {"department" in entry && <p className="text-[10px] font-mono tracking-wider truncate px-2 mb-2 opacity-80 uppercase" style={{ color: meta.color }}>{(entry as RankingEntry).department}</p>}
           <div className="text-xl font-display font-bold mt-1" style={{ color: meta.color }}>{entry.points.toLocaleString()}</div>
           <div className="text-[10px] font-mono font-bold uppercase tracking-widest opacity-70 mb-4" style={{ color: meta.color }}>Points</div>
-          {/* podium bar base */}
           <div className={`mt-auto w-full flex items-end justify-center pb-2 rounded-b-xl ${podiumHeightClass}`} style={{ background: `${meta.border}50` }}>
              <span className="text-2xl font-display font-black opacity-40 mix-blend-color-burn">#{idx === 0 ? 2 : idx === 1 ? 1 : 3}</span>
           </div>
@@ -159,9 +140,6 @@ const Top3Podium = ({ top3, isMe }: { top3: (RankingEntry | DepartmentRankingEnt
   </div>
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
-// RANKING TABLE
-// ─────────────────────────────────────────────────────────────────────────────
 const RankingTable = ({ entries, isMe, showDept = true, loading }: any) => {
   if (loading) return (
     <div className="p-5 flex flex-col gap-3">
@@ -241,9 +219,6 @@ const RankingTable = ({ entries, isMe, showDept = true, loading }: any) => {
   );
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// MAIN PAGE
-// ─────────────────────────────────────────────────────────────────────────────
 export default function RankingsPage() {
   const {
     rankings, departmentRankings, myPosition, currentStudentRanking,
@@ -296,13 +271,10 @@ export default function RankingsPage() {
 
       <main className="p-6 lg:p-8 max-w-[1600px] mx-auto space-y-6">
 
-        {/* My Position Banner */}
         <MyPositionBanner myPosition={myPosition} loading={isLoadingPosition} />
 
-        {/* View toggle + filters */}
         <div className="bg-card-glass/60 backdrop-blur-xl border border-border/40 shadow-sm rounded-2xl p-4 flex flex-col xl:flex-row xl:items-center gap-4 justify-between">
           <div className="flex flex-col md:flex-row md:items-center gap-4">
-            {/* View toggle block */}
             <div className="flex bg-foreground/5 p-1 rounded-xl w-full md:w-auto">
               {[
                 { key: "overall", label: "Overall", icon: <Trophy size={14} /> },
@@ -331,7 +303,6 @@ export default function RankingsPage() {
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-1 gap-6 items-start">
-          {/* Podium top 3 (only shows if we have data) */}
           <div className="w-full">
             {activeTop3.length >= 3 && (
               <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="h-full">
@@ -346,7 +317,6 @@ export default function RankingsPage() {
             )}
           </div>
 
-          {/* Full table */}
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }} className="w-full">
             <div className="bg-card-glass/60 backdrop-blur-xl border border-border/40 shadow-sm rounded-2xl overflow-hidden">
               <div className="p-5 lg:p-6 border-b border-border/40 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -386,7 +356,6 @@ export default function RankingsPage() {
               />
             </div>
 
-            {/* Pagination */}
             {totalPages > 1 && (
               <div className="flex items-center justify-center gap-4 mt-6">
                 <Button variant="outline" size="sm" onClick={() => activeView === "overall" ? setPage(pagination.skip - pagination.limit) : setDeptPage(deptPagination.skip - deptPagination.limit)} disabled={currentPage === 1} className="rounded-xl font-bold uppercase tracking-widest text-[10px] gap-2 h-9 px-4">

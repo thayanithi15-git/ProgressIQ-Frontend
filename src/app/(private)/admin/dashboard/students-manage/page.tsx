@@ -46,7 +46,6 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-// ─── TOKENS ─────────────────────────────────────────────────────────────────
 const STATUS_META: Record<string, { label: string; color: string; bg: string }> = {
   ACTIVE: {
     label: "Active",
@@ -60,7 +59,6 @@ const STATUS_META: Record<string, { label: string; color: string; bg: string }> 
   },
 };
 
-// ─── COMPONENTS ──────────────────────────────────────────────────────────────
 const StatusBadge = ({ status }: { status: string }) => {
   const meta = status?.toUpperCase() === "ACTIVE" ? STATUS_META.ACTIVE : STATUS_META.INACTIVE;
   return (
@@ -92,7 +90,6 @@ export default function StudentListPage() {
   const [searchEmail, setSearchEmail] = useState("");
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
-  // Form State
   const [createFormData, setCreateFormData] = useState<Partial<CreateStudentPayload>>({
     email: "", password: "", firstName: "", lastName: "", phone: "", dob: "",
     gender: "Male", department: "", year: "1", place: "", parentName: "",
@@ -145,22 +142,21 @@ export default function StudentListPage() {
   return (
     <div className="min-h-screen bg-background pb-20">
       <GlobalNotification />
-      <Header 
-        title="Student Directory" 
+      <Header
+        title="Student Directory"
         subtitle="Manage academic profiles and performance metrics"
       />
 
       <div className="p-4 lg:p-8 max-w-[1600px] mx-auto space-y-6">
-        {/* Actions Bar */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3 w-full md:w-auto">
-            <Button 
+            <Button
               onClick={() => setIsCreateDialogOpen(true)}
               className="h-11 rounded-xl px-6 bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-[11px] flex items-center gap-2 shadow-md hover:shadow-lg transition-all"
             >
               <UserPlus size={16} /> Add student
             </Button>
-            <Button 
+            <Button
               variant="outline"
               onClick={() => setIsBulkUploadDialogOpen(true)}
               className="h-11 rounded-xl px-6 border-border/60 font-semibold uppercase tracking-wider text-[11px] flex items-center gap-2 hover:bg-muted/50 transition-all"
@@ -168,7 +164,6 @@ export default function StudentListPage() {
               <Upload size={16} /> Bulk Upload
             </Button>
           </div>
-          
           <div className="relative w-full md:w-96">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
@@ -183,7 +178,6 @@ export default function StudentListPage() {
           </div>
         </div>
 
-        {/* Filter Card */}
         <div className="bg-card border border-border shadow-sm rounded-2xl p-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-1.5">
@@ -232,8 +226,8 @@ export default function StudentListPage() {
             </div>
 
             <div className="flex items-end gap-2">
-              <Button 
-                variant="ghost" 
+              <Button
+                variant="ghost"
                 onClick={resetFilters}
                 className="h-10 w-full rounded-xl text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-destructive transition-colors border border-transparent hover:border-destructive/20"
               >
@@ -243,7 +237,6 @@ export default function StudentListPage() {
           </div>
         </div>
 
-        {/* Student Table */}
         <div className="bg-card border border-border shadow-sm rounded-2xl overflow-hidden">
           <div className="overflow-x-auto scrollbar-hide">
             <table className="w-full border-collapse min-w-[1600px]">
@@ -275,7 +268,6 @@ export default function StudentListPage() {
                       className="group border-b border-border/40 hover:bg-foreground/[0.01] transition-colors cursor-pointer"
                       onClick={() => router.push(`/admin/dashboard/students-manage/${student._id}`)}
                     >
-                      {/* 1. STUDENT PROFILE */}
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-xl bg-primary/5 flex items-center justify-center border border-primary/10 group-hover:bg-primary/10 transition-colors">
@@ -296,7 +288,6 @@ export default function StudentListPage() {
                         </div>
                       </td>
 
-                      {/* 2. ACADEMIC CONTEXT */}
                       <td className="px-6 py-4">
                         <div className="min-w-[120px]">
                           <p className="text-[11px] font-black text-foreground font-mono mb-0.5 tracking-tight">{student.rollNo || "N/A"}</p>
@@ -305,7 +296,6 @@ export default function StudentListPage() {
                         </div>
                       </td>
 
-                      {/* 3. PERFORMANCE METRICS */}
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-4">
                           <div className="flex flex-col items-center p-1.5 rounded-lg bg-muted/30 border border-border/40 min-w-[50px]">
@@ -324,7 +314,6 @@ export default function StudentListPage() {
                         </div>
                       </td>
 
-                      {/* 4. FAMILY & ORIGIN */}
                       <td className="px-6 py-4">
                         <div className="min-w-[160px] space-y-1">
                            <div className="flex items-center gap-2">
@@ -346,7 +335,6 @@ export default function StudentListPage() {
                         </div>
                       </td>
 
-                      {/* 5. SKILLS & SOCIALS */}
                       <td className="px-6 py-4">
                         <div className="min-w-[140px] space-y-2">
                            <div className="flex flex-wrap gap-1">
@@ -413,7 +401,6 @@ export default function StudentListPage() {
           </div>
         </div>
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between pt-6 border-t border-border/40">
             <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
@@ -444,7 +431,6 @@ export default function StudentListPage() {
         )}
       </div>
 
-      {/* CREATE DIALOG */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
         <DialogContent className="modal-sheet max-w-2xl p-0 overflow-hidden">
           <div className="px-6 py-5 border-b border-border/40 bg-foreground/[0.02] flex items-center justify-between">
@@ -461,7 +447,6 @@ export default function StudentListPage() {
               <X size={16} />
             </Button>
           </div>
-          
           <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
             <Tabs defaultValue="account" className="w-full">
               <TabsList className="grid w-full grid-cols-3 mb-6 bg-muted/20 p-1 rounded-xl">
@@ -469,13 +454,12 @@ export default function StudentListPage() {
                 <TabsTrigger value="personal" className="rounded-lg text-[10px] font-bold uppercase tracking-wider">Personal</TabsTrigger>
                 <TabsTrigger value="academic" className="rounded-lg text-[10px] font-bold uppercase tracking-wider">Academic</TabsTrigger>
               </TabsList>
-              
               <TabsContent value="account" className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Institutional Email</Label>
-                    <Input 
-                      className="h-11 rounded-xl bg-muted/20 border-border/40" 
+                    <Input
+                      className="h-11 rounded-xl bg-muted/20 border-border/40"
                       placeholder="student@progress.edu"
                       value={createFormData.email}
                       onChange={e => setCreateFormData({...createFormData, email: e.target.value})}
@@ -483,8 +467,8 @@ export default function StudentListPage() {
                   </div>
                   <div className="space-y-1.5">
                     <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Access Password</Label>
-                    <Input 
-                      className="h-11 rounded-xl bg-muted/20 border-border/40" 
+                    <Input
+                      className="h-11 rounded-xl bg-muted/20 border-border/40"
                       type="password"
                       placeholder="••••••••"
                       value={createFormData.password}
@@ -545,7 +529,6 @@ export default function StudentListPage() {
               </TabsContent>
             </Tabs>
           </div>
-          
           <div className="p-4 border-t border-border/40 bg-foreground/[0.01] flex justify-end gap-3">
             <Button variant="ghost" onClick={() => setIsCreateDialogOpen(false)} className="rounded-xl h-10 px-6 uppercase text-[10px] font-bold tracking-widest">Cancel</Button>
             <Button onClick={handleCreateStudent} className="rounded-xl h-10 px-8 bg-primary text-primary-foreground uppercase text-[10px] font-bold tracking-widest shadow-md">Create Profile</Button>
@@ -553,7 +536,6 @@ export default function StudentListPage() {
         </DialogContent>
       </Dialog>
 
-      {/* EDIT DIALOG */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="modal-sheet max-w-2xl p-0 overflow-hidden">
           <div className="px-6 py-5 border-b border-border/40 bg-foreground/[0.02] flex items-center justify-between">
@@ -570,7 +552,6 @@ export default function StudentListPage() {
               <X size={16} />
             </Button>
           </div>
-          
           <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
              <div className="grid grid-cols-2 gap-x-6 gap-y-5">
                <div className="space-y-1.5">
@@ -601,8 +582,8 @@ export default function StudentListPage() {
                       <Label className="text-[10px] font-bold text-primary uppercase tracking-widest flex items-center gap-2"><Zap size={14} className="fill-primary" /> Reward Ecosystem</Label>
                       <span className="text-xs font-bold text-primary underline underline-offset-4">{editFormData.rewardPoints || 0} Points</span>
                    </div>
-                   <Input 
-                      type="number" 
+                   <Input
+                      type="number"
                       className="h-11 rounded-xl bg-background border-primary/20 focus-visible:ring-primary/20"
                       placeholder="Adjust rewards balance"
                       value={editFormData.rewardPoints || 0}
@@ -612,7 +593,6 @@ export default function StudentListPage() {
                </div>
              </div>
           </div>
-          
           <div className="p-4 border-t border-border/40 bg-foreground/[0.01] flex justify-end gap-3">
             <Button variant="ghost" onClick={() => setIsEditDialogOpen(false)} className="rounded-xl h-10 px-6 uppercase text-[10px] font-bold tracking-widest">Discard</Button>
             <Button onClick={handleSaveEdit} className="rounded-xl h-10 px-8 bg-primary text-primary-foreground uppercase text-[10px] font-bold tracking-widest shadow-md">Apply Edits</Button>
@@ -620,7 +600,6 @@ export default function StudentListPage() {
         </DialogContent>
       </Dialog>
 
-      {/* BULK UPLOAD DIALOG */}
       <Dialog open={isBulkUploadDialogOpen} onOpenChange={setIsBulkUploadDialogOpen}>
         <DialogContent className="modal-sheet max-w-3xl p-0 overflow-hidden">
           <div className="px-6 py-5 border-b border-border/40 bg-foreground/[0.02] flex items-center justify-between">
@@ -649,7 +628,6 @@ export default function StudentListPage() {
               <Database size={14} /> Download Template
             </Button>
           </div>
-          
           <div className="p-8 text-center space-y-6">
             <div className="mb-6">
                 <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-4 text-left">Protocol Map (Required Headers)</p>
@@ -679,16 +657,14 @@ export default function StudentListPage() {
                 </div>
                 <h4 className="text-sm font-bold text-foreground mb-1 uppercase tracking-tight">Upload Telemetry File</h4>
                 <p className="text-[11px] text-muted-foreground font-medium mb-6">Select a .xlsx or .csv student manifest</p>
-                
-                <Input 
-                    type="file" 
-                    accept=".xlsx,.xls,.csv" 
-                    className="hidden" id="bulk-file-input" 
+                <Input
+                    type="file"
+                    accept=".xlsx,.xls,.csv"
+                    className="hidden" id="bulk-file-input"
                     onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
                             console.log("File detected:", file.name);
-                            // Processing logic...
                         }
                     }}
                 />
@@ -696,17 +672,14 @@ export default function StudentListPage() {
                     Select Manifest
                 </Label>
             </div>
-            
             <p className="text-[9px] text-muted-foreground/60 font-bold uppercase tracking-[0.1em]">Supported protocols: XLSX, XLSM, CSV (UTF-8)</p>
           </div>
-          
           <div className="p-4 border-t border-border/40 bg-foreground/[0.01] flex justify-end">
             <Button variant="ghost" onClick={() => setIsBulkUploadDialogOpen(false)} className="rounded-xl h-10 px-6 uppercase text-[10px] font-bold tracking-widest">Abort Intake</Button>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* DELETE DIALOG */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent className="modal-sheet p-0 overflow-hidden max-w-md">
           <div className="p-6 text-center space-y-4">
@@ -720,7 +693,6 @@ export default function StudentListPage() {
           </div>
           <div className="p-4 border-t border-border/40 bg-foreground/[0.01] flex justify-center gap-3">
             <AlertDialogCancel className="rounded-xl h-10 px-6 border-border shadow-none text-[10px] font-bold uppercase tracking-widest">Abort</AlertDialogCancel>
-            {/* <AlertDialogAction onClick={handleDeleteStudent} className="rounded-xl h-10 px-8 bg-destructive text-destructive-foreground font-bold uppercase tracking-widest text-[10px] hover:bg-destructive/90 shadow-md">Confirm Purge</AlertDialogAction> */}
           </div>
         </AlertDialogContent>
       </AlertDialog>

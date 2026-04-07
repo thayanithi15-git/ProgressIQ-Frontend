@@ -1,6 +1,4 @@
-// components/ui/google-icon.tsx
 import React from "react";
-
 export const GoogleIcon = ({
   className = "w-4 h-4",
 }: {

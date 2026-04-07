@@ -12,9 +12,6 @@ import { useInternshipsStore, Internship, InternshipStatusFilter, InternshipType
 import Header from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TOKENS
-// ─────────────────────────────────────────────────────────────────────────────
 const C = {
   blue:    "var(--piq-blue)",
   violet:  "#7C3AED",
@@ -49,16 +46,12 @@ const   STATUS_META: Record<string, { label: string; color: string; bg: string; 
   },
 };
 
-
 const TYPE_META: Record<string, { label: string; color: string; icon: any }> = {
   REMOTE: { label: "Remote", color: "var(--piq-blue)",   icon: Monitor },
   ONSITE: { label: "Onsite", color: "var(--piq-blue)", icon: Building2 },
   HYBRID: { label: "Hybrid", color: "var(--piq-blue)",   icon: Users },
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// HELPERS
-// ─────────────────────────────────────────────────────────────────────────────
 const Sk = ({ h = 16, className = "" }: { h?: number; className?: string }) => (
   <div className={`animate-pulse bg-foreground/5 rounded-lg ${className}`} style={{ height: h }} />
 );
@@ -72,9 +65,6 @@ const fmtDate = (v?: string) => {
 const getMentorName = (m: any) =>
   typeof m === "object" ? `${m?.firstName ?? ""} ${m?.lastName ?? ""}`.trim() : "—";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SUB-COMPONENTS
-// ─────────────────────────────────────────────────────────────────────────────
 const StatusBadge = ({ status }: any) => {
   const meta = STATUS_META[status] ?? STATUS_META.PENDING;
   const Icon = meta.icon;
@@ -136,7 +126,7 @@ const FeedbackModal = ({ open, feedback, onClose }: any) => (
   <AnimatePresence>
     {open && (
       <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} onClick={(e) => e.stopPropagation()} 
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} onClick={(e) => e.stopPropagation()}
           className="bg-card-glass/80 backdrop-blur-2xl border border-border/40 shadow-2xl rounded-[1.5rem] w-full max-w-[480px] overflow-hidden flex flex-col">
           <div className="p-6 pb-4 flex items-center justify-between border-b border-border/40">
             <div className="flex items-center gap-3">
@@ -181,9 +171,6 @@ const Field = ({ label, required, children }: any) => (
   </div>
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
-// INTERNSHIP FORM MODAL
-// ─────────────────────────────────────────────────────────────────────────────
 const InternshipFormModal = ({ open, editing, onClose, onSubmit, isSubmitting }: any) => {
   const isEdit = !!editing;
   const [form, setForm] = useState({ companyName: "", companyUrl: "", role: "", type: "REMOTE", paid: false, from: "", to: "", description: "" });
@@ -209,7 +196,7 @@ const InternshipFormModal = ({ open, editing, onClose, onSubmit, isSubmitting }:
     <AnimatePresence>
       {open && (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
-          <motion.div initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }} onClick={(e) => e.stopPropagation()} 
+          <motion.div initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }} onClick={(e) => e.stopPropagation()}
             className="bg-card-glass/80 backdrop-blur-2xl border border-border/40 shadow-2xl rounded-[1.5rem] w-full max-w-[580px] overflow-hidden flex flex-col max-h-[95vh]">
             <div className="p-6 pb-4 flex items-center justify-between border-b border-border/40">
               <div className="flex items-center gap-3">
@@ -265,9 +252,6 @@ const InternshipFormModal = ({ open, editing, onClose, onSubmit, isSubmitting }:
   );
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// INTERNSHIP CARD
-// ─────────────────────────────────────────────────────────────────────────────
 const InternshipCard = ({ item, index, onEdit, onDelete, onFeedback }: any) => {
   const canEdit   = item.status === "PENDING";
   const canDelete = item.status === "PENDING";
@@ -347,9 +331,6 @@ const InternshipCard = ({ item, index, onEdit, onDelete, onFeedback }: any) => {
   );
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// MAIN PAGE
-// ─────────────────────────────────────────────────────────────────────────────
 export default function InternshipsPage() {
   const {
     internships, pagination, statusFilter, typeFilter, searchQuery,
@@ -404,7 +385,6 @@ export default function InternshipsPage() {
 
       <main className="p-6 lg:p-8 max-w-[1600px] mx-auto space-y-6">
 
-        {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { label: "Total",    val: counts.ALL,      color: "var(--piq-blue)" },
@@ -420,7 +400,6 @@ export default function InternshipsPage() {
           ))}
         </div>
 
-        {/* Filters */}
         <div className="bg-card-glass/60 backdrop-blur-xl border border-border/40 shadow-sm rounded-2xl p-4 flex flex-col lg:flex-row items-center gap-4 justify-between">
           <div className="flex flex-wrap items-center gap-4 w-full">
             <div className="flex gap-2 flex-wrap">
@@ -441,7 +420,6 @@ export default function InternshipsPage() {
           </div>
         </div>
 
-        {/* Cards */}
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
             {[...Array(6)].map((_, i) => <Sk key={i} h={240} className="rounded-2xl" />)}
@@ -465,7 +443,6 @@ export default function InternshipsPage() {
           </div>
         )}
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-center gap-4 pt-2">
             <Button variant="outline" size="sm" onClick={() => setPage(pagination.skip - pagination.limit)} disabled={currentPage === 1} className="rounded-xl font-bold uppercase tracking-widest text-[10px] gap-2 h-9 px-4">

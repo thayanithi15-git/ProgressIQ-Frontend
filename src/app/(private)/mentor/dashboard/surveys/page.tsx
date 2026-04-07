@@ -20,7 +20,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-// ─── TOKENS ─────────────────────────────────────────────────────────────────
 const STATUS_META: Record<string, { label: string; color: string; bg: string }> = {
   ACTIVE: {
     label: "Active",
@@ -39,7 +38,6 @@ const STATUS_META: Record<string, { label: string; color: string; bg: string }> 
   },
 };
 
-// ─── COMPONENTS ──────────────────────────────────────────────────────────────
 const StatusBadge = ({ status }: { status: string }) => {
   const meta = STATUS_META[status?.toUpperCase()] ?? STATUS_META.CLOSED;
   return (
@@ -278,7 +276,6 @@ const ResponsesModal = ({ surveyDetail, onClose }: any) => {
   );
 };
 
-// ─── MAIN COMPONENT ──────────────────────────────────────────────────────────
 export default function MentorSurveysPage() {
   const {
     surveys, surveyDetail, searchQuery, statusFilter, page, totalPages,
@@ -315,7 +312,6 @@ export default function MentorSurveysPage() {
       />
 
       <div className="p-6 lg:p-8 max-w-[1600px] mx-auto space-y-8">
-        {/* Filter Controller */}
         <div className="bg-card border border-border rounded-2xl p-4 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 scrollbar-hide w-full md:w-auto">
             {STATUS_PILLS.map((p) => (
@@ -360,7 +356,6 @@ export default function MentorSurveysPage() {
           </div>
         </div>
 
-        {/* Survey Collection Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {isLoading ? (
             Array.from({ length: 8 }).map((_, i) => (
@@ -434,7 +429,6 @@ export default function MentorSurveysPage() {
           )}
         </div>
 
-        {/* Index Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between mt-12 pt-6 border-t border-border/40">
             <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">

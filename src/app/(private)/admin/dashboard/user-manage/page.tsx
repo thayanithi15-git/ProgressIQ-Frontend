@@ -46,7 +46,6 @@ import Header from "@/components/layout/header";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// ─── TOKENS ─────────────────────────────────────────────────────────────────
 const ROLE_META: Record<string, { label: string; color: string; bg: string; icon: any }> = {
   ADMIN: {
     label: "Admin",
@@ -81,7 +80,6 @@ const STATUS_META = {
   },
 };
 
-// ─── COMPONENTS ──────────────────────────────────────────────────────────────
 const RoleBadge = ({ role }: { role: string }) => {
   const meta = ROLE_META[role?.toUpperCase()] || ROLE_META.STUDENT;
   const Icon = meta.icon;
@@ -178,13 +176,12 @@ export default function UserManagementPage() {
   return (
     <div className="min-h-screen bg-background pb-20">
       <GlobalNotification />
-      <Header 
-        title="User Management" 
+      <Header
+        title="User Management"
         subtitle="Manage administrative, mentor, and student access"
       />
 
       <div className="p-4 lg:p-8 max-w-[1600px] mx-auto space-y-6">
-        {/* Filters & Actions */}
         <div className="bg-card border border-border shadow-sm rounded-2xl p-6 space-y-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="relative w-full md:w-96">
@@ -208,15 +205,14 @@ export default function UserManagementPage() {
                   <SelectItem value="MENTOR">Mentor</SelectItem>
                 </SelectContent>
               </Select>
-              
-              <Button 
+              <Button
                 onClick={() => setIsCreateDialogOpen(true)}
                 className="h-11 rounded-xl px-6 bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-[11px] flex items-center gap-2 shadow-md hover:shadow-lg transition-all"
               >
                 <UserPlus size={16} /> Create User
               </Button>
 
-              <Button 
+              <Button
                 variant="outline"
                 onClick={() => setIsBulkUploadDialogOpen(true)}
                 className="h-11 rounded-xl px-4 border-border/60 font-semibold uppercase tracking-wider text-[11px] flex items-center gap-2 hover:bg-muted/50 transition-all shadow-sm"
@@ -235,8 +231,8 @@ export default function UserManagementPage() {
                     key={s}
                     onClick={() => handleStatusFilter(s)}
                     className={`px-3 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all ${
-                      (filters.isActive === undefined && s === 'all') || 
-                      (filters.isActive === true && s === 'active') || 
+                      (filters.isActive === undefined && s === 'all') ||
+                      (filters.isActive === true && s === 'active') ||
                       (filters.isActive === false && s === 'inactive')
                         ? 'bg-primary/10 text-primary border border-primary/20'
                         : 'text-muted-foreground hover:bg-muted border border-transparent'
@@ -262,7 +258,6 @@ export default function UserManagementPage() {
           </div>
         </div>
 
-        {/* Users Table */}
         <div className="bg-card border border-border shadow-sm rounded-2xl overflow-hidden">
           <div className="overflow-x-auto scrollbar-hide">
             <table className="w-full border-collapse min-w-[1000px]">
@@ -355,7 +350,6 @@ export default function UserManagementPage() {
           </div>
         </div>
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between pt-6 border-t border-border/40">
             <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
@@ -390,7 +384,6 @@ export default function UserManagementPage() {
         )}
       </div>
 
-      {/* Edit Dialog (Styled with Glassmorphism) */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="modal-sheet max-w-xl p-0 overflow-hidden">
           <div className="px-6 py-4 border-b border-border/40 bg-foreground/[0.02] flex items-center justify-between">
@@ -402,25 +395,23 @@ export default function UserManagementPage() {
               <X size={16} />
             </Button>
           </div>
-          
           <div className="p-6 space-y-5 max-h-[75vh] overflow-y-auto">
             {selectedUserForEdit && (
               <>
                 <div className="space-y-4">
                   <div>
                     <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2 block">System Identifier (Email)</Label>
-                    <Input 
+                    <Input
                       className="h-11 rounded-xl bg-muted/20 border-border/60"
                       value={editFormData.email || selectedUserForEdit.email}
                       onChange={e => setEditFormData({...editFormData, email: e.target.value})}
                     />
                   </div>
-                  
                   {isStudentData(selectedUserForEdit) && (
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2 block">First Name</Label>
-                        <Input 
+                        <Input
                           className="h-11 rounded-xl bg-muted/20 border-border/60"
                           value={(editFormData as any).firstName || selectedUserForEdit.firstName}
                           onChange={e => setEditFormData({...editFormData, firstName: e.target.value} as any)}
@@ -428,7 +419,7 @@ export default function UserManagementPage() {
                       </div>
                       <div>
                         <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2 block">Last Name</Label>
-                        <Input 
+                        <Input
                           className="h-11 rounded-xl bg-muted/20 border-border/60"
                           value={(editFormData as any).lastName || selectedUserForEdit.lastName}
                           onChange={e => setEditFormData({...editFormData, lastName: e.target.value} as any)}
@@ -458,10 +449,9 @@ export default function UserManagementPage() {
               </>
             )}
           </div>
-          
           <div className="p-4 border-t border-border/40 flex justify-end gap-3 bg-foreground/[0.01]">
             <Button variant="ghost" onClick={() => setIsEditDialogOpen(false)} className="rounded-xl h-10 px-6 uppercase text-[10px] font-bold tracking-widest">Cancel</Button>
-            <Button 
+            <Button
                onClick={async () => {
                  if (selectedUserForEdit) {
                    await updateUser(selectedUserForEdit._id, editFormData);
@@ -476,7 +466,6 @@ export default function UserManagementPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Delete Alert */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent className="modal-sheet p-0 overflow-hidden">
           <div className="p-6">
@@ -487,7 +476,7 @@ export default function UserManagementPage() {
           </div>
           <div className="p-4 border-t border-border/40 flex justify-end gap-3 bg-foreground/[0.01]">
             <AlertDialogCancel className="border-border hover:bg-muted rounded-xl h-10 px-6 uppercase text-[10px] font-bold tracking-widest">Abort Action</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogAction
               onClick={async () => {
                 if (selectedUserForDelete) {
                   await deleteUser(selectedUserForDelete);
@@ -502,7 +491,6 @@ export default function UserManagementPage() {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* BULK UPLOAD DIALOG */}
       <Dialog open={isBulkUploadDialogOpen} onOpenChange={setIsBulkUploadDialogOpen}>
         <DialogContent className="modal-sheet max-w-3xl p-0 overflow-hidden">
           <div className="px-6 py-5 border-b border-border/40 bg-foreground/[0.02] flex items-center justify-between">
@@ -519,14 +507,12 @@ export default function UserManagementPage() {
               variant="outline"
               size="sm"
               onClick={() => {
-                // Template logic
               }}
               className="h-9 rounded-xl border-primary/20 text-primary text-[10px] font-black uppercase tracking-widest bg-primary/5 hover:bg-primary/10 transition-all gap-2"
             >
               <Database size={14} /> Download Template
             </Button>
           </div>
-          
           <div className="p-8 text-center space-y-6">
             <div className="mb-6 text-left">
                 <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-4">Header Protocol Map</p>
@@ -556,14 +542,12 @@ export default function UserManagementPage() {
                 </div>
                 <h4 className="text-sm font-bold text-foreground mb-1 uppercase tracking-tight">Upload Identity Manifest</h4>
                 <p className="text-[11px] text-muted-foreground font-medium mb-6">Select a .xlsx or .csv member list</p>
-                
                 <Input type="file" className="hidden" id="user-bulk-input" />
                 <Label htmlFor="user-bulk-input" className="h-11 px-10 rounded-xl bg-primary text-primary-foreground font-black uppercase tracking-widest text-[10px] flex items-center cursor-pointer shadow-md transition-all hover:scale-[1.02]">
                     Choose File
                 </Label>
             </div>
           </div>
-          
           <div className="p-4 border-t border-border/40 bg-foreground/[0.01] flex justify-end">
             <Button variant="ghost" onClick={() => setIsBulkUploadDialogOpen(false)} className="rounded-xl h-10 px-6 uppercase text-[10px] font-bold tracking-widest">Abort Intake</Button>
           </div>

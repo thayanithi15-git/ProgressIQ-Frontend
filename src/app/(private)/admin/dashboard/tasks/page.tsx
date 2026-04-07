@@ -2,10 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  ClipboardList, GraduationCap, Calendar, CheckCircle2, 
-  Clock, AlertCircle, Loader2, Search, Filter, 
-  RefreshCw, ChevronLeft, ChevronRight, Hash, 
+import {
+  ClipboardList, GraduationCap, Calendar, CheckCircle2,
+  Clock, AlertCircle, Loader2, Search, Filter,
+  RefreshCw, ChevronLeft, ChevronRight, Hash,
   MoreVertical, Layout
 } from "lucide-react";
 import Header from "@/components/layout/header";
@@ -24,7 +24,6 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAdminTasksStore } from "@/store/admin/tasks";
 
-// ─── TOKENS ─────────────────────────────────────────────────────────────────
 const STATUS_META: Record<string, { label: string; color: string; bg: string; icon: any }> = {
   "COMPLETED": {
     label: "Task Resolved",
@@ -70,7 +69,6 @@ const STATUS_META: Record<string, { label: string; color: string; bg: string; ic
   }
 };
 
-// ─── COMPONENTS ──────────────────────────────────────────────────────────────
 const TaskStatusBadge = ({ status }: { status: string }) => {
   const meta = STATUS_META[status?.toUpperCase()] || { label: status, color: "#6b7280", bg: "rgba(107, 114, 128, 0.12)", icon: ClipboardList };
   const Icon = meta.icon;
@@ -119,7 +117,6 @@ export default function TasksPage() {
       />
 
       <div className="p-4 lg:p-8 max-w-[1600px] mx-auto space-y-8">
-        {/* Elite Command Console */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="relative w-full md:w-[450px]">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -130,7 +127,7 @@ export default function TasksPage() {
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
               className="pl-11 h-12 rounded-2xl bg-muted/20 border-border/60 focus-visible:ring-primary/20 transition-all font-medium text-sm"
             />
-            <Button 
+            <Button
                 onClick={handleSearch}
                 className="absolute right-1.5 top-1.5 h-9 rounded-xl bg-primary text-primary-foreground font-bold uppercase tracking-widest text-[10px] px-4"
             >
@@ -155,8 +152,8 @@ export default function TasksPage() {
                 </SelectContent>
             </Select>
 
-            <Button 
-                variant="outline" 
+            <Button
+                variant="outline"
                 onClick={() => fetchTasks()}
                 className="h-12 w-12 p-0 rounded-2xl border-border/60 hover:bg-muted/50 transition-all"
             >
@@ -165,7 +162,6 @@ export default function TasksPage() {
           </div>
         </div>
 
-        {/* Task Architecture Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <AnimatePresence mode="popLayout">
             {isLoading ? (
@@ -252,13 +248,11 @@ export default function TasksPage() {
           </AnimatePresence>
         </div>
 
-        {/* Global Pagination Console */}
         {totalPages > 1 && (
           <div className="flex flex-col sm:flex-row items-center justify-between pt-10 border-t border-border/40 gap-4">
              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                 Operational focus: <span className="text-foreground font-black">{tasks.length}</span> / {total} records
              </p>
-             
              <div className="flex items-center gap-3 bg-muted/20 p-1.5 rounded-2xl border border-border/40">
                 <Button
                    variant="ghost"
@@ -269,7 +263,6 @@ export default function TasksPage() {
                 >
                   <ChevronLeft size={16} />
                 </Button>
-                
                 <div className="w-[1px] h-4 bg-border/60 mx-1" />
                 <span className="text-xs font-black text-foreground px-2 tabular-nums">{page} / {totalPages}</span>
                 <div className="w-[1px] h-4 bg-border/60 mx-1" />

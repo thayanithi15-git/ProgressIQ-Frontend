@@ -17,21 +17,19 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSystemLogStore } from "@/store/admin/systemLogStore";
-import { 
-  Activity, ShieldAlert, Cpu, UserCheck, Shield, Database, RefreshCw, 
+import {
+  Activity, ShieldAlert, Cpu, UserCheck, Shield, Database, RefreshCw,
   Search, Clock, HardDrive, History, Filter, ChevronLeft, ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/layout/header";
 
-// ─── TOKENS ─────────────────────────────────────────────────────────────────
 const ROLE_META: Record<string, { label: string; color: string; bg: string }> = {
   Admin:   { label: "Administrator", color: "#7c3aed", bg: "rgba(124, 58, 237, 0.12)" },
   Mentor:  { label: "Academic Mentor", color: "#059669", bg: "rgba(5, 150, 105, 0.12)" },
   Student: { label: "Learner Profile", color: "#2563eb", bg: "rgba(37, 99, 235, 0.12)" },
 };
 
-// ─── COMPONENTS ──────────────────────────────────────────────────────────────
 const RoleBadge = ({ role }: { role: string }) => {
   const meta = ROLE_META[role] || { label: role, color: "#6b7280", bg: "rgba(107, 114, 128, 0.12)" };
   return (
@@ -72,7 +70,6 @@ export default function SystemLogsPage() {
       />
 
       <div className="p-4 lg:p-8 max-w-[1600px] mx-auto space-y-6">
-        {/* Stat Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
            {stats.map((stat, i) => (
              <motion.div
@@ -94,7 +91,6 @@ export default function SystemLogsPage() {
            ))}
         </div>
 
-        {/* Filter & Table Bar */}
         <div className="bg-card border border-border shadow-sm rounded-2xl overflow-hidden">
            <div className="p-6 border-b border-border/40 bg-foreground/[0.01] flex flex-col md:flex-row items-center justify-between gap-4">
               <div className="flex items-center gap-3">
@@ -119,10 +115,9 @@ export default function SystemLogsPage() {
                        <SelectItem value="STUDENT">Student Base</SelectItem>
                     </SelectContent>
                  </Select>
-                 
-                 <Button 
-                   variant="secondary" 
-                   size="sm" 
+                 <Button
+                   variant="secondary"
+                   size="sm"
                    onClick={() => fetchLogs(currentPage)}
                    className="h-10 rounded-xl px-4 bg-primary/5 text-primary border border-primary/10 hover:bg-primary/10 font-bold uppercase tracking-widest text-[10px] gap-2"
                  >
@@ -192,23 +187,22 @@ export default function SystemLogsPage() {
               </table>
            </div>
 
-           {/* Pagination Footer */}
            {totalPages > 1 && (
              <div className="p-4 border-t border-border/40 flex items-center justify-between bg-foreground/[0.01]">
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                    Auditing page <span className="text-primary font-black">{currentPage}</span> of {totalPages}
                 </p>
                 <div className="flex items-center gap-2">
-                   <Button 
-                      variant="outline" size="sm" 
+                   <Button
+                      variant="outline" size="sm"
                       onClick={() => fetchLogs(currentPage - 1)}
                       disabled={currentPage === 1 || isLoading}
                       className="h-9 px-4 rounded-xl border-border/40 text-[10px] font-bold uppercase tracking-wider gap-2"
                    >
                      <ChevronLeft size={14} /> Back
                    </Button>
-                   <Button 
-                      variant="outline" size="sm" 
+                   <Button
+                      variant="outline" size="sm"
                       onClick={() => fetchLogs(currentPage + 1)}
                       disabled={currentPage === totalPages || isLoading}
                       className="h-9 px-4 rounded-xl border-border/40 text-[10px] font-bold uppercase tracking-wider gap-2"

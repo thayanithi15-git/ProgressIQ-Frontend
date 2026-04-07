@@ -3,10 +3,6 @@ import api from '@/utils/api';
 import { useNotificationStore } from '@/utils/notification';
 import { getStoredMentorId } from '@/utils/mentorSession';
 
-// ==========================================
-// TYPES
-// ==========================================
-
 export interface Task {
   _id: string;
   studentId: string;
@@ -56,10 +52,6 @@ interface Pagination {
   skip: number;
 }
 
-// ==========================================
-// STORE
-// ==========================================
-
 interface TasksState {
   tasks: Task[];
   selectedTask: Task | null;
@@ -75,7 +67,6 @@ interface TasksState {
   editingTask: Task | null;
   completingTaskId: string | null;
 
-  // Actions
   fetchTasks: (status?: TaskStatusFilter) => Promise<void>;
   fetchTaskById: (id: string) => Promise<void>;
   createTask: (payload: CreateTaskPayload) => Promise<boolean>;
@@ -85,7 +76,6 @@ interface TasksState {
   submitTask: (id: string, completedAt?: string, submissionNote?: string) => Promise<boolean>;
   fetchFeedback: (id: string) => Promise<void>;
 
-  // UI
   setStatusFilter: (filter: TaskStatusFilter) => void;
   setSearchQuery: (q: string) => void;
   setPage: (skip: number) => void;

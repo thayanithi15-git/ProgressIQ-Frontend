@@ -12,11 +12,9 @@ import { TestimonialsSection } from "@/components/landingSection/components/land
 import { PricingSection } from "@/components/landingSection/components/landing/pricing-section";
 import { CtaSection } from "@/components/landingSection/components/landing/cta-section";
 import { FooterSection } from "@/components/landingSection/components/landing/footer-section";
-
 export default function Home() {
   return (
     <main className="relative min-h-screen overflow-x-hidden noise-overlay">
-      
       <Navigation />
       <HeroSection />
       <FeaturesSection />

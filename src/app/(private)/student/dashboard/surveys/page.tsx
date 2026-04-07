@@ -13,10 +13,6 @@ import { useThemeStore } from "@/store/layoutStore";
 import Header from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TOKENS
-// ─────────────────────────────────────────────────────────────────────────────
-
 const QTYPE_META: Record<string, { label: string; icon: any }> = {
   TEXT:            { label: "Text",     icon: AlignLeft },
   MULTIPLE_CHOICE: { label: "Choice",   icon: CheckSquare },
@@ -24,9 +20,6 @@ const QTYPE_META: Record<string, { label: string; icon: any }> = {
   YES_NO:          { label: "Yes/No",   icon: ToggleLeft },
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// HELPERS
-// ─────────────────────────────────────────────────────────────────────────────
 const Sk = ({ className = "", h = 16 }: any) => (
   <div className={`animate-pulse bg-foreground/5 rounded-lg ${className}`} style={{ height: h }} />
 );
@@ -44,9 +37,6 @@ const Pill = ({ label, active, onClick, count }: any) => (
   </button>
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
-// QUESTION INPUT RENDERER
-// ─────────────────────────────────────────────────────────────────────────────
 const QuestionInput = ({ q, idx, value, onChange, readOnly = false }: { q: SurveyQuestion; idx: number; value: any; onChange?: (v: any) => void; readOnly?: boolean }) => {
   const type = q.type ?? "TEXT";
 
@@ -113,16 +103,12 @@ const QuestionInput = ({ q, idx, value, onChange, readOnly = false }: { q: Surve
   return null;
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ANSWER MODAL (bottom sheet)
-// ─────────────────────────────────────────────────────────────────────────────
 const AnswerModal = ({ open, survey, answers, onAnswer, onSubmit, onClose, isSubmitting, isLoading }: any) => (
   <AnimatePresence>
     {open && (
       <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-end justify-center sm:p-4" onClick={onClose}>
         <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", damping: 28, stiffness: 300 }}
           className="bg-card-glass/90 backdrop-blur-2xl border border-border/40 shadow-2xl rounded-t-3xl sm:rounded-3xl w-full max-w-[680px] max-h-[92vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
-          
           <div className="flex justify-center pt-3 pb-1">
             <div className="w-12 h-1.5 rounded-full bg-border/50" />
           </div>
@@ -190,16 +176,12 @@ const AnswerModal = ({ open, survey, answers, onAnswer, onSubmit, onClose, isSub
   </AnimatePresence>
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
-// VIEW RESPONSE MODAL
-// ─────────────────────────────────────────────────────────────────────────────
 const ViewResponseModal = ({ open, response, onClose }: any) => (
   <AnimatePresence>
     {open && (
       <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
         <motion.div initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }} transition={{ duration: 0.2 }}
           className="bg-card-glass/90 backdrop-blur-2xl border border-border/40 shadow-2xl rounded-[1.5rem] w-full max-w-[640px] max-h-[85vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
-          
           <div className="px-6 py-5 flex items-center justify-between border-b border-border/40">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
@@ -243,9 +225,6 @@ const ViewResponseModal = ({ open, response, onClose }: any) => (
   </AnimatePresence>
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SURVEY CARD
-// ─────────────────────────────────────────────────────────────────────────────
 const SurveyCard = ({ survey, index, onAnswer, onView }: any) => {
   const responded = survey.hasResponded;
   return (
@@ -267,16 +246,16 @@ const SurveyCard = ({ survey, index, onAnswer, onView }: any) => {
         </div>
         {responded
   ? (
-    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full 
-    bg-emerald-100 text-emerald-700 
+    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full
+    bg-emerald-100 text-emerald-700
     dark:bg-emerald-900/30 dark:text-emerald-400
     text-[9px] font-mono font-bold uppercase tracking-widest shrink-0">
       <CheckCircle size={10} /> Answered
     </span>
   )
   : (
-    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full 
-    bg-amber-100 text-amber-700 
+    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full
+    bg-amber-100 text-amber-700
     dark:bg-amber-900/30 dark:text-amber-400
     text-[9px] font-mono font-bold uppercase tracking-widest shrink-0">
       Pending
@@ -342,9 +321,6 @@ const SurveyCard = ({ survey, index, onAnswer, onView }: any) => {
   );
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// MAIN PAGE
-// ─────────────────────────────────────────────────────────────────────────────
 export default function SurveysPage() {
   const {
     surveys, selectedSurvey, myResponse, pagination,
@@ -399,7 +375,6 @@ export default function SurveysPage() {
 
       <main className="p-6 lg:p-8 max-w-[1600px] mx-auto space-y-6">
 
-        {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {[
             { label: "Total Surveys",  val: counts.ALL,      icon: ClipboardList },
@@ -419,7 +394,6 @@ export default function SurveysPage() {
           ))}
         </div>
 
-        {/* Filters */}
         <div className="bg-card-glass/60 backdrop-blur-xl border border-border/40 shadow-sm rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex gap-2 flex-wrap">
             <Pill label="All" active={filterAnswered === "ALL"} onClick={() => setFilterAnswered("ALL")} count={counts.ALL} />
@@ -432,7 +406,6 @@ export default function SurveysPage() {
           </div>
         </div>
 
-        {/* Survey grid */}
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {[...Array(6)].map((_, i) => <Sk key={i} h={220} className="rounded-2xl" />)}
@@ -453,7 +426,6 @@ export default function SurveysPage() {
           </div>
         )}
 
-        {/* Pagination bar */}
         {totalPages > 1 && (
           <div className="flex items-center justify-center gap-4 pt-2">
             <button onClick={() => setPage(pagination.skip - pagination.limit)} disabled={currentPage === 1} className="flex items-center gap-2 px-4 py-2 rounded-xl border-2 border-border/50 text-sm font-bold disabled:opacity-50 transition-colors">

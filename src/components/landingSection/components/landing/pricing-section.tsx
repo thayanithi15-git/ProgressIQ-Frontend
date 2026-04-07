@@ -58,7 +58,6 @@ export function PricingSection() {
   return (
     <section id="pricing" className="relative py-32 lg:py-40 border-t border-foreground/10">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        {/* Header */}
         <div className="max-w-3xl mb-20">
           <span className="font-mono text-xs tracking-widest text-muted-foreground uppercase block mb-6">
             Pricing
@@ -73,7 +72,6 @@ export function PricingSection() {
           </p>
         </div>
 
-        {/* Billing Toggle */}
         <div className="flex items-center gap-4 mb-16">
           <span
             className={`text-sm transition-colors ${
@@ -106,7 +104,6 @@ export function PricingSection() {
           )}
         </div>
 
-        {/* Pricing Cards */}
         <div className="grid md:grid-cols-3 gap-px bg-foreground/10">
           {plans.map((plan, idx) => (
             <div
@@ -121,7 +118,6 @@ export function PricingSection() {
                 </span>
               )}
 
-              {/* Plan Header */}
               <div className="mb-8">
                 <span className="font-mono text-xs text-muted-foreground">
                   {String(idx + 1).padStart(2, "0")}
@@ -130,7 +126,6 @@ export function PricingSection() {
                 <p className="text-sm text-muted-foreground mt-2">{plan.description}</p>
               </div>
 
-              {/* Price */}
               <div className="mb-8 pb-8 border-b border-foreground/10">
                 {plan.price.monthly !== null ? (
                   <div className="flex items-baseline gap-2">
@@ -144,7 +139,6 @@ export function PricingSection() {
                 )}
               </div>
 
-              {/* Features */}
               <ul className="space-y-4 mb-10">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-start gap-3">
@@ -154,7 +148,6 @@ export function PricingSection() {
                 ))}
               </ul>
 
-              {/* CTA */}
               <button
                 className={`w-full py-4 flex items-center justify-center gap-2 text-sm font-medium transition-all group ${
                   plan.popular
@@ -169,7 +162,6 @@ export function PricingSection() {
           ))}
         </div>
 
-        {/* Bottom Note */}
         <p className="mt-12 text-center text-sm text-muted-foreground">
           All plans include automatic updates, HTTPS, and DDoS protection.{" "}
           <a href="#" className="underline underline-offset-4 hover:text-foreground transition-colors">

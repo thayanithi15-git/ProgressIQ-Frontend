@@ -2,11 +2,11 @@
 
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  ClipboardCheck, Users, Calendar, CheckCircle2, 
-  Clock, XCircle, Search, Filter, RefreshCw, 
-  ChevronLeft, ChevronRight, MessageSquare, 
-  BarChart3, User, GraduationCap, ArrowUpRight, 
+import {
+  ClipboardCheck, Users, Calendar, CheckCircle2,
+  Clock, XCircle, Search, Filter, RefreshCw,
+  ChevronLeft, ChevronRight, MessageSquare,
+  BarChart3, User, GraduationCap, ArrowUpRight,
   Layers, ShieldAlert, History, ExternalLink,
   Table as TableIcon, Upload, Database, FileSpreadsheet
 } from "lucide-react";
@@ -26,13 +26,12 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { 
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription 
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription
 } from "@/components/ui/dialog";
 import { useAdminSurveysStore } from "@/store/admin/surveys";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-// ─── TOKENS ─────────────────────────────────────────────────────────────────
 const STATUS_META: Record<string, { label: string; color: string; bg: string; icon: any }> = {
   "ACTIVE": {
     label: "Live Protocol",
@@ -54,7 +53,6 @@ const STATUS_META: Record<string, { label: string; color: string; bg: string; ic
   }
 };
 
-// ─── COMPONENTS ──────────────────────────────────────────────────────────────
 const SurveyStatusBadge = ({ status }: { status: string }) => {
   const meta = STATUS_META[status?.toUpperCase()] || { label: status, color: "#6b7280", bg: "rgba(107, 114, 128, 0.12)", icon: Layers };
   const Icon = meta.icon;
@@ -110,17 +108,7 @@ export default function AdminSurveysPage() {
       />
 
       <div className="p-4 lg:p-8 max-w-[1600px] mx-auto space-y-8">
-        
-        {/* Advanced Command Bar */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            {/* <div className="flex items-center gap-3 w-full md:w-auto">
-                <Button 
-                    onClick={() => setIsBulkUploadDialogOpen(true)}
-                    className="h-11 rounded-xl px-6 bg-primary text-primary-foreground font-semibold uppercase tracking-widest text-[10px] flex items-center gap-2 shadow-md hover:shadow-lg transition-all"
-                >
-                    <Upload size={16} /> Bulk Upload
-                </Button>
-            </div> */}
 
             <div className="flex items-center gap-3 w-full md:w-auto">
                 <Select value={statusFilter || "all"} onValueChange={(v) => { setStatusFilter(v); fetchSurveys(); }}>
@@ -144,7 +132,6 @@ export default function AdminSurveysPage() {
             </div>
         </div>
 
-        {/* Protocol Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <AnimatePresence mode="popLayout">
                 {isLoading ? (
@@ -221,7 +208,7 @@ export default function AdminSurveysPage() {
                                         <Calendar size={12} className="text-muted-foreground/60" />
                                         <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest">{new Date(survey.createdAt).toLocaleDateString()}</span>
                                     </div>
-                                    <button 
+                                    <button
                                         onClick={() => handleViewResponses(survey)}
                                         className="flex items-center gap-1.5 text-[10px] font-black text-primary uppercase tracking-[0.2em] hover:translate-x-1 transition-transform group-hover:drop-shadow-sm"
                                     >
@@ -235,13 +222,11 @@ export default function AdminSurveysPage() {
             </AnimatePresence>
         </div>
 
-        {/* Global Pagination Bar */}
         {totalPages > 1 && (
             <div className="flex flex-col sm:flex-row items-center justify-between pt-10 border-t border-border/40 gap-4">
                 <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">
                     Archive Focus: <span className="text-foreground font-black">{surveys.length}</span> of <span className="text-primary font-black">{total}</span> protocols
                 </p>
-                
                 <div className="flex items-center gap-3 bg-muted/20 p-1.5 rounded-2xl border border-border/40 text-[10px] font-black uppercase tracking-widest">
                     <Button
                         variant="ghost"
@@ -252,7 +237,6 @@ export default function AdminSurveysPage() {
                     >
                         <ChevronLeft size={16} />
                     </Button>
-                    
                     <div className="w-[1px] h-4 bg-border/40 mx-1" />
                     <span className="text-xs px-4 tabular-nums text-foreground">{page} / {totalPages}</span>
                     <div className="w-[1px] h-4 bg-border/40 mx-1" />
@@ -271,7 +255,6 @@ export default function AdminSurveysPage() {
         )}
       </div>
 
-      {/* Bulk Upload Dialog */}
       <Dialog open={isBulkUploadDialogOpen} onOpenChange={setIsBulkUploadDialogOpen}>
         <DialogContent className="modal-sheet max-w-2xl p-0 overflow-hidden">
           <div className="px-6 py-5 border-b border-border/40 bg-foreground/[0.02] flex items-center justify-between">
@@ -293,7 +276,6 @@ export default function AdminSurveysPage() {
               <Database size={14} /> Template
             </Button>
           </div>
-          
           <div className="p-8 text-center space-y-6">
              <div className="mb-2">
                 <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-4 text-left">Protocol Map (Required Headers)</p>
@@ -324,21 +306,18 @@ export default function AdminSurveysPage() {
                 </div>
                 <h4 className="text-sm font-semibold text-foreground mb-1 uppercase tracking-tight">Drop Manifest Here</h4>
                 <p className="text-[11px] text-muted-foreground font-medium mb-6">Select a .xlsx or .csv protocol dataset</p>
-                
                 <Input type="file" accept=".xlsx,.xls,.csv" className="hidden" id="survey-bulk-file" />
                 <label htmlFor="survey-bulk-file" className="h-11 px-8 rounded-xl bg-primary text-primary-foreground font-black uppercase tracking-widest text-[10px] flex items-center cursor-pointer hover:shadow-lg transition-all shadow-md">
                     Select Manifest
                 </label>
              </div>
           </div>
-          
           <div className="p-4 border-t border-border/40 bg-foreground/[0.01] flex justify-end">
             <Button variant="ghost" onClick={() => setIsBulkUploadDialogOpen(false)} className="rounded-xl h-10 px-6 uppercase text-[10px] font-semibold tracking-widest">Abort Intake</Button>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* Response Audit Dialog */}
       <Dialog open={!!selectedSurvey} onOpenChange={() => { setSelectedSurvey(null); clearResponses(); }}>
           <DialogContent className="max-w-4xl p-0 overflow-hidden border-none rounded-[32px] bg-background shadow-2xl">
               <div className="p-8 border-b border-border/40 bg-foreground/[0.01]">

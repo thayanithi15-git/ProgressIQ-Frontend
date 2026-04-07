@@ -79,14 +79,12 @@ export function RolesSection() {
       ref={sectionRef}
       className="relative py-24 lg:py-32 overflow-hidden"
     >
-      {/* Background decorations */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full pointer-events-none opacity-20">
         <div className="absolute top-1/4 left-0 w-96 h-96 bg-primary/20 rounded-full blur-[120px]" />
         <div className="absolute bottom-1/4 right-0 w-96 h-96 bg-secondary/20 rounded-full blur-[120px]" />
       </div>
 
       <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12">
-        {/* Header */}
         <div className="mb-16 lg:mb-24 text-center max-w-3xl mx-auto">
           <span className="inline-flex items-center gap-3 text-sm font-mono text-muted-foreground mb-6">
             <span className="w-8 h-px bg-foreground/30" />
@@ -103,7 +101,6 @@ export function RolesSection() {
           </h2>
         </div>
 
-        {/* Roles Grid */}
         <div className="grid md:grid-cols-3 gap-8">
           {roles.map((role, index) => (
             <motion.div
@@ -117,7 +114,6 @@ export function RolesSection() {
               <div className="mb-6 p-4 bg-background rounded-2xl w-fit shadow-sm">
                 {role.icon}
               </div>
-              
               <h3 className="text-2xl font-display mb-3">
                 {role.title}
               </h3>

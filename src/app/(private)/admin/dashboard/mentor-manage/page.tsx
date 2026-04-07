@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   MoreVertical, UserPlus, Link2, Upload, FileSpreadsheet, Database,
-  BarChart3, Search, Briefcase, Phone, MapPin, Users, Edit, Trash2, 
+  BarChart3, Search, Briefcase, Phone, MapPin, Users, Edit, Trash2,
   ChevronLeft, ChevronRight, X, AlertCircle
 } from "lucide-react";
 import * as XLSX from "xlsx";
@@ -47,7 +47,6 @@ import Header from "@/components/layout/header";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// ─── TOKENS ─────────────────────────────────────────────────────────────────
 const DESIGNATION_META: Record<string, { label: string; color: string; bg: string }> = {
   "PROFESSOR": { label: "Professor", color: "#7c3aed", bg: "rgba(124, 58, 237, 0.12)" },
   "ASSOCIATE PROFESSOR": { label: "Assoc. Professor", color: "#2563eb", bg: "rgba(37, 99, 235, 0.12)" },
@@ -57,7 +56,6 @@ const DESIGNATION_META: Record<string, { label: string; color: string; bg: strin
 
 const CHART_COLORS = ["#3b82f6", "#8b5cf6", "#10b981", "#f59e0b", "#06b6d4", "#ec4899"];
 
-// ─── COMPONENTS ──────────────────────────────────────────────────────────────
 const DesignationBadge = ({ designation }: { designation: string }) => {
   const meta = DESIGNATION_META[designation?.toUpperCase()] || { label: designation, color: "#6b7280", bg: "rgba(107, 114, 128, 0.12)" };
   return (
@@ -106,7 +104,6 @@ export default function MentorListPage() {
   }, [fetchMentors, pageSize]);
 
   const handleViewProfile = (mentorId: string) => {
-    // Navigate to mentor profile or open detail view
     router.push(`/admin/dashboard/mentor-manage/${mentorId}`);
   };
 
@@ -159,30 +156,29 @@ export default function MentorListPage() {
   return (
     <div className="min-h-screen bg-background pb-20">
       <GlobalNotification />
-      <Header 
-        title="Faculty Management" 
+      <Header
+        title="Faculty Management"
         subtitle="Orchestrate academic mentorship and faculty assignments"
       />
 
       <div className="p-4 lg:p-8 max-w-[1600px] mx-auto space-y-6">
-        {/* Top Controls */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3 w-full md:w-auto">
-            <Button 
+            <Button
                onClick={() => setIsCreateDialogOpen(true)}
                className="h-11 rounded-xl px-6 bg-primary text-primary-foreground font-semibold uppercase tracking-wider text-[11px] flex items-center gap-2 shadow-md hover:shadow-lg transition-all"
             >
               <UserPlus size={16} /> Recruit Mentor
             </Button>
-            <Button 
+            <Button
               variant="outline"
               onClick={() => setIsBulkUploadDialogOpen(true)}
               className="h-11 rounded-xl px-6 border-border/60 font-semibold uppercase tracking-wider text-[11px] flex items-center gap-2 hover:bg-muted/50 transition-all"
             >
               <Upload size={16} /> Bulk Upload
             </Button>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setShowStats(!showStats)}
               className={`h-11 rounded-xl px-4 border-border/60 font-semibold uppercase tracking-wider text-[11px] flex items-center gap-2 transition-all ${showStats ? 'bg-primary/10 text-primary border-primary/20' : 'hover:bg-muted/50'}`}
             >
@@ -195,7 +191,7 @@ export default function MentorListPage() {
             <Input
               placeholder="Search faculty by name..."
               value={searchName}
-              onChange={(e) => {  
+              onChange={(e) => {
                 setSearchName(e.target.value);
                 setFilters({ ...filters, searchName: e.target.value });
               }}
@@ -204,7 +200,6 @@ export default function MentorListPage() {
           </div>
         </div>
 
-        {/* Analytics Overlay */}
         <AnimatePresence>
           {showStats && (
             <motion.div
@@ -233,10 +228,10 @@ export default function MentorListPage() {
                           <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} stroke="transparent" />
                         ))}
                       </Pie>
-                      <Tooltip 
+                      <Tooltip
                          contentStyle={{ backgroundColor: 'hsl(var(--card))', borderRadius: '12px', border: '1px solid hsl(var(--border))', fontSize: '10px', fontWeight: 'bold' }}
                       />
-                      <Legend 
+                      <Legend
                         verticalAlign="middle" align="right" layout="vertical"
                         iconType="circle" iconSize={8}
                         formatter={(value) => <span className="text-[10px] font-bold text-muted-foreground uppercase ml-2">{value}</span>}
@@ -271,7 +266,6 @@ export default function MentorListPage() {
           )}
         </AnimatePresence>
 
-        {/* Filter Bar */}
         <div className="bg-card border border-border shadow-sm rounded-2xl p-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-1.5">
@@ -288,7 +282,6 @@ export default function MentorListPage() {
                 </SelectContent>
               </Select>
             </div>
-            
             <div className="space-y-1.5">
               <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Designation</Label>
               <Select value={filters.designation || "all"} onValueChange={(v) => setFilters({...filters, designation: v === "all" ? undefined : v})}>
@@ -319,8 +312,8 @@ export default function MentorListPage() {
             </div>
 
             <div className="flex items-end">
-               <Button 
-                variant="ghost" 
+               <Button
+                variant="ghost"
                 onClick={resetFilters}
                 className="h-10 w-full rounded-xl text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-destructive transition-colors border border-transparent hover:border-destructive/20"
               >
@@ -330,7 +323,6 @@ export default function MentorListPage() {
           </div>
         </div>
 
-        {/* Mentor Directory Table */}
         <div className="bg-card border border-border shadow-sm rounded-2xl overflow-hidden">
           <div className="overflow-x-auto scrollbar-hide">
             <table className="w-full border-collapse min-w-[1200px]">
@@ -394,21 +386,21 @@ export default function MentorListPage() {
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-2">
-                           <Button 
-                             variant="secondary" 
-                             size="sm" 
+                           <Button
+                             variant="secondary"
+                             size="sm"
                              onClick={(e) => { e.stopPropagation(); handleOpenMappingDialog(mentor._id); }}
                              className="h-8 rounded-lg bg-emerald-500/5 text-emerald-600 border border-emerald-500/10 hover:bg-emerald-500/10 text-[9px] font-bold uppercase tracking-widest gap-1.5"
                            >
                              <Users size={12} /> Assign Students
                            </Button>
-                           <button 
+                           <button
                              onClick={(e) => { e.stopPropagation(); handleEditMentor(mentor._id); }}
                              className="p-2 hover:bg-primary/10 rounded-lg text-primary transition-all"
                            >
                              <Edit size={16} />
                            </button>
-                           <button 
+                           <button
                              onClick={(e) => { e.stopPropagation(); setSelectedMentorForDelete(mentor._id); setIsDeleteDialogOpen(true); }}
                              className="p-2 hover:bg-destructive/10 rounded-lg text-destructive transition-all"
                            >
@@ -424,15 +416,14 @@ export default function MentorListPage() {
           </div>
         </div>
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between pt-6 border-t border-border/40">
              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                 Reviewing <span className="text-primary">{mentors.length}</span> faculty profiles
              </p>
              <div className="flex items-center gap-2">
-                <Button 
-                   variant="outline" size="sm" 
+                <Button
+                   variant="outline" size="sm"
                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                    disabled={currentPage === 1}
                    className="h-9 px-4 rounded-xl border-border/40 text-[10px] font-bold"
@@ -440,8 +431,8 @@ export default function MentorListPage() {
                   <ChevronLeft size={14} /> Back
                 </Button>
                 <span className="text-xs font-bold text-muted-foreground px-2">{currentPage} / {totalPages}</span>
-                <Button 
-                   variant="outline" size="sm" 
+                <Button
+                   variant="outline" size="sm"
                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
                    disabled={currentPage === totalPages}
                    className="h-9 px-4 rounded-xl border-border/40 text-[10px] font-bold"
@@ -453,7 +444,6 @@ export default function MentorListPage() {
         )}
       </div>
 
-      {/* CREATE DIALOG */}
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
         <DialogContent className="modal-sheet max-w-xl p-0 overflow-hidden">
            <div className="px-6 py-4 border-b border-border/40 bg-foreground/[0.02] flex items-center justify-between">
@@ -504,7 +494,6 @@ export default function MentorListPage() {
         </DialogContent>
       </Dialog>
 
-      {/* EDIT DIALOG */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="modal-sheet max-w-xl p-0 overflow-hidden">
            <div className="px-6 py-4 border-b border-border/40 bg-foreground/[0.02]">
@@ -512,12 +501,10 @@ export default function MentorListPage() {
               <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Audit faculty metadata</p>
            </div>
            <div className="p-6 space-y-5">
-              {/* Form fields same as create, but with editFormData */}
               <div className="space-y-1.5">
                 <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Full Identity Name</Label>
                 <Input className="h-11 rounded-xl bg-muted/20 border-border/60" value={editFormData.name || ""} onChange={e => setEditFormData({...editFormData, name: e.target.value})} />
               </div>
-              {/* Simplified for brevity - usually full duplicate of create but for edit */}
            </div>
            <div className="p-4 border-t border-border/40 flex justify-end gap-3">
               <Button variant="ghost" onClick={() => setIsEditDialogOpen(false)} className="rounded-xl h-10 px-6 uppercase text-[10px] font-bold tracking-widest">Cancel</Button>
@@ -526,7 +513,6 @@ export default function MentorListPage() {
         </DialogContent>
       </Dialog>
 
-      {/* STUDENT MAPPING DIALOG */}
       <Dialog open={isMappingDialogOpen} onOpenChange={setIsMappingDialogOpen}>
         <DialogContent className="modal-sheet max-w-2xl p-0 overflow-hidden">
            <div className="px-6 py-5 border-b border-border/40 bg-foreground/[0.02]">
@@ -544,8 +530,8 @@ export default function MentorListPage() {
               <div className="flex items-center justify-between mb-2">
                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{selectedStudents.length} Students Selected</p>
                 <div className="flex items-center gap-2">
-                   <Checkbox 
-                      id="select-all" 
+                   <Checkbox
+                      id="select-all"
                       className="rounded-md border-border/60"
                       checked={selectedStudents.length === students.length && students.length > 0}
                       onCheckedChange={(checked) => setSelectedStudents(checked ? students.map(s => s._id) : [])}
@@ -562,8 +548,8 @@ export default function MentorListPage() {
                   students.map((student) => (
                     <div key={student._id} className="p-4 flex items-center justify-between hover:bg-muted/20 transition-colors">
                        <div className="flex items-center gap-3 min-w-0">
-                          <Checkbox 
-                            id={student._id} 
+                          <Checkbox
+                            id={student._id}
                             className="rounded-md border-border/60"
                             checked={selectedStudents.includes(student._id)}
                             onCheckedChange={() => setSelectedStudents(prev => prev.includes(student._id) ? prev.filter(id => id !== student._id) : [...prev, student._id])}
@@ -581,8 +567,8 @@ export default function MentorListPage() {
            </div>
            <div className="p-4 border-t border-border/40 flex justify-end gap-3">
               <Button variant="ghost" onClick={() => setIsMappingDialogOpen(false)} className="rounded-xl h-10 px-6 uppercase text-[10px] font-bold tracking-widest">Abort Mapping</Button>
-              <Button 
-                onClick={handleMapStudents} 
+              <Button
+                onClick={handleMapStudents}
                 className="rounded-xl h-10 px-8 bg-emerald-600 text-white font-bold uppercase tracking-widest text-[10px] shadow-md"
                 disabled={selectedStudents.length === 0}
               >
@@ -592,7 +578,6 @@ export default function MentorListPage() {
         </DialogContent>
       </Dialog>
 
-      {/* BULK UPLOAD DIALOG */}
       <Dialog open={isBulkUploadDialogOpen} onOpenChange={setIsBulkUploadDialogOpen}>
         <DialogContent className="modal-sheet max-w-3xl p-0 overflow-hidden">
           <div className="px-6 py-5 border-b border-border/40 bg-foreground/[0.02] flex items-center justify-between">
@@ -621,7 +606,6 @@ export default function MentorListPage() {
               <Database size={14} /> Download Template
             </Button>
           </div>
-          
           <div className="p-8 text-center space-y-6">
              <div className="mb-6">
                 <p className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-4 text-left">Faculty Protocol Map</p>
@@ -664,9 +648,7 @@ export default function MentorListPage() {
         </DialogContent>
       </Dialog>
 
-      {/* DELETE DIALOG */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        {/* Simplified dialog structure for consistency */}
         <AlertDialogContent className="modal-sheet p-0 overflow-hidden max-w-md">
            <div className="p-6 text-center space-y-4">
               <div className="w-16 h-16 rounded-full bg-destructive/10 border border-destructive/20 flex items-center justify-center mx-auto">

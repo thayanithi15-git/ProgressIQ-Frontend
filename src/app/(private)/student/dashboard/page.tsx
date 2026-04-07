@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -23,14 +22,7 @@ import { useStudentDashboardStore } from "@/store/student/dashboard";
 import { useProfileStore } from "@/store/student/profile";
 import { useThemeStore } from "@/store/layoutStore";
 import Header from "@/components/layout/header";
-
-// Premium Components
 import { StatCard } from "@/components/dashboard/stat-card";
-
-
-// ─────────────────────────────────────────────────────────────────────────────
-// DESIGN TOKENS
-// ─────────────────────────────────────────────────────────────────────────────
 const C = {
   blue: "#3B6FD4",
   violet: "#7C3AED",
@@ -43,66 +35,57 @@ const C = {
   teal: "#0D9488",
   orange: "#EA580C",
 };
-
 const PIE_COLORS = [C.blue, C.violet, C.emerald, C.amber, C.rose, C.cyan];
-
-// Heatmap intensity → color
 const HEAT_COLORS = ["#E8F0FE", "#A8C4F8", "#5C96F5", "#2563EB", "#1D4ED8"];
 const HEAT_COLORS_DARK = ["#1A2540", "#1E3A6E", "#2563EB", "#1D4ED8", "#1E40AF"];
-
 const STAT_META = [
   {
-    key: "totalPoints", 
-    label: "Total Points", 
+    key: "totalPoints",
+    label: "Total Points",
     icon: Zap,
     color: C.amber,
     sub: (s: any) => `Rank #${s?.ranking?.overallRank ?? "—"} overall`,
   },
   {
-    key: "totalHoursSpent", 
-    label: "Hours Logged", 
+    key: "totalHoursSpent",
+    label: "Hours Logged",
     icon: Clock,
     color: C.blue,
     sub: () => "Total activity hours",
   },
   {
-    key: "projects", 
-    label: "Projects", 
+    key: "projects",
+    label: "Projects",
     icon: Briefcase,
     color: C.violet,
     sub: (s: any) => `${s?.projects?.completed ?? 0} completed`,
     val: (s: any) => s?.projects?.total,
   },
   {
-    key: "tasks", 
-    label: "Tasks", 
+    key: "tasks",
+    label: "Tasks",
     icon: CheckSquare,
     color: C.emerald,
     sub: (s: any) => `${s?.tasks?.overdue ?? 0} overdue`,
     val: (s: any) => s?.tasks?.total,
   },
   {
-    key: "certifications", 
-    label: "Certifications", 
+    key: "certifications",
+    label: "Certifications",
     icon: Award,
     color: C.rose,
     sub: (s: any) => `${s?.certifications?.completed ?? 0} earned`,
     val: (s: any) => s?.certifications?.total,
   },
   {
-    key: "internships", 
-    label: "Internships", 
+    key: "internships",
+    label: "Internships",
     icon: GraduationCap,
     color: C.cyan,
     sub: (s: any) => `${s?.internships?.completed ?? 0} completed`,
     val: (s: any) => s?.internships?.total,
   },
 ];
-
-
-// ─────────────────────────────────────────────────────────────────────────────
-// GLOBAL CSS
-// ─────────────────────────────────────────────────────────────────────────────
 const GLOBAL_CSS = `
   @keyframes shimmer {
     0%   { background-position: 200% 0; }
@@ -117,7 +100,6 @@ const GLOBAL_CSS = `
     100% { transform: scale(1.5); opacity: 0; }
   }
   @keyframes spin { to { transform: rotate(360deg); } }
-
   :root {
     --card-bg:        #ffffff;
     --card-border:    #E8EDF4;
@@ -170,24 +152,20 @@ const GLOBAL_CSS = `
     --heat-4:         #3B82F6;
     --profile-card:   linear-gradient(135deg,#1E2432 0%,#141921 100%);
   }
-
   .sk {
     background: linear-gradient(90deg, var(--sk-from) 25%, var(--sk-via) 50%, var(--sk-from) 75%);
     background-size: 200% 100%;
     animation: shimmer 1.6s infinite linear;
     border-radius: 10px;
   }
-
   .heat-cell {
     border-radius: 3px;
     cursor: pointer;
     transition: transform 0.1s, opacity 0.1s;
   }
   .heat-cell:hover { transform: scale(1.35); opacity: 0.85; }
-
   .student-shell { disgap: 22px; align-items: start; }
   .student-main { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
-
   @media (max-width: 1280px) {
     .stat-grid-student { grid-template-columns: repeat(3,1fr) !important; }
   }
@@ -202,14 +180,9 @@ const GLOBAL_CSS = `
     .stat-grid-student { grid-template-columns: 1fr !important; }
   }
 `;
-
-// ─────────────────────────────────────────────────────────────────────────────
-// HELPERS
-// ─────────────────────────────────────────────────────────────────────────────
 const Sk = ({ w = "100%", h = 16, style = {} }: any) => (
   <div className="sk" style={{ width: w, height: h, ...style }} />
 );
-
 const fmtDate = (v: string, mode = "day") => {
   try {
     const d = new Date(v);
@@ -217,10 +190,6 @@ const fmtDate = (v: string, mode = "day") => {
     return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   } catch { return v; }
 };
-
-// ─────────────────────────────────────────────────────────────────────────────
-// EMPTY STATE
-// ─────────────────────────────────────────────────────────────────────────────
 const EmptyState = ({ label = "No data available" }: { label?: string }) => (
   <motion.div
     initial={{ opacity: 0, scale: 0.92 }}
@@ -234,10 +203,6 @@ const EmptyState = ({ label = "No data available" }: { label?: string }) => (
     <p style={{ fontSize: 12, fontWeight: 600, color: "var(--text-muted)" }}>{label}</p>
   </motion.div>
 );
-
-// ─────────────────────────────────────────────────────────────────────────────
-// CHART TOOLTIP
-// ─────────────────────────────────────────────────────────────────────────────
 const ChartTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
   return (
@@ -253,10 +218,6 @@ const ChartTooltip = ({ active, payload, label }: any) => {
     </div>
   );
 };
-
-// ─────────────────────────────────────────────────────────────────────────────
-// PILL FILTER
-// ─────────────────────────────────────────────────────────────────────────────
 const Pill = ({ label, active, onClick }: any) => (
   <button className="font-mono" onClick={onClick} style={{
     padding: "4px 13px", borderRadius: 20, border: "none", cursor: "pointer",
@@ -266,22 +227,11 @@ const Pill = ({ label, active, onClick }: any) => (
     boxShadow: active ? `0 2px 10px ${C.blue}55` : "none",
   }}>{label}</button>
 );
-
-// ─────────────────────────────────────────────────────────────────────────────
-// STAR DECO
-// ─────────────────────────────────────────────────────────────────────────────
 const StarDeco = ({ color, size, style }: any) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill={color} style={{ position: "absolute", pointerEvents: "none", ...style }}>
     <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
   </svg>
 );
-
-
-
-
-// ─────────────────────────────────────────────────────────────────────────────
-// CHART CARD WRAPPER
-// ─────────────────────────────────────────────────────────────────────────────
 const ChartCard = ({ title, desc, children, actions, loading, minH = 330 }: any) => (
   <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.42 }} style={{ height: "100%" }}>
     <div style={{ background: "var(--card-bg)", borderRadius: 18, border: "1px solid var(--card-border)", boxShadow: "var(--card-shadow)", overflow: "hidden", height: "100%", display: "flex", flexDirection: "column" }}>
@@ -298,16 +248,11 @@ const ChartCard = ({ title, desc, children, actions, loading, minH = 330 }: any)
     </div>
   </motion.div>
 );
-
-// ─────────────────────────────────────────────────────────────────────────────
-// PROGRESS RING
-// ─────────────────────────────────────────────────────────────────────────────
 const ProgressRing = ({ value, max, color, size = 80, stroke = 7, label, sub }: any) => {
   const pct = max > 0 ? Math.min(value / max, 1) : 0;
   const r = (size - stroke) / 2;
   const circ = 2 * Math.PI * r;
   const dash = pct * circ;
-
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
       <div style={{ position: "relative", width: size, height: size }}>
@@ -326,53 +271,33 @@ const ProgressRing = ({ value, max, color, size = 80, stroke = 7, label, sub }: 
     </div>
   );
 };
-
-// ─────────────────────────────────────────────────────────────────────────────
-// HEATMAP COMPONENT
-// Uses a full-year calendar grid of squares (GitHub-style)
-// ─────────────────────────────────────────────────────────────────────────────
 const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
 interface HeatCell { date: string; value: number; intensity: number; }
-
 const Heatmap = ({ data, year, loading }: { data: HeatCell[]; year: number; loading: boolean }) => {
   const [tooltip, setTooltip] = useState<{ x: number; y: number; date: string; value: number } | null>(null);
   const toIsoDayUTC = (date: Date) => date.toISOString().split("T")[0];
-
   const { weeks, monthOffsets } = useMemo(() => {
-    // Build map from date string → intensity
     const map: Record<string, { value: number; intensity: number }> = {};
     data.forEach((d) => { map[d.date] = { value: d.value, intensity: d.intensity }; });
-
-    // Generate all days for the year
     const jan1 = new Date(Date.UTC(year, 0, 1));
     const dec31 = new Date(Date.UTC(year, 11, 31));
-
-    // Pad from Sunday of first week
-    const startDay = jan1.getUTCDay(); // 0=Sun
+    const startDay = jan1.getUTCDay();
     const start = new Date(jan1);
     start.setUTCDate(start.getUTCDate() - startDay);
-
-    // Pad to Saturday of last week
     const endDay = dec31.getUTCDay();
     const end = new Date(dec31);
     end.setUTCDate(end.getUTCDate() + (6 - endDay));
-
     const allDays: { date: Date; inYear: boolean }[] = [];
     let cur = new Date(start);
     while (cur <= end) {
       allDays.push({ date: new Date(cur), inYear: cur.getUTCFullYear() === year });
       cur.setUTCDate(cur.getUTCDate() + 1);
     }
-
-    // Group into weeks of 7
     const weeksArr: typeof allDays[] = [];
     for (let i = 0; i < allDays.length; i += 7) {
       weeksArr.push(allDays.slice(i, i + 7));
     }
-
-    // Month label offsets (which week index does each month start in?)
     const offsets: { label: string; col: number }[] = [];
     weeksArr.forEach((week, wi) => {
       week.forEach(({ date, inYear }) => {
@@ -385,10 +310,8 @@ const Heatmap = ({ data, year, loading }: { data: HeatCell[]; year: number; load
         }
       });
     });
-
     return { weeks: weeksArr, monthOffsets: offsets, map };
   }, [data, year]);
-
   const getColor = (date: Date, inYear: boolean) => {
     if (!inYear) return "transparent";
     const key = toIsoDayUTC(date);
@@ -399,16 +322,12 @@ const Heatmap = ({ data, year, loading }: { data: HeatCell[]; year: number; load
     if (entry.intensity <= 3) return "var(--heat-3)";
     return "var(--heat-4)";
   };
-
   const CELL = 13;
   const GAP = 3;
   const totalW = weeks.length * (CELL + GAP);
-
   if (loading) return <Sk h={130} style={{ width: "100%", borderRadius: 10 }} />;
-
   return (
     <div style={{ position: "relative", overflowX: "auto", paddingBottom: 4 }}>
-      {/* Month labels */}
       <div style={{ display: "flex", marginLeft: 28, marginBottom: 4, position: "relative", height: 16 }}>
         {monthOffsets.map(({ label, col }) => (
           <span key={label + col} style={{
@@ -418,16 +337,12 @@ const Heatmap = ({ data, year, loading }: { data: HeatCell[]; year: number; load
           }}>{label}</span>
         ))}
       </div>
-
       <div style={{ display: "flex", gap: 0 }}>
-        {/* Day labels */}
         <div style={{ display: "flex", flexDirection: "column", gap: GAP, marginRight: 4, paddingTop: 0 }}>
           {DAYS.map((d, i) => (
             <div key={i} style={{ height: CELL, fontSize: 9, color: "var(--text-muted)", fontWeight: 600, display: "flex", alignItems: "center", whiteSpace: "nowrap" }}>{d}</div>
           ))}
         </div>
-
-        {/* Grid */}
         <div style={{ display: "flex", gap: GAP }}>
           {weeks.map((week, wi) => (
             <div key={wi} style={{ display: "flex", flexDirection: "column", gap: GAP }}>
@@ -453,8 +368,6 @@ const Heatmap = ({ data, year, loading }: { data: HeatCell[]; year: number; load
           ))}
         </div>
       </div>
-
-      {/* Legend */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 10, justifyContent: "flex-end" }}>
         <span style={{ fontSize: 10, color: "var(--text-muted)", fontWeight: 600 }}>Less</span>
         {["var(--heat-empty)", "var(--heat-1)", "var(--heat-2)", "var(--heat-3)", "var(--heat-4)"].map((c, i) => (
@@ -462,8 +375,6 @@ const Heatmap = ({ data, year, loading }: { data: HeatCell[]; year: number; load
         ))}
         <span style={{ fontSize: 10, color: "var(--text-muted)", fontWeight: 600 }}>More</span>
       </div>
-
-      {/* Tooltip */}
       <AnimatePresence>
         {tooltip && (
           <motion.div
@@ -483,10 +394,6 @@ const Heatmap = ({ data, year, loading }: { data: HeatCell[]; year: number; load
     </div>
   );
 };
-
-// ─────────────────────────────────────────────────────────────────────────────
-// DONUT PANEL (reused pattern)
-// ─────────────────────────────────────────────────────────────────────────────
 const MiniDonut = ({ data, dataKey, nameKey }: any) => {
   const [active, setActive] = useState(0);
   if (!data?.length) return <EmptyState />;
@@ -523,10 +430,6 @@ const MiniDonut = ({ data, dataKey, nameKey }: any) => {
     </div>
   );
 };
-
-// ─────────────────────────────────────────────────────────────────────────────
-// FEEDBACK CARD
-// ─────────────────────────────────────────────────────────────────────────────
 const FeedbackCard = ({ item, index }: any) => (
   <motion.div initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.05 }}
     style={{ padding: "12px 14px", borderRadius: 12, background: "var(--body-bg)", border: "1px solid var(--card-border)", display: "flex", flexDirection: "column", gap: 6 }}>
@@ -542,10 +445,6 @@ const FeedbackCard = ({ item, index }: any) => (
     <p style={{ fontSize: 12, color: "var(--text-secondary)", lineHeight: 1.5, margin: 0 }}>{item.message}</p>
   </motion.div>
 );
-
-// ─────────────────────────────────────────────────────────────────────────────
-// ACTIVITY ROW
-// ─────────────────────────────────────────────────────────────────────────────
 const ActivityRow = ({ item, index }: any) => (
   <motion.div initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.04 }}
     style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 12px", borderRadius: 10, transition: "background 0.14s" }}
@@ -565,10 +464,6 @@ const ActivityRow = ({ item, index }: any) => (
     )}
   </motion.div>
 );
-
-// ─────────────────────────────────────────────────────────────────────────────
-// MAIN STUDENT DASHBOARD
-// ─────────────────────────────────────────────────────────────────────────────
 export default function StudentDashboard() {
   const {
     student, mentor, stats,
@@ -581,12 +476,9 @@ export default function StudentDashboard() {
     setHeatmapYear, setPointsTrendFilter, setActivityFilter,
     refreshDashboard,
   } = useStudentDashboardStore();
-
   const { socials, fetchProfile } = useProfileStore() as any;
-
   const { initializeTheme } = useThemeStore();
   const [isRefreshing, setIsRefreshing] = useState(false);
-
   useEffect(() => { initializeTheme(); }, [initializeTheme]);
   useEffect(() => {
     fetchDashboard();
@@ -595,16 +487,12 @@ export default function StudentDashboard() {
     fetchTaskCompletion();
     fetchProfile();
   }, []);
-
   const handleRefresh = async () => {
     setIsRefreshing(true);
     await refreshDashboard();
     setIsRefreshing(false);
   };
-
   const statsLoading = isLoadingStats && !stats;
-
-  // Build completion donut data
   const projectDonut = stats?.projects
     ? [
       { label: "Completed", count: stats.projects.completed },
@@ -612,7 +500,6 @@ export default function StudentDashboard() {
       { label: "Rejected", count: stats.projects.rejected },
     ].filter(d => d.count > 0)
     : [];
-
   const taskDonut = stats?.tasks
     ? [
       { label: "Completed", count: stats.tasks.completed },
@@ -620,7 +507,6 @@ export default function StudentDashboard() {
       { label: "Overdue", count: stats.tasks.overdue },
     ].filter(d => d.count > 0)
     : [];
-
   const certDonut = stats?.certifications
     ? [
       { label: "Earned", count: stats.certifications.completed },
@@ -628,33 +514,24 @@ export default function StudentDashboard() {
       { label: "Rejected", count: stats.certifications.rejected },
     ].filter(d => d.count > 0)
     : [];
-
-  // Available years for heatmap selector
   const currentYear = new Date().getFullYear();
   const yearOptions = [currentYear, currentYear - 1, currentYear - 2];
-
   return (
     <>
       <style>{GLOBAL_CSS}</style>
-
       <div style={{ width: "100%", minHeight: "100vh", background: "var(--body-bg)" }}>
-
-        {/* ── HEADER ─────────────────────────────────────────────── */}
         <Header
           title="Student Dashboard"
           subtitle={student ? `Welcome back, ${student.name.split(" ")[0]}! Keep up the great work.` : "Welcome back!"}
         />
-
         <div style={{ padding: "24px 24px 48px" }}>
-          {/* ── 1. STAT CARDS (TOP ROW) ───────────────────────────── */}
           <div className="stat-grid-student" style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 14, marginBottom: 20 }}>
             {STAT_META.map((meta, i) => {
               const value = meta.val ? meta.val(stats) : (stats as any)?.[meta.key];
               const subLabel = typeof meta.sub === "function" ? meta.sub(stats) : meta.sub;
-              
               return (
-                <StatCard 
-                  key={meta.key} 
+                <StatCard
+                  key={meta.key}
                   label={meta.label}
                   value={value}
                   icon={meta.icon}
@@ -666,9 +543,6 @@ export default function StudentDashboard() {
               );
             })}
           </div>
-
-
-          {/* ── 2. HEATMAP ────────────────────────────────────────── */}
           <motion.div
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
@@ -695,10 +569,7 @@ export default function StudentDashboard() {
                   </SelectContent>
                 </Select>
               </div>
-
               <Heatmap data={heatmapData} year={heatmapYear} loading={isLoadingHeatmap} />
-
-              {/* Summary pills */}
               {!isLoadingHeatmap && heatmapData.length > 0 && (
                 <div style={{ display: "flex", gap: 10, marginTop: 14, flexWrap: "wrap" }}>
                   {[
@@ -716,10 +587,7 @@ export default function StudentDashboard() {
               )}
             </div>
           </motion.div>
-
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full mb-6">
-
-            {/* ── STUDENT PROFILE ─────────────────────────── */}
             <motion.div
               className="w-full"
               initial={{ opacity: 0, y: 16 }}
@@ -738,13 +606,10 @@ export default function StudentDashboard() {
                   height: "100%"
                 }}
               >
-
                 <div style={{ position: "absolute", right: -40, top: -40, width: 180, height: 180, borderRadius: "50%", background: "rgba(255,255,255,0.05)" }} />
                 <div style={{ position: "absolute", right: 40, bottom: -60, width: 140, height: 140, borderRadius: "50%", background: "rgba(255,255,255,0.04)" }} />
-
                 <StarDeco color="rgba(255,255,255,0.14)" size={22} style={{ top: 18, right: 120 }} />
                 <StarDeco color="rgba(255,255,255,0.10)" size={14} style={{ top: 50, right: 180 }} />
-
                 {isLoadingProfile ? (
                   <div className="flex flex-col gap-3">
                     <Sk h={20} w="70%" />
@@ -754,37 +619,29 @@ export default function StudentDashboard() {
                   </div>
                 ) : (
                   <>
-                    {/* Header */}
                     <div className="flex items-center gap-3 mb-4">
                       <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
                         <User size={20} color="#fff" />
                       </div>
-
                       <div className="min-w-0">
                         <p className="text-[16px] font-extrabold text-white truncate">
                           {student?.name || "Student"}
                         </p>
-
                         <p className="text-[11px] text-white/70">
                           {student?.department || "—"} • {student?.year || "—"}
                         </p>
                       </div>
                     </div>
-
-                    {/* Details */}
                     <div className="flex flex-col gap-2 text-[12px] text-white/80">
                       <div className="flex items-center gap-2">
                         <Mail size={13} /> {student?.email || "—"}
                       </div>
-
                       <div className="flex items-center gap-2">
                         <MapPin size={13} /> {student?.place || "—"}
                       </div>
-
                       <div className="flex items-center gap-2">
                         <Phone size={13} /> {student?.phone || "—"}
                       </div>
-
                       <div className="flex items-center gap-2">
                         <Calendar size={13} /> {student?.academicYear || "—"}
                       </div>
@@ -793,8 +650,6 @@ export default function StudentDashboard() {
                 )}
               </div>
             </motion.div>
-
-            {/* ── SOCIALS CARD ─────────────────────────── */}
             <motion.div
               className="w-full"
               initial={{ opacity: 0, y: 16 }}
@@ -824,7 +679,6 @@ export default function StudentDashboard() {
                     </div>
                   </div>
                 </div>
-
                 {!socials ? (
                   <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: 140 }}>
                     <Sk h={16} w="80%" style={{ marginBottom: 12 }} />
@@ -857,8 +711,6 @@ export default function StudentDashboard() {
                 )}
               </div>
             </motion.div>
-
-            {/* ── RANK CARD ─────────────────────────── */}
             <div
               className="w-full"
               style={{
@@ -869,12 +721,10 @@ export default function StudentDashboard() {
                 padding: "22px"
               }}
             >
-
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-gradient-to-br from-orange-50 to-yellow-50">
                   <Trophy size={17} color={C.amber} />
                 </div>
-
                 <div>
                   <p className="font-display text-[13px] font-bold text-[var(--text-primary)]">
                     Rankings
@@ -884,7 +734,6 @@ export default function StudentDashboard() {
                   </p>
                 </div>
               </div>
-
               {statsLoading ? (
                 <div className="flex flex-col gap-3">
                   <Sk h={60} />
@@ -892,33 +741,6 @@ export default function StudentDashboard() {
                 </div>
               ) : (
                 <div className="flex flex-col gap-3">
-
-                  {/* {[
-                    { label: "Overall Rank", val: stats?.ranking?.overallRank, color: C.amber, icon: "🏆" },
-                    { label: "Department Rank", val: stats?.ranking?.departmentRank, color: C.blue, icon: "🎯" }
-                  ].map(({ label, val, color, icon }) => (
-                    <div
-                      key={label}
-                      className="flex items-center justify-between p-4 rounded-xl"
-                      style={{
-                        background: `${color}0F`,
-                        border: `1px solid ${color}25`
-                      }}
-                    >
-                      <div>
-                        <p className="text-[10px] font-bold uppercase text-[var(--text-muted)]">
-                          {label}
-                        </p>
-
-                        <p className="text-[26px] font-extrabold" style={{ color }}>
-                          {val != null ? `#${val}` : "—"}
-                        </p>
-                      </div>
-
-                      <span className="text-[28px]">{icon}</span>
-                    </div>
-                  ))} */}
-
                   <div
                     className="flex items-center justify-between p-4 rounded-xl"
                     style={{
@@ -930,20 +752,15 @@ export default function StudentDashboard() {
                       <p className="text-[10px] font-bold uppercase text-[var(--text-muted)]">
                         Total Points
                       </p>
-
                       <p className="text-[26px] font-extrabold" style={{ color: C.violet }}>
                         {stats?.totalPoints?.toLocaleString() ?? "—"}
                       </p>
                     </div>
-
                     <Zap size={28} color={C.violet} />
                   </div>
-
                 </div>
               )}
             </div>
-
-            {/* ── MENTOR CARD ─────────────────────────── */}
             <motion.div
               className="w-full hidden"
               initial={{ opacity: 0, y: 16 }}
@@ -959,7 +776,6 @@ export default function StudentDashboard() {
                   padding: "18px"
                 }}
               >
-
                 <div className="flex items-center gap-3 mb-3">
                   <div
                     style={{
@@ -974,7 +790,6 @@ export default function StudentDashboard() {
                   >
                     <GraduationCap size={16} color={C.cyan} />
                   </div>
-
                   <div>
                     <p className="font-display text-[13px] font-bold text-[var(--text-primary)]">
                       Mentor
@@ -984,7 +799,6 @@ export default function StudentDashboard() {
                     </p>
                   </div>
                 </div>
-
                 {mentor ? (
                   <div className="flex flex-col gap-1 text-[12px]">
                     <div className="font-bold text-[var(--text-primary)]">
@@ -1004,14 +818,9 @@ export default function StudentDashboard() {
                 )}
               </div>
             </motion.div>
-
-
-
           </div>
-
           <div className="student-shell">
             <div className="student-main">
-              {/* ── 3. POINTS TREND + ACTIVITY CHART ─────────────────── */}
               <div className="one-col-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
                 <ChartCard
                   title="Points Trend" desc="Points earned over time" loading={isLoadingCharts} minH={290}
@@ -1037,7 +846,6 @@ export default function StudentDashboard() {
                     </ResponsiveContainer>
                   )}
                 </ChartCard>
-
                 <ChartCard
                   title="Activity Hours" desc="Daily hours logged over time" loading={isLoadingCharts} minH={290}
                   actions={["week", "month", "year"].map(v => (
@@ -1063,11 +871,7 @@ export default function StudentDashboard() {
                   )}
                 </ChartCard>
               </div>
-
-              {/* ── 4. COMPLETION RINGS + POINTS BY SOURCE ────────────── */}
               <div className="two-col-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-
-                {/* Completion status */}
                 <ChartCard title="Completion Overview" desc="Status breakdown for all activities" loading={isLoadingStats} minH={0}>
                   {statsLoading ? (
                     <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
@@ -1094,8 +898,6 @@ export default function StudentDashboard() {
                     </div>
                   )}
                 </ChartCard>
-
-                {/* Points by source */}
                 <ChartCard title="Points by Source" desc="Where your points come from" loading={isLoadingCharts} minH={0}>
                   {!pointsBySource?.length ? <EmptyState /> : (
                     <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
@@ -1120,8 +922,6 @@ export default function StudentDashboard() {
                           </Bar>
                         </BarChart>
                       </ResponsiveContainer>
-
-                      {/* Source legend */}
                       <div style={{ display: "flex", flexDirection: "column", gap: 5, marginTop: 8 }}>
                         {pointsBySource.map((item: any, i: number) => {
                           const total = pointsBySource.reduce((s: number, d: any) => s + d.points, 0);
@@ -1141,8 +941,6 @@ export default function StudentDashboard() {
                   )}
                 </ChartCard>
               </div>
-
-              {/* ── 5. TASK COMPLETION TREND ──────────────────────────── */}
               {taskCompletion?.length > 0 && (
                 <ChartCard title="Task Completion Trend" desc="Monthly breakdown of task statuses" loading={isLoadingCharts} minH={310}>
                   <ResponsiveContainer width="100%" height={290}>
@@ -1167,10 +965,7 @@ export default function StudentDashboard() {
                   </ResponsiveContainer>
                 </ChartCard>
               )}
-
-              {/* ── 6. RECENT FEEDBACK + ACTIVITY LOG ────────────────── */}
               <div className="two-col-grid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-
                 <ChartCard title="Recent Feedback" desc="Latest from your mentor" loading={isLoadingProfile} minH={0}>
                   {!recentFeedback?.length ? (
                     <EmptyState label="No feedback yet" />
@@ -1182,7 +977,6 @@ export default function StudentDashboard() {
                     </div>
                   )}
                 </ChartCard>
-
                 <ChartCard title="Recent Activity" desc="Your 5 most recent actions" loading={isLoadingProfile} minH={0}>
                   {!recentActivities?.length ? (
                     <EmptyState label="No recent activity" />
@@ -1195,7 +989,6 @@ export default function StudentDashboard() {
                   )}
                 </ChartCard>
               </div>
-
             </div>
           </div>
         </div>

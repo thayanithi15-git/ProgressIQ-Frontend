@@ -35,20 +35,20 @@ portal.activity.subscribe((update) => {
 ];
 
 const features = [
-  { 
-    title: "Enterprise Grade", 
+  {
+    title: "Enterprise Grade",
     description: "Built to handle thousands of concurrent users safely."
   },
-  { 
-    title: "Smart Automations", 
+  {
+    title: "Smart Automations",
     description: "Automated ranking and point allocation engines."
   },
-  { 
-    title: "Live Monitoring", 
+  {
+    title: "Live Monitoring",
     description: "Real-time updates across all institutional dashboards."
   },
-  { 
-    title: "Actionable Data", 
+  {
+    title: "Actionable Data",
     description: "Generate deep insights into student performance."
   },
 ];
@@ -59,20 +59,17 @@ const codeAnimationStyles = `
     transform: translateX(-8px);
     animation: devLineReveal 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   }
-  
   @keyframes devLineReveal {
     to {
       opacity: 1;
       transform: translateX(0);
     }
   }
-  
   .dev-code-char {
     opacity: 0;
     filter: blur(8px);
     animation: devCharReveal 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   }
-  
   @keyframes devCharReveal {
     to {
       opacity: 1;
@@ -110,7 +107,6 @@ export function DevelopersSection() {
       <style dangerouslySetInnerHTML={{ __html: codeAnimationStyles }} />
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-start">
-          {/* Left: Content */}
           <div
             className={`transition-all duration-700 ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
@@ -126,11 +122,9 @@ export function DevelopersSection() {
               <span className="text-muted-foreground">For Excellence.</span>
             </h2>
             <p className="text-xl text-muted-foreground mb-12 leading-relaxed">
-              A robust infrastructure designed for modern educational environments. 
+              A robust infrastructure designed for modern educational environments.
               Manage thousands of students and mentors with real-time accuracy and smart insights.
             </p>
-            
-            {/* Features */}
             <div className="grid grid-cols-2 gap-6">
               {features.map((feature, index) => (
                 <div
@@ -146,15 +140,12 @@ export function DevelopersSection() {
               ))}
             </div>
           </div>
-          
-          {/* Right: Code block */}
           <div
             className={`lg:sticky lg:top-32 transition-all duration-700 delay-200 ${
               isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"
             }`}
           >
             <div className="border border-foreground/10">
-              {/* Tabs */}
               <div className="flex items-center border-b border-foreground/10">
                 {codeExamples.map((example, idx) => (
                   <button
@@ -187,13 +178,11 @@ export function DevelopersSection() {
                   )}
                 </button>
               </div>
-              
-              {/* Code content */}
               <div className="p-8 font-mono text-sm bg-foreground/[0.01] min-h-[220px]">
                 <pre className="text-foreground/80">
                   {codeExamples[activeTab].code.split('\n').map((line, lineIndex) => (
-                    <div 
-                      key={`${activeTab}-${lineIndex}`} 
+                    <div
+                      key={`${activeTab}-${lineIndex}`}
                       className="leading-loose dev-code-line"
                       style={{ animationDelay: `${lineIndex * 80}ms` }}
                     >
@@ -215,8 +204,6 @@ export function DevelopersSection() {
                 </pre>
               </div>
             </div>
-            
-            {/* Links */}
             <div className="mt-6 flex items-center gap-6 text-sm">
               <a href="#" className="text-foreground hover:underline underline-offset-4">
                 Read the docs

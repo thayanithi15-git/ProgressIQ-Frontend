@@ -106,7 +106,6 @@ export function HowItWorksSection() {
       ref={sectionRef}
       className="relative py-24 lg:py-32 bg-foreground text-background overflow-hidden"
     >
-      {/* Diagonal lines pattern */}
       <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
         <div className="absolute inset-0" style={{
           backgroundImage: `repeating-linear-gradient(
@@ -120,7 +119,6 @@ export function HowItWorksSection() {
       </div>
 
       <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12">
-        {/* Header */}
         <div className="mb-16 lg:mb-24">
           <span className="inline-flex items-center gap-3 text-sm font-mono text-background/50 mb-6">
             <span className="w-8 h-px bg-background/30" />
@@ -137,9 +135,7 @@ export function HowItWorksSection() {
           </h2>
         </div>
 
-        {/* Main content */}
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-24">
-          {/* Steps */}
           <div className="space-y-0">
             {steps.map((step, index) => (
               <button
@@ -159,11 +155,9 @@ export function HowItWorksSection() {
                     <p className="text-background/60 leading-relaxed">
                       {step.description}
                     </p>
-                    
-                    {/* Progress indicator */}
                     {activeStep === index && (
                       <div className="mt-4 h-px bg-background/20 overflow-hidden">
-                        <div 
+                        <div
                           className="h-full bg-background w-0"
                           style={{
                             animation: 'progress 5s linear forwards'
@@ -177,10 +171,8 @@ export function HowItWorksSection() {
             ))}
           </div>
 
-          {/* Code display */}
           <div className="lg:sticky lg:top-32 self-start">
             <div className="border border-background/10 overflow-hidden">
-              {/* Window header */}
               <div className="px-6 py-4 border-b border-background/10 flex items-center justify-between">
                 <div className="flex gap-2">
                   <div className="w-3 h-3 rounded-full bg-background/20" />
@@ -190,14 +182,13 @@ export function HowItWorksSection() {
                 <span className="text-xs font-mono text-background/40">workflow.ts</span>
               </div>
 
-              {/* Code content */}
               <div className="p-8 font-mono text-sm min-h-[280px]">
                 <pre className="text-background/70">
                   {steps[activeStep].code.split('\n').map((line, lineIndex) => (
-                    <div 
-                      key={`${activeStep}-${lineIndex}`} 
+                    <div
+                      key={`${activeStep}-${lineIndex}`}
                       className="leading-loose code-line-reveal"
-                      style={{ 
+                      style={{
                         animationDelay: `${lineIndex * 80}ms`,
                       }}
                     >
@@ -220,7 +211,6 @@ export function HowItWorksSection() {
                 </pre>
               </div>
 
-              {/* Status */}
               <div className="px-6 py-4 border-t border-background/10 flex items-center gap-3">
                 <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
                 <span className="text-xs font-mono text-background/40">Ready</span>
@@ -235,26 +225,22 @@ export function HowItWorksSection() {
           from { width: 0%; }
           to { width: 100%; }
         }
-        
         .code-line-reveal {
           opacity: 0;
           transform: translateX(-8px);
           animation: lineReveal 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
-        
         @keyframes lineReveal {
           to {
             opacity: 1;
             transform: translateX(0);
           }
         }
-        
         .code-char-reveal {
           opacity: 0;
           filter: blur(8px);
           animation: charReveal 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
-        
         @keyframes charReveal {
           to {
             opacity: 1;

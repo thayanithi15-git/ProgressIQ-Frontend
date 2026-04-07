@@ -48,7 +48,6 @@ export function SecuritySection() {
     <section id="security" ref={sectionRef} className="relative py-24 lg:py-32 bg-foreground/[0.02] overflow-hidden">
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-24">
-          {/* Left: Content */}
           <div
             className={`transition-all duration-700 ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
@@ -64,11 +63,10 @@ export function SecuritySection() {
               non-negotiable.
             </h2>
             <p className="text-xl text-muted-foreground leading-relaxed mb-12">
-              Enterprise-grade security isn&apos;t optional. It&apos;s built into every layer 
+              Enterprise-grade security isn&apos;t optional. It&apos;s built into every layer
               of our platform, from infrastructure to application.
             </p>
 
-            {/* Certifications */}
             <div className="flex flex-wrap gap-3">
               {certifications.map((cert, index) => (
                 <span
@@ -84,7 +82,6 @@ export function SecuritySection() {
             </div>
           </div>
 
-          {/* Right: Features */}
           <div className="grid gap-6">
             {securityFeatures.map((feature, index) => (
               <div

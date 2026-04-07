@@ -17,24 +17,17 @@ Briefcase,
 User,
 ClipboardCheck,
 } from "lucide-react";
-
 export interface SidebarItem {
   icon: any;
   label: string;
   href: string;
   description: string;
 }
-
 export interface SidebarSection {
   title: string;
   items: SidebarItem[];
 }
-
-/* ===================== ADMIN (7 â†’ 3 + 4) ===================== */
-
 export const adminSections = (base: string): SidebarSection[] => [
-
-  /* ----- 3 ITEMS ----- */
   {
     title: "Core",
     items: [
@@ -70,17 +63,9 @@ export const adminSections = (base: string): SidebarSection[] => [
       },
     ],
   },
-
-  /* ----- 4 ITEMS ----- */
   {
     title: "Administration",
     items: [
-      // {
-      //   icon: FolderKanban,
-      //   label: "Mappings",
-      //   href: `${base}/mappings`,
-      //   description: "Mentor-student map",
-      // },
       {
         icon: FileText,
         label: "Project Details",
@@ -120,12 +105,7 @@ export const adminSections = (base: string): SidebarSection[] => [
     ],
   },
 ];
-
-/* ===================== MENTOR (4 â†’ 2 + 2) ===================== */
-
 export const mentorSections = (base: string): SidebarSection[] => [
-
-  /* ----- 2 ITEMS ----- */
   {
     title: "Mentor Space",
     items: [
@@ -167,8 +147,6 @@ export const mentorSections = (base: string): SidebarSection[] => [
       },
     ],
   },
-
-  /* ----- 2 ITEMS ----- */
   {
     title: "Review",
     items: [
@@ -187,12 +165,7 @@ export const mentorSections = (base: string): SidebarSection[] => [
     ],
   },
 ];
-
-/* ===================== STUDENT (5 â†’ 2 + 3) ===================== */
-
 export const studentSections = (base: string): SidebarSection[] => [
-
-  /* ----- DASHBOARD ----- */
   {
     title: "Overview",
     items: [
@@ -210,8 +183,6 @@ export const studentSections = (base: string): SidebarSection[] => [
       },
     ],
   },
-
-  /* ----- WORK ----- */
   {
     title: "Work & Progress",
     items: [
@@ -241,8 +212,6 @@ export const studentSections = (base: string): SidebarSection[] => [
       },
     ],
   },
-
-  /* ----- PERSONAL ----- */
   {
     title: "Personal",
     items: [

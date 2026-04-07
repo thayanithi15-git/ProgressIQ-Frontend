@@ -6,21 +6,12 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* ============================================================
-   PROGRESS IQ — PROFESSIONAL THEME v2
-   Primary Font : Poppins (UI, labels, body, nav)
-   Display Font : Plus Jakarta Sans (headings, brand)
-   Mono Font    : JetBrains Mono (code, data)
 
-   Light: Clean white surfaces, deep charcoal text
-   Dark : Cool Gray (#1E2128) bg, Soft Blue (#4A90D9) accent
-   Primary: Deep Charcoal (#1E2530)
-   ============================================================ */
 
-/* @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap'); */
+
 
 :root {
-  /* ── Surfaces ─────────────────────────────────────────── */
+  
   --background: oklch(0.9870 0.0025 240.0);
   --foreground: oklch(0.1520 0.0360 248.0);
 
@@ -30,7 +21,7 @@
   --popover: oklch(1.0000 0.0000 0.0);
   --popover-foreground: oklch(0.1520 0.0360 248.0);
 
-  /* Primary: Deep Charcoal #1E2530 */
+  
   --primary: oklch(0.2280 0.0400 250.0);
   --primary-foreground: oklch(0.9870 0.0025 240.0);
 
@@ -40,7 +31,7 @@
   --muted: oklch(0.9380 0.0090 240.0);
   --muted-foreground: oklch(0.5000 0.0220 248.0);
 
-  /* Accent: Soft Blue #4A90D9 */
+  
   --accent: oklch(0.6150 0.1520 241.0);
   --accent-foreground: oklch(1.0000 0.0000 0.0);
 
@@ -57,7 +48,7 @@
   --chart-4: oklch(0.7100 0.1250 52.0);
   --chart-5: oklch(0.6200 0.1400 298.0);
 
-  /* Sidebar: Deep Charcoal */
+  
   --sidebar: oklch(0.2050 0.0380 250.0);
   --sidebar-foreground: oklch(0.8900 0.0120 240.0);
   --sidebar-primary: oklch(0.6150 0.1520 241.0);
@@ -67,14 +58,14 @@
   --sidebar-border: oklch(0.2850 0.0350 250.0);
   --sidebar-ring: oklch(0.6150 0.1520 241.0);
 
-  /* Typography */
+  
   --font-sans: 'Poppins', sans-serif;
   --font-serif: 'Plus Jakarta Sans', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
   --radius: 0.600rem;
 
-  /* Shadows */
+  
   --shadow-2xs: 0px 1px 2px 0px hsl(220 30% 12% / 0.05);
   --shadow-xs: 0px 1px 3px 0px hsl(220 30% 12% / 0.07);
   --shadow-sm: 0px 2px 4px 0px hsl(220 30% 12% / 0.09), 0px 1px 2px -1px hsl(220 30% 12% / 0.07);
@@ -87,7 +78,7 @@
   --tracking-normal: -0.012em;
   --spacing: 0.25rem;
 
-  /* ── Design tokens ──────────────────────────────────── */
+  
   --piq-blue: oklch(0.6150 0.1520 241.0);
   --piq-blue-light: oklch(0.7300 0.1100 239.0);
   --piq-blue-dark: oklch(0.4700 0.1620 243.0);
@@ -103,7 +94,7 @@
 }
 
 .dark {
-  /* Backgrounds: Cool Gray #1E2128 */
+  
   --background: oklch(0.2530 0.0310 241.0);
   --foreground: oklch(0.9180 0.0090 240.0);
 
@@ -113,7 +104,7 @@
   --popover: oklch(0.2800 0.0290 241.0);
   --popover-foreground: oklch(0.9180 0.0090 240.0);
 
-  /* Primary in dark: Soft Blue becomes primary */
+  
   --primary: oklch(0.6400 0.1520 241.0);
   --primary-foreground: oklch(0.1400 0.0280 250.0);
 
@@ -139,7 +130,7 @@
   --chart-4: oklch(0.7700 0.1150 55.0);
   --chart-5: oklch(0.6700 0.1350 298.0);
 
-  /* Sidebar in dark: deepest surface */
+  
   --sidebar: oklch(0.1950 0.0320 250.0);
   --sidebar-foreground: oklch(0.8700 0.0100 240.0);
   --sidebar-primary: oklch(0.6400 0.1520 241.0);
@@ -251,7 +242,7 @@
   }
 }
 
-/* ── Gradient utilities ──────────────────────────────────────── */
+
 
 .bg-hero-gradient {
   background: linear-gradient(150deg,
@@ -327,9 +318,7 @@
 
 
 
-/* =========================================================
-   MODAL LAYOUT
-   ========================================================= */
+
 
 .modal-overlay {
   position: fixed;
@@ -338,9 +327,9 @@
 
   display: flex;
   align-items: center;
-  /* CENTER VERTICALLY */
+  
   justify-content: center;
-  /* CENTER HORIZONTALLY */
+  
 
   z-index: 1000;
   backdrop-filter: blur(6px);
@@ -365,7 +354,7 @@
   animation: modalFade 0.25s ease;
 }
 
-/* Modal animation */
+
 @keyframes modalFade {
   from {
     opacity: 0;
@@ -378,22 +367,22 @@
   }
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera */
+
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
 }
 
-/* Hide scrollbar for IE, Edge and Firefox */
+
 .scrollbar-hide {
   -ms-overflow-style: none;
-  /* IE and Edge */
+  
   scrollbar-width: none;
-  /* Firefox */
+  
 }
 
-/* Ultra thin horizontal scrollbar */
+
 .horizontal-scroll::-webkit-scrollbar {
-  height: 2px;   /* reduce from 4px to 2px */
+  height: 2px;   
 }
 
 .horizontal-scroll::-webkit-scrollbar-track {
@@ -406,15 +395,13 @@
   opacity: 0.4;
 }
 
-/* Firefox */
+
 .horizontal-scroll {
   scrollbar-width: thin;
   scrollbar-color: var(--piq-blue-dark) transparent;
 }
 
-/* =========================================================
-   MARQUEE ANIMATIONS
-   ========================================================= */
+
 
 @keyframes marquee {
   0% { transform: translateX(0); }
@@ -442,7 +429,7 @@
   animation-play-state: paused;
 }
 
-/* Ensure marquee containers hide overflow */
+
 .marquee-container {
   width: 100%;
   overflow: hidden;

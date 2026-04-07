@@ -1,5 +1,4 @@
 'use client';
-
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -25,7 +24,6 @@ import {
 import Image from 'next/image';
 import { getEncryptedItem } from '@/utils/encryption';
 import { adminSections, mentorSections, studentSections } from './sidebarData';
-
 interface SidebarItem {
     icon: React.ElementType;
     label: string;
@@ -33,30 +31,18 @@ interface SidebarItem {
     badge?: string;
     description?: string;
 }
-
-/* ─────────────────────────────────────────────────────────────
-   COLLEGE THEME TOKENS (maps to CSS variables from theme)
-   Navy  = var(--college-navy)   → oklch(0.278 0.105 264)
-   Gold  = var(--college-gold)   → oklch(0.785 0.145 80)
-   These are used via Tailwind where possible; raw CSS vars
-   are used for things Tailwind can't express inline.
-───────────────────────────────────────────────────────────── */
-
 const Sidebar: React.FC = () => {
     const { isOpen } = useSidebarStore();
     const router = useRouter();
     const { showNotification } = useNotificationStore();
-
     const [sessionData, setSessionData] = useState<any>(null);
     const pathname = usePathname();
     const [role, setRole] = useState<string>('student');
     const [sections, setSections] = useState<any[]>([]);
-
     useEffect(() => {
         const decryptedRole = getEncryptedItem('role') || 'student';
         const r = decryptedRole.toLowerCase();
         setRole(r);
-
         if (r === 'admin') {
             setSections(adminSections('/admin/dashboard'));
         } else if (r === 'mentor') {
@@ -65,65 +51,42 @@ const Sidebar: React.FC = () => {
             setSections(studentSections('/student/dashboard'));
         }
     }, []);
-
     useEffect(() => {
         const savedSession = localStorage.getItem('credxUser');
         if (savedSession) {
             setSessionData(JSON.parse(savedSession));
         }
     }, []);
-
     const handleLogout = () => {
-        // Show logout notification
         showNotification('You have been successfully logged out', 'success');
-
-        // Clear all auth and app-related localStorage items
-        // localStorage.removeItem('credxUser');
-        // localStorage.removeItem('role');
-        // localStorage.removeItem('theme-preference');
-        // localStorage.removeItem('auth-token');
-        // localStorage.removeItem('user-data');
-
         localStorage.clear();
-
-        // Clear session state
         setSessionData(null);
-
-        // Navigate to landing page after a brief delay
         setTimeout(() => {
             router.push('/');
         }, 500);
     };
-
     const getUserInitials = (name: string) =>
         name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-
     const formatRole = (r?: string) =>
         (r || 'student')
             .toLowerCase()
             .replace(/_/g, ' ')
             .replace(/\b\w/g, (c) => c.toUpperCase());
-
     const displayName = sessionData?.username || formatRole(role);
     const displayEmail = sessionData?.email || '';
     const displayRole = formatRole(sessionData?.role || role);
-
     const formatDate = (dateString: string) =>
         new Date(dateString).toLocaleDateString('en-IN', {
             day: 'numeric',
             month: 'short',
             year: 'numeric',
         });
-
-    /* ── Active indicator pill ── */
     const ActivePip = () => (
         <span
             className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-r-full"
             style={{ background: 'var(--college-gold)' }}
         />
     );
-
-    /* ── Individual nav button ── */
     const SidebarButton: React.FC<{ item: SidebarItem; isActive: boolean }> = ({
         item,
         isActive,
@@ -132,13 +95,9 @@ const Sidebar: React.FC = () => {
             <Button
                 variant="ghost"
                 className={cn(
-                    // base
                     'relative w-full justify-start gap-3 h-10 my-0.5 rounded-lg transition-all duration-200',
-                    // default hover: very subtle navy tint
                     'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-                    // collapsed center
                     !isOpen && 'justify-center px-0',
-                    // active state: navy bg + gold text
                     isActive
                         ? 'bg-sidebar-accent text-sidebar-accent-foreground font-semibold'
                         : 'text-sidebar-foreground/80',
@@ -146,9 +105,7 @@ const Sidebar: React.FC = () => {
                 asChild
             >
                 <Link href={item.href}>
-                    {/* Gold left pip when active */}
                     {isActive && <ActivePip />}
-
                     <div className={cn('flex items-center gap-3 w-full', !isOpen && 'justify-center')}>
                         {React.createElement(item.icon, {
                             className: cn(
@@ -158,13 +115,11 @@ const Sidebar: React.FC = () => {
                                     : 'text-sidebar-foreground/60',
                             ),
                         })}
-
                         {isOpen && (
                             <span className="truncate flex-1 text-[13.5px] tracking-wide font-poppins">
                                 {item.label}
                             </span>
                         )}
-
                         {isOpen && item.badge && (
                             <Badge
                                 variant="secondary"
@@ -181,7 +136,6 @@ const Sidebar: React.FC = () => {
                 </Link>
             </Button>
         );
-
         if (!isOpen) {
             return (
                 <Tooltip delayDuration={0}>
@@ -202,11 +156,8 @@ const Sidebar: React.FC = () => {
                 </Tooltip>
             );
         }
-
         return content;
     };
-
-    /* ── Role badge config ── */
     const isRecruiter = sessionData?.role === 'recruiter';
     const roleBadgeClass = isRecruiter
         ? 'bg-purple-500/10 text-purple-700 dark:text-purple-400 border-purple-500/20'
@@ -214,7 +165,6 @@ const Sidebar: React.FC = () => {
     const roleBadgeStyle = !isRecruiter
         ? { background: 'var(--college-gold)', color: 'var(--college-navy-dark)' }
         : {};
-
     return (
         <TooltipProvider>
             <aside
@@ -223,12 +173,10 @@ const Sidebar: React.FC = () => {
                     'border-r border-sidebar-border',
                     'shadow-[2px_0_16px_0_hsl(220_40%_15%/0.18)]',
                     'transition-all duration-300 ease-in-out',
-                    // Sidebar bg: deep navy from theme
                     'bg-sidebar',
                     isOpen ? 'w-64' : 'w-[60px]',
                 )}
             >
-                {/* ── Gold top accent line ── */}
                 <div
                     className="w-full h-[3px] flex-shrink-0"
                     style={{
@@ -236,8 +184,6 @@ const Sidebar: React.FC = () => {
                             'linear-gradient(90deg, var(--college-gold-dark), var(--college-gold), var(--college-gold-dark))',
                     }}
                 />
-
-                {/* ── Logo ── */}
                 <div
                     className={cn(
                         'flex items-center border-b border-sidebar-border flex-shrink-0',
@@ -247,8 +193,6 @@ const Sidebar: React.FC = () => {
                     <div
                         className="flex-shrink-0 overflow-hidden flex items-center justify-center"
                         style={{
-                            // width: 32,
-                            // height: 38,
                         }}
                     >
                         <Image
@@ -259,7 +203,6 @@ const Sidebar: React.FC = () => {
                             className="w-9 h-9 rounded-xl"
                         />
                     </div>
-
                     {isOpen && (
                         <div className="min-w-0">
                             <span className="font-display flex-1 text-gray-300 text-[18px] font-bold tracking-wide uppercase">
@@ -271,13 +214,10 @@ const Sidebar: React.FC = () => {
                         </div>
                     )}
                 </div>
-
-                {/* ── Navigation ── */}
                 <ScrollArea className="flex-1 py-3">
                     <nav className={cn('space-y-3', isOpen ? 'px-3' : 'px-2')}>
                         {sections.map((section, si) => (
                             <div key={section.title} className="space-y-0.5">
-                                {/* Section label */}
                                 {isOpen && (
                                     <div className="flex items-center px-2 mb-1 relative w-full justify-start gap-3 h-10 my-0.5 rounded-lg transition-all duration-200">
                                         <span className="font-display flex-1 text-gray-300 text-[12px] font-bold tracking-wider uppercase">
@@ -292,7 +232,6 @@ const Sidebar: React.FC = () => {
                                         />
                                     </div>
                                 )}
-
                                 {section.items.map((item: SidebarItem) => (
                                     <SidebarButton
                                         key={item.href}
@@ -300,7 +239,6 @@ const Sidebar: React.FC = () => {
                                         isActive={pathname === item.href}
                                     />
                                 ))}
-
                                 {si < sections.length - 1 && (
                                     <div className="pt-2 pb-1 px-2">
                                         <Separator className="bg-sidebar-border/60" />
@@ -310,8 +248,6 @@ const Sidebar: React.FC = () => {
                         ))}
                     </nav>
                 </ScrollArea>
-
-                {/* ── User profile / dropdown ── */}
                 <div className="flex-shrink-0 border-t border-sidebar-border p-2">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -324,7 +260,6 @@ const Sidebar: React.FC = () => {
                                 )}
                             >
                                 <div className={cn('flex items-center gap-3 w-full', !isOpen && 'justify-center')}>
-                                    {/* Avatar with gold ring */}
                                     <Avatar
                                         className="flex-shrink-0 h-9 w-9"
                                         style={{
@@ -346,7 +281,6 @@ const Sidebar: React.FC = () => {
                                                 : role.charAt(0).toUpperCase()}
                                         </AvatarFallback>
                                     </Avatar>
-
                                     {isOpen && (
                                         <div className="flex-1 min-w-0 text-left">
                                             <p className="flex-1 text-gray-300 text-[14px] tracking-wide uppercase font-poppins">
@@ -361,8 +295,6 @@ const Sidebar: React.FC = () => {
                                 </div>
                             </Button>
                         </DropdownMenuTrigger>
-
-                        {/* ── Dropdown panel ── */}
                         <DropdownMenuContent
                             align="end"
                             side="right"
@@ -373,7 +305,6 @@ const Sidebar: React.FC = () => {
                                 'shadow-[0_8px_32px_hsl(220_40%_15%/0.18)]',
                             )}
                         >
-                            {/* Header band */}
                             <div
                                 className="px-4 pt-4 pb-3"
                                 style={{
@@ -393,7 +324,6 @@ const Sidebar: React.FC = () => {
                                                 background: isRecruiter
                                                     ? 'linear-gradient(135deg,#7c3aed,#db2777)'
                                                     : 'linear-gradient(135deg, var(--college-navy-light), var(--college-navy))',
-                                                // color: 'white',
                                             }}
                                         >
                                             {displayName
@@ -401,7 +331,6 @@ const Sidebar: React.FC = () => {
                                                 : role.charAt(0).toUpperCase()}
                                         </AvatarFallback>
                                     </Avatar>
-
                                     <div className="flex-1 min-w-0">
                                         <p className="flex-1 text-foreground font-bold text-[11px] tracking-wide uppercase font-poppins">
                                             {displayName}
@@ -418,7 +347,6 @@ const Sidebar: React.FC = () => {
                                                 background: isRecruiter
                                                     ? 'rgba(168,85,247,0.25)'
                                                     : 'var(--college-gold)',
-                                                // color: 'white',
                                             }}
                                         >
                                             {displayRole}
@@ -426,8 +354,6 @@ const Sidebar: React.FC = () => {
                                     </div>
                                 </div>
                             </div>
-
-                            {/* Details grid */}
                             <div className="px-4 py-3 space-y-1.5 text-[13px] text-white">
                                 {[
                                     { label: 'Account Type', value: displayRole },
@@ -449,8 +375,6 @@ const Sidebar: React.FC = () => {
                                         </span>
                                     </div>
                                 ))}
-
-                                {/* Role-specific stats */}
                                 {(sessionData?.role === 'user' || sessionData?.role === 'recruiter') && (
                                     <>
                                         <Separator className="my-1.5" />
@@ -491,8 +415,6 @@ const Sidebar: React.FC = () => {
                                     </>
                                 )}
                             </div>
-
-                            {/* Action buttons */}
                             <div className="px-4 pb-3 space-y-1.5">
                                 <Button
                                     variant="outline"
@@ -519,8 +441,6 @@ const Sidebar: React.FC = () => {
                                     {isRecruiter ? 'View Company Profile' : 'View Profile'}
                                 </Button>
                             </div>
-
-                            {/* Logout */}
                             <div className="px-4 pb-4 pt-1 border-t border-border">
                                 <Button
                                     onClick={handleLogout}
@@ -543,5 +463,4 @@ const Sidebar: React.FC = () => {
         </TooltipProvider>
     );
 };
-
 export default Sidebar;

@@ -1,11 +1,6 @@
 import { create } from 'zustand';
 import api from '@/utils/api';
 import { useNotificationStore } from '@/utils/notification';
-
-// ==========================================
-// TYPES
-// ==========================================
-
 export interface RankingEntry {
   rank: number;
   studentId: string;
@@ -18,7 +13,6 @@ export interface RankingEntry {
   departmentRank?: number;
   isCurrentStudent: boolean;
 }
-
 export interface DepartmentRankingEntry {
   rank: number;
   studentId: string;
@@ -28,12 +22,10 @@ export interface DepartmentRankingEntry {
   points: number;
   isCurrentStudent: boolean;
 }
-
 export interface CurrentStudentRanking {
   overallRank: number;
   departmentRank: number;
 }
-
 export interface StudentRankingPosition {
   studentInfo: {
     id: string;
@@ -54,55 +46,36 @@ export interface StudentRankingPosition {
     percentile: number;
   };
 }
-
 export type RankingView = 'overall' | 'department';
-
 interface Pagination {
   total: number;
   limit: number;
   skip: number;
 }
-
-// ==========================================
-// STORE
-// ==========================================
-
 interface RankingsState {
-  // Data
   rankings: RankingEntry[];
   departmentRankings: DepartmentRankingEntry[];
   currentStudentRanking: CurrentStudentRanking | null;
   myPosition: StudentRankingPosition | null;
   departmentName: string;
-
-  // Filters & View
   activeView: RankingView;
   searchQuery: string;
   selectedYear: string;
-
-  // Pagination
   pagination: Pagination;
   deptPagination: Pagination;
-
-  // Loading
   isLoadingOverall: boolean;
   isLoadingDepartment: boolean;
   isLoadingPosition: boolean;
-
-  // Actions
   fetchAllRankings: () => Promise<void>;
   fetchDepartmentRankings: () => Promise<void>;
   fetchMyPosition: () => Promise<void>;
   fetchAll: () => Promise<void>;
-
-  // UI
   setActiveView: (view: RankingView) => void;
   setSearchQuery: (q: string) => void;
   setSelectedYear: (year: string) => void;
   setPage: (skip: number) => void;
   setDeptPage: (skip: number) => void;
 }
-
 export const useRankingsStore = create<RankingsState>((set, get) => ({
   rankings: [],
   departmentRankings: [],
@@ -117,8 +90,6 @@ export const useRankingsStore = create<RankingsState>((set, get) => ({
   isLoadingOverall: false,
   isLoadingDepartment: false,
   isLoadingPosition: false,
-
-  // ─── FETCH OVERALL ────────────────────────────────────────
   fetchAllRankings: async () => {
     const { showNotification } = useNotificationStore.getState();
     const { pagination } = get();
@@ -130,7 +101,6 @@ export const useRankingsStore = create<RankingsState>((set, get) => ({
         limit: String(pagination.limit),
         skip: String(pagination.skip),
       });
-
       const res = await api.get(`/api/student/rankings?${params}`);
       if (res.data.success) {
         set({
@@ -145,20 +115,15 @@ export const useRankingsStore = create<RankingsState>((set, get) => ({
       set({ isLoadingOverall: false });
     }
   },
-
-  // ─── FETCH DEPARTMENT ─────────────────────────────────────
   fetchDepartmentRankings: async () => {
     const { showNotification } = useNotificationStore.getState();
     const { deptPagination } = get();
-
     try {
       set({ isLoadingDepartment: true });
-
       const params = new URLSearchParams({
         limit: String(deptPagination.limit),
         skip: String(deptPagination.skip),
       });
-
       const res = await api.get(`/api/student/rankings/department?${params}`);
       if (res.data.success) {
         set({
@@ -173,8 +138,6 @@ export const useRankingsStore = create<RankingsState>((set, get) => ({
       set({ isLoadingDepartment: false });
     }
   },
-
-  // ─── FETCH MY POSITION ────────────────────────────────────
   fetchMyPosition: async () => {
     const { showNotification } = useNotificationStore.getState();
     try {
@@ -187,8 +150,6 @@ export const useRankingsStore = create<RankingsState>((set, get) => ({
       set({ isLoadingPosition: false });
     }
   },
-
-  // ─── FETCH ALL ────────────────────────────────────────────
   fetchAll: async () => {
     await Promise.all([
       get().fetchAllRankings(),
@@ -196,19 +157,14 @@ export const useRankingsStore = create<RankingsState>((set, get) => ({
       get().fetchMyPosition(),
     ]);
   },
-
-  // ─── UI ───────────────────────────────────────────────────
   setActiveView: (view) => set({ activeView: view }),
 
   setSearchQuery: (q) => set({ searchQuery: q }),
-
   setSelectedYear: (year) => set({ selectedYear: year }),
-
   setPage: (skip) => {
     set({ pagination: { ...get().pagination, skip } });
     get().fetchAllRankings();
   },
-
   setDeptPage: (skip) => {
     set({ deptPagination: { ...get().deptPagination, skip } });
     get().fetchDepartmentRankings();

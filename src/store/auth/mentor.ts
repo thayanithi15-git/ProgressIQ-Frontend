@@ -27,7 +27,6 @@ export const useMentorAuthStore = create<MentorAuthState>((set) => ({
 
   login: async (email: string, password: string) => {
     const { showNotification } = useNotificationStore.getState();
-    
     try {
       set({ isLoading: true });
       showNotification('Signing in...', 'pending');
@@ -43,12 +42,10 @@ export const useMentorAuthStore = create<MentorAuthState>((set) => ({
         throw new Error('Unauthorized: Mentor access only');
       }
 
-      // Encrypt and store sensitive data
       setEncryptedItem('token', token);
       setEncryptedItem('role', role);
       setEncryptedItem('userId', userId);
 
-      // Store user session for UI (try profile, fallback to email prefix)
       if (typeof window !== 'undefined') {
         let displayName = email.split('@')[0] || 'Mentor';
         try {
@@ -87,17 +84,14 @@ export const useMentorAuthStore = create<MentorAuthState>((set) => ({
       showNotification('Login successful! Welcome Mentor.', 'success');
     } catch (error: any) {
       set({ isLoading: false, user: null, isAuthenticated: false });
-      
       const errorMessage = error.response?.data?.message || error.message || 'Login failed. Please try again.';
       showNotification(errorMessage, 'error');
-      
       throw error;
     }
   },
 
   googleLogin: async (credential: string) => {
     const { showNotification } = useNotificationStore.getState();
-    
     try {
       set({ isLoading: true });
       showNotification('Signing in with Google...', 'pending');
@@ -154,7 +148,6 @@ export const useMentorAuthStore = create<MentorAuthState>((set) => ({
 
   logout: () => {
     const { showNotification } = useNotificationStore.getState();
-    
     removeEncryptedItem('token');
     removeEncryptedItem('role');
     removeEncryptedItem('userId');

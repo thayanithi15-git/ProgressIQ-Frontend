@@ -21,12 +21,10 @@ import {
 import { sidebarData } from '@/data/sidebar-data'
 import { ScrollArea } from './ui/scroll-area'
 import { useSearchStore } from '@/store/useSearchStore'
-
 export function CommandMenu() {
   const router = useRouter()
   const { setTheme } = useTheme()
   const { open, setOpen } = useSearchStore()
-
   const runCommand = React.useCallback(
     (command: () => unknown) => {
       setOpen(false)
@@ -34,7 +32,6 @@ export function CommandMenu() {
     },
     [setOpen]
   )
-
   return (
     <CommandDialog modal open={open} onOpenChange={setOpen}>
       <CommandInput placeholder='Type a command or search...' />
@@ -59,7 +56,6 @@ export function CommandMenu() {
                       {navItem.title}
                     </CommandItem>
                   )
-
                 return navItem.items?.map((subItem, i) => (
                   <CommandItem
                     key={`${navItem.title}-${subItem.url}-${i}`}

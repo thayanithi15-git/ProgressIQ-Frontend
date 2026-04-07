@@ -1,5 +1,4 @@
 'use client';
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -13,14 +12,11 @@ import HeroSection from "@/components/landing/hero";
 import HeaderSection from "@/components/landing/header";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-
 export default function LandingPage() {
   const { isDark, toggleTheme } = useThemeStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState<'student' | 'mentor' | 'admin' | null>(null);
-
   const router = useRouter();
-
   const steps = [
     {
       step: 1,
@@ -59,7 +55,6 @@ export default function LandingPage() {
       icon: <TrendingUp className="w-10 h-10 text-primary" />
     }
   ];
-
   return (
     <div className={`min-h-screen ${isDark ? 'dark' : ''} font-poppins`}>
       <style>{`
@@ -81,11 +76,8 @@ export default function LandingPage() {
           --ring: ${isDark ? 'oklch(0.6132 0.2294 291.7437)' : '#0c9ced'};
         }
       `}</style>
-
       <HeaderSection />
-
       <HeroSection />
-
       <section id="features" className="pt-10 pb-20 px-4 bg-card">
         <div className="max-w-6xl mx-auto">
           <motion.div
@@ -101,7 +93,6 @@ export default function LandingPage() {
               Comprehensive tools designed to streamline activity tracking and performance monitoring
             </p>
           </motion.div>
-
           <div className="grid md:grid-cols-4 gap-6">
             <FeatureCard
               icon={<Activity className="h-7 w-7 text-primary" />}
@@ -109,21 +100,18 @@ export default function LandingPage() {
               desc="Monitor daily activities and task updates instantly across teams and departments."
               isDark={isDark}
             />
-
             <FeatureCard
               icon={<BarChart3 className="h-7 w-7 text-primary" />}
               title="Smart Analytics"
               desc="AI-driven insights to measure productivity, progress, and performance metrics."
               isDark={isDark}
             />
-
             <FeatureCard
               icon={<Users className="h-7 w-7 text-primary" />}
               title="Team Collaboration"
               desc="Centralized workspace for mentors, students, and administrators to work together."
               isDark={isDark}
             />
-
             <FeatureCard
               icon={<ShieldCheck className="h-7 w-7 text-primary" />}
               title="Secure & Reliable"
@@ -133,7 +121,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
       <section id="flow" className="py-20 px-4 bg-background">
         <div className="max-w-6xl mx-auto">
           <motion.div
@@ -149,7 +136,6 @@ export default function LandingPage() {
               A seamless workflow from setup to analytics and reporting
             </p>
           </motion.div>
-
           <div className="grid md:grid-cols-3 gap-6">
             {steps.map((item, idx) => (
               <motion.div
@@ -173,10 +159,8 @@ export default function LandingPage() {
               </motion.div>
             ))}
           </div>
-
         </div>
       </section>
-
       <section id="roles" className="py-20 px-4 bg-card">
         <div className="max-w-6xl mx-auto">
           <motion.div
@@ -192,9 +176,7 @@ export default function LandingPage() {
               Specialized features designed for administrators, mentors, and students
             </p>
           </motion.div>
-
           <div className="grid md:grid-cols-3 gap-8">
-
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -237,7 +219,6 @@ export default function LandingPage() {
                 </CardContent>
               </Card>
             </motion.div>
-
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -280,7 +261,6 @@ export default function LandingPage() {
                 </CardContent>
               </Card>
             </motion.div>
-
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -326,7 +306,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
       <section className="py-20 px-4 bg-gradient-to-br from-primary to-accent text-white">
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <motion.h2
@@ -336,7 +315,6 @@ export default function LandingPage() {
           >
             Ready to Transform Your Institution?
           </motion.h2>
-
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -347,7 +325,6 @@ export default function LandingPage() {
           </motion.p>
         </div>
       </section>
-
       <footer className="bg-card border-t border-border px-4 py-12">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
@@ -364,7 +341,6 @@ export default function LandingPage() {
               </div>
               <p className="text-muted-foreground text-sm">Smart Activity Reporting Dashboard</p>
             </div>
-
             <div className="space-y-3">
               <h4 className="font-semibold text-foreground">Product</h4>
               <ul className="space-y-1 text-muted-foreground text-sm">
@@ -373,7 +349,6 @@ export default function LandingPage() {
                 <li><a href="#" className="hover:text-primary transition-colors">Security</a></li>
               </ul>
             </div>
-
             <div className="space-y-3">
               <h4 className="font-semibold text-foreground">Company</h4>
               <ul className="space-y-1 text-muted-foreground text-sm">
@@ -382,7 +357,6 @@ export default function LandingPage() {
                 <li><a href="#" className="hover:text-primary transition-colors">Contact</a></li>
               </ul>
             </div>
-
             <div className="space-y-3">
               <h4 className="font-semibold text-foreground">Legal</h4>
               <ul className="space-y-1 text-muted-foreground text-sm">
@@ -392,7 +366,6 @@ export default function LandingPage() {
               </ul>
             </div>
           </div>
-
           <div className="border-t border-border pt-8">
             <p className="text-muted-foreground text-sm text-center">
               © 2026 Progress IQ. All rights reserved.
@@ -400,14 +373,12 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
-
       {selectedRole && (
         <RoleLoginModal role={selectedRole} onClose={() => setSelectedRole(null)} />
       )}
     </div>
   );
 }
-
 function FeatureCard({
   icon,
   title,
@@ -434,16 +405,13 @@ function FeatureCard({
     </motion.div>
   );
 }
-
 function RoleLoginModal({ role, onClose }: { role: string; onClose: () => void }) {
   const roleConfig = {
     student: { title: "Student Login", link: "/login", color: "accent" },
     mentor: { title: "Mentor Login", link: "/mentor/login", color: "secondary" },
     admin: { title: "Admin Login", link: "/admin/login", color: "primary" },
   };
-
   const config = roleConfig[role as keyof typeof roleConfig];
-
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -462,14 +430,12 @@ function RoleLoginModal({ role, onClose }: { role: string; onClose: () => void }
           <h2 className="text-2xl font-bold text-foreground">{config.title}</h2>
           <p className="text-muted-foreground">Choose your preferred authentication method</p>
         </div>
-
         <div className="space-y-3">
           <Link href={config.link} className="block w-full">
             <Button className="w-full bg-primary text-white font-bold h-12">
               Continue with Email
             </Button>
           </Link>
-
           <Button variant="outline" className="w-full border-2 border-border h-12 font-bold">
             <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
               <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -480,7 +446,6 @@ function RoleLoginModal({ role, onClose }: { role: string; onClose: () => void }
             Continue with Google
           </Button>
         </div>
-
         <button
           onClick={onClose}
           className="w-full text-muted-foreground hover:text-foreground transition-colors font-medium"

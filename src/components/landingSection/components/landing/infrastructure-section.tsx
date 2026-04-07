@@ -39,7 +39,6 @@ export function InfrastructureSection() {
     <section ref={sectionRef} className="relative py-24 lg:py-32 overflow-hidden">
       <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
-          {/* Left: Content */}
           <div
             className={`transition-all duration-700 ${
               isVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8"
@@ -55,11 +54,10 @@ export function InfrastructureSection() {
               default.
             </h2>
             <p className="text-xl text-muted-foreground leading-relaxed mb-12">
-              Deploy once, run everywhere. Our edge network spans 17 data centers 
+              Deploy once, run everywhere. Our edge network spans 17 data centers
               across 6 continents, delivering sub-50ms latency to 99% of the world.
             </p>
 
-            {/* Stats */}
             <div className="grid grid-cols-3 gap-8">
               <div>
                 <div className="text-4xl lg:text-5xl font-display mb-2">17</div>
@@ -76,14 +74,12 @@ export function InfrastructureSection() {
             </div>
           </div>
 
-          {/* Right: Location list */}
           <div
             className={`transition-all duration-700 delay-200 ${
               isVisible ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8"
             }`}
           >
             <div className="border border-foreground/10">
-              {/* Header */}
               <div className="px-6 py-4 border-b border-foreground/10 flex items-center justify-between">
                 <span className="text-sm font-mono text-muted-foreground">Edge Network</span>
                 <span className="flex items-center gap-2 text-xs font-mono text-green-600">
@@ -92,7 +88,6 @@ export function InfrastructureSection() {
                 </span>
               </div>
 
-              {/* Locations */}
               <div>
                 {locations.map((location, index) => (
                   <div
@@ -102,7 +97,7 @@ export function InfrastructureSection() {
                     }`}
                   >
                     <div className="flex items-center gap-4">
-                      <span 
+                      <span
                         className={`w-2 h-2 rounded-full transition-colors duration-300 ${
                           activeLocation === index ? "bg-foreground" : "bg-foreground/20"
                         }`}

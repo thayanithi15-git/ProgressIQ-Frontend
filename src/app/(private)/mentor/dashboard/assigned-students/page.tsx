@@ -12,17 +12,11 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
-// import {
-//   Select,
-//   SelectContent,
-//   SelectItem,
-//   SelectTrigger,
-//   SelectValue,
-// } from '@/';
+
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAssignedStudentsStore } from '@/store/mentor/assignedStudents';
-// import { MentorHeader } from '@/components/mentor/header';
+
 import { motion } from 'framer-motion';
 import Header from '@/components/layout/header';
 import { Select,
@@ -71,7 +65,6 @@ const StudentProfileModal = ({ student, onClose }: any) => {
     <Dialog open={!!student} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto border-none p-0 bg-transparent shadow-none">
         <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-2xl">
-          {/* Header */}
           <div className="px-6 py-5 border-b border-border/50 bg-foreground/[0.02] flex items-center justify-between">
             <div>
               <DialogTitle className="text-lg font-semibold">Student Profile</DialogTitle>
@@ -83,7 +76,6 @@ const StudentProfileModal = ({ student, onClose }: any) => {
           </div>
 
           <div className="p-6 space-y-6">
-            {/* Profile Summary */}
             <div className="relative overflow-hidden bg-primary/[0.03] border border-primary/10 rounded-2xl p-6">
               <div className="relative z-10 flex items-start justify-between">
                 <div>
@@ -107,7 +99,6 @@ const StudentProfileModal = ({ student, onClose }: any) => {
               </div>
             </div>
 
-            {/* Stats Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {[
                 { label: "Projects", val: stats.projects.approved, sub: `${stats.projects.pending} Pending` },
@@ -123,7 +114,6 @@ const StudentProfileModal = ({ student, onClose }: any) => {
               ))}
             </div>
 
-            {/* Contact Details */}
             <div className="bg-card border border-border/60 rounded-xl overflow-hidden">
               <div className="px-4 py-3 bg-foreground/[0.01] border-b border-border/40">
                 <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Personal & Academic Details</p>

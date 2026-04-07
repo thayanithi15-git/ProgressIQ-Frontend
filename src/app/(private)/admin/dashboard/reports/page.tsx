@@ -47,8 +47,6 @@ import { useAdminReportsStore, ReportCategory, ReportType } from "@/store/admin/
 import GlobalNotification from "@/components/notify/notification";
 import Header from "@/components/layout/header";
 
-// ─── COMPONENTS ──────────────────────────────────────────────────────────────
-
 const StepHeader = ({ step, title, subtitle }: { step: number; title: string; subtitle: string }) => (
     <div className="flex items-center gap-4 mb-6">
         <div className="w-10 h-10 rounded-2xl bg-primary/10 flex items-center justify-center border border-primary/20 text-primary font-black text-sm">
@@ -70,21 +68,21 @@ const ReportTypeCard: React.FC<{
     isSelected: boolean;
     onClick: () => void;
 }> = ({ icon: Icon, title, description, color, isSelected, onClick }) => (
-    <motion.div 
-        whileHover={{ y: -4 }} 
-        whileTap={{ scale: 0.98 }} 
+    <motion.div
+        whileHover={{ y: -4 }}
+        whileTap={{ scale: 0.98 }}
         onClick={onClick}
         className="cursor-pointer h-full"
     >
         <Card className={`h-full border-1 transition-all duration-500 overflow-hidden ${
-            isSelected 
-            ? "border-primary bg-primary/[0.03] shadow-lg shadow-primary/10" 
+            isSelected
+            ? "border-primary bg-primary/[0.03] shadow-lg shadow-primary/10"
             : "border-border/60 bg-transparent hover:border-primary/40 hover:bg-muted/30"
         }`}>
             <CardContent className="p-5">
                 <div className="flex items-start gap-4">
                     <div className="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border transition-all duration-500"
-                        style={{ 
+                        style={{
                             backgroundColor: isSelected ? `${color}20` : 'rgba(var(--muted), 0.2)',
                             borderColor: isSelected ? `${color}40` : 'rgba(var(--border), 0.4)'
                         }}>
@@ -114,15 +112,15 @@ const CategoryCard: React.FC<{
     isSelected: boolean;
     onClick: () => void;
 }> = ({ icon: Icon, title, description, color, isSelected, onClick }) => (
-    <motion.div 
-        whileHover={{ y: -4 }} 
-        whileTap={{ scale: 0.97 }} 
+    <motion.div
+        whileHover={{ y: -4 }}
+        whileTap={{ scale: 0.97 }}
         onClick={onClick}
         className="cursor-pointer h-full"
     >
         <Card className={`h-full border-1 transition-all duration-500 ${
-            isSelected 
-            ? "border-primary bg-primary/[0.03] shadow-xl shadow-primary/5" 
+            isSelected
+            ? "border-primary bg-primary/[0.03] shadow-xl shadow-primary/5"
             : "border-border/60 bg-transparent hover:border-primary/20"
         }`} style={isSelected ? { borderColor: `${color}60` } : {}}>
             <CardContent className="p-4">
@@ -426,8 +424,6 @@ const ReportPreview: React.FC = () => {
     );
 };
 
-// ─── MAIN COMPONENT ──────────────────────────────────────────────────────────
-
 export default function AdminReports() {
     const {
         selectedType, selectedCategory, filters, isGenerating,
@@ -451,9 +447,9 @@ export default function AdminReports() {
     ];
 
     const handlePreview = () => validateFilters() && fetchReportPreview(selectedCategory, filters);
-    const handleGenerate = async () => validateFilters() && generateReport({ 
-        type: selectedType, category: selectedCategory, filter: filters, 
-        options: { includeCharts: true, includeStatistics: true, includeRankings: selectedCategory === "performance" } 
+    const handleGenerate = async () => validateFilters() && generateReport({
+        type: selectedType, category: selectedCategory, filter: filters,
+        options: { includeCharts: true, includeStatistics: true, includeRankings: selectedCategory === "performance" }
     });
 
     return (
@@ -476,8 +472,6 @@ export default function AdminReports() {
             />
 
             <div className="p-4 lg:p-8 max-w-[1600px] mx-auto space-y-12">
-                
-                {/* Format Selection */}
                 <section>
                     <StepHeader step={1} title="Output Matrix" subtitle="Define the protocol for data delivery" />
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -487,7 +481,6 @@ export default function AdminReports() {
                     </div>
                 </section>
 
-                {/* Domain Selection */}
                 <section>
                     <StepHeader step={2} title="Domain Taxonomy" subtitle="Select the academic sector for extraction" />
                     <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
@@ -497,7 +490,6 @@ export default function AdminReports() {
                     </div>
                 </section>
 
-                {/* Final step split */}
                 <section className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
                     <div className="space-y-8">
                          <StepHeader step={3} title="Configuration Layer" subtitle="Execute fine-grained audit filters" />
@@ -514,13 +506,11 @@ export default function AdminReports() {
                             </div>
                          </div>
                          <ReportPreview />
-                         
                          <div className="flex gap-4 pt-6">
                             <Button onClick={handleGenerate} disabled={isGenerating} className="flex-1 h-14 rounded-2xl bg-primary text-primary-foreground font-black uppercase tracking-[0.2em] text-xs shadow-2xl hover:translate-y-[-2px] transition-all duration-300">
                                {isGenerating ? "Generating Protocol..." : "Generate & Synthesize"}
                             </Button>
                          </div>
-                         
                          <div className="flex items-center gap-3 flex-wrap opacity-60">
                             {["End-to-End Encryption", "Instant Generation", "Verified Data"].map(tag => (
                                 <div key={tag} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-muted/40 border border-border/40 border-dashed">

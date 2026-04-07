@@ -1,7 +1,5 @@
 import CryptoJS from 'crypto-js';
-
 const SECRET_KEY = process.env.NEXT_PUBLIC_SECRET_KEY || 'progress-iq-secret-key-2026';
-
 export const encryptData = (data: string): string => {
   if (!SECRET_KEY) {
     console.error("SECRET_KEY is not defined!");
@@ -9,7 +7,6 @@ export const encryptData = (data: string): string => {
   }
   return CryptoJS.AES.encrypt(data, SECRET_KEY).toString();
 };
-
 export const decryptData = (cipherText: string): string | null => {
   try {
     if (!SECRET_KEY) {
@@ -23,7 +20,6 @@ export const decryptData = (cipherText: string): string | null => {
     return null;
   }
 };
-
 export const setEncryptedItem = (key: string, value: string): void => {
   if (typeof window !== 'undefined') {
     if (key == 'token') {
@@ -34,7 +30,6 @@ export const setEncryptedItem = (key: string, value: string): void => {
     localStorage.setItem(key, encrypted);
   }
 };
-
 export const getEncryptedItem = (key: string): string | null => {
   if (typeof window !== 'undefined') {
     if (key == 'token') {
@@ -47,7 +42,6 @@ export const getEncryptedItem = (key: string): string | null => {
   }
   return null;
 };
-
 export const removeEncryptedItem = (key: string): void => {
   if (typeof window !== 'undefined') {
     localStorage.removeItem(key);

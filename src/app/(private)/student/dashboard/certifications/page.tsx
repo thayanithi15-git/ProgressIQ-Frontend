@@ -11,9 +11,6 @@ import { useCertificationsStore, Certification, CertStatusFilter } from "@/store
 import Header from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// TOKENS
-// ─────────────────────────────────────────────────────────────────────────────
 const C = {
   blue: "var(--piq-blue)",
   violet: "#7C3AED",
@@ -25,7 +22,7 @@ const C = {
   orange: "#EA580C",
 };
 
-const ACCENT = C.amber; // Certifications accent colour
+const ACCENT = C.amber;
 
 const   STATUS_META: Record<string, { label: string; color: string; bg: string; icon: any }> = {
   PENDING: {
@@ -50,9 +47,6 @@ const   STATUS_META: Record<string, { label: string; color: string; bg: string; 
   },
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// HELPERS
-// ─────────────────────────────────────────────────────────────────────────────
 const Sk = ({ h = 16, className = "" }: { h?: number; className?: string }) => (
   <div className={`animate-pulse bg-foreground/5 rounded-lg ${className}`} style={{ height: h }} />
 );
@@ -166,9 +160,6 @@ const Field = ({ label, required, children }: any) => (
   </div>
 );
 
-// ─────────────────────────────────────────────────────────────────────────────
-// CERT FORM MODAL
-// ─────────────────────────────────────────────────────────────────────────────
 const CertFormModal = ({ open, editing, onClose, onSubmit, isSubmitting }: any) => {
   const isEdit = !!editing;
   const [form, setForm] = useState({ title: "", platform: "", platformLink: "", from: "", to: "" });
@@ -228,17 +219,11 @@ const CertFormModal = ({ open, editing, onClose, onSubmit, isSubmitting }: any) 
   );
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// CERT CARD
-// ─────────────────────────────────────────────────────────────────────────────
 const CertCard = ({ item, index, onEdit, onDelete, onFeedback }: any) => {
   const days = durationDays(item.from, item.to);
   return (
     <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.045 }}
       className="bg-card-glass/60 backdrop-blur-xl border border-border/40 shadow-sm rounded-2xl p-5 flex flex-col gap-4 relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-
-      {/* Accent strip removed to adhere to monotone style */}
-      {/* <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-blue-500" /> */}
 
       <div className="flex justify-between items-start gap-3 mt-1">
         <div className="flex items-start gap-3 flex-1 min-w-0">
@@ -293,7 +278,7 @@ const CertCard = ({ item, index, onEdit, onDelete, onFeedback }: any) => {
       text-[10px] font-bold  uppercase tracking-widest transition-colors"
     >
       <MessageSquare size={13} /> Feedback
-    </Button>   
+    </Button>
   )}
 
   {item.status === "PENDING" && (
@@ -327,9 +312,6 @@ const CertCard = ({ item, index, onEdit, onDelete, onFeedback }: any) => {
   );
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// MAIN PAGE
-// ─────────────────────────────────────────────────────────────────────────────
 export default function CertificationsPage() {
   const {
     certifications, pagination, statusFilter, searchQuery,
@@ -384,7 +366,6 @@ export default function CertificationsPage() {
 
       <main className="p-6 lg:p-8 max-w-[1600px] mx-auto space-y-6">
 
-        {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
             { label: "Total", val: counts.ALL, color: "var(--piq-blue)" },
@@ -400,7 +381,6 @@ export default function CertificationsPage() {
           ))}
         </div>
 
-        {/* Filters */}
         <div className="bg-card-glass/60 backdrop-blur-xl border border-border/40 shadow-sm rounded-2xl p-4 flex flex-col lg:flex-row items-center gap-4 justify-between">
           <div className="flex gap-2 flex-wrap w-full lg:w-auto">
             {(["ALL", "PENDING", "APPROVED", "REJECTED"] as CertStatusFilter[]).map(f => (
@@ -413,7 +393,6 @@ export default function CertificationsPage() {
           </div>
         </div>
 
-        {/* Cards */}
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {[...Array(6)].map((_, i) => <Sk key={i} h={220} className="rounded-2xl" />)}
@@ -437,7 +416,6 @@ export default function CertificationsPage() {
           </div>
         )}
 
-        {/* Pagination bar */}
         {totalPages > 1 && (
           <div className="flex items-center justify-center gap-4 pt-2">
             <Button variant="outline" size="sm" onClick={() => setPage(pagination.skip - pagination.limit)} disabled={currentPage === 1} className="rounded-xl font-bold uppercase tracking-widest text-[10px] gap-2 h-9 px-4">

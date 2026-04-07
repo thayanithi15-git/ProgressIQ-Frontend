@@ -1,7 +1,5 @@
 import CryptoJS from 'crypto-js';
-
 const SECRET_KEY = process.env.NEXT_PUBLIC_SECRET_KEY || 'fallback-key';
-
 export const encryptData = (data: any) => {
     if (!SECRET_KEY) {
         console.error("SECRET_KEY is not defined!");
@@ -9,7 +7,6 @@ export const encryptData = (data: any) => {
     }
     return CryptoJS.AES.encrypt(data, SECRET_KEY).toString();
 };
-
 export const decryptData = (cipherText: any) => {
     try {
         if (!SECRET_KEY) {

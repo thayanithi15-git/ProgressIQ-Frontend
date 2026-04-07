@@ -68,7 +68,6 @@ export default function MentorLoginPage() {
       <GlobalNotification />
       <div className="min-h-screen w-full flex font-sans bg-background overflow-hidden relative">
 
-        {/* Background Grid (Same as landing) */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-30">
           {[...Array(8)].map((_, i) => (
             <div
@@ -86,7 +85,6 @@ export default function MentorLoginPage() {
           ))}
         </div>
 
-        {/* LEFT PANEL - Login Form */}
         <div className="flex-1 flex items-center justify-center p-6 sm:p-12 relative z-10">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -94,7 +92,6 @@ export default function MentorLoginPage() {
             transition={{ duration: 0.6 }}
             className="w-full max-w-md"
           >
-            {/* Mobile Logo */}
             <div className="lg:hidden mb-12 flex flex-col items-center">
               <Image src="/progress_iq.png" alt="Logo" width={48} height={48} className="mb-4" />
               <h1 className="text-3xl font-display tracking-tight">Progress IQ</h1>
@@ -211,9 +208,7 @@ export default function MentorLoginPage() {
           </motion.div>
         </div>
 
-        {/* RIGHT PANEL - Visual (Desktop Only) */}
         <div className="hidden lg:flex w-[50%] relative overflow-hidden bg-foreground flex-col">
-          {/* Animated sphere background */}
           <div className="absolute inset-0 opacity-20 pointer-events-none invert">
             <AnimatedSphere />
           </div>

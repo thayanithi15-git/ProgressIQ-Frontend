@@ -1,5 +1,4 @@
 "use client"
-
 import Link from 'next/link'
 import {
   BadgeCheck,
@@ -28,9 +27,7 @@ import {
 } from '@/components/ui/sidebar'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-// import { useAuthMeStore } from '@/store/auth/me/me'
 import { decryptData } from '../../utils/crypto'
-
 export function NavUser({
   user,
 }: {
@@ -42,47 +39,31 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar()
   const router = useRouter()
-
   const [appRole, setAppRole] = useState<string | null>(null);
-
   useEffect(() => {
     const newEncryptedRole = localStorage.getItem("role");
     const role = newEncryptedRole ? decryptData(newEncryptedRole) : null;
     setAppRole(role);
   }, []);
-
-
   function handleLogout() {
     if (typeof window !== "undefined") {
       localStorage.clear()
     }
     router.push('/')
   }
-
-  // const { fetchMe, userDetails } = useAuthMeStore();
-
-  // useEffect(() => {
-    // fetchMe();
-  // }, [fetchMe])
-
   function getInitials(name?: string | null): string {
-    if (!name || !name.trim()) return ""; // fallback for null/undefined/empty
-
+    if (!name || !name.trim()) return "";
     const words = name.trim().split(/\s+/);
     if (words.length === 0) return "";
-
     if (words.length === 1) {
       return words[0].charAt(0).toUpperCase();
     }
-
     return (words[0].charAt(0) + words[1].charAt(0)).toUpperCase();
   }
-
   const userDetails = {
     name: user.name,
     email: user.email,
   };
-
   return (
     <SidebarMenu>
       <SidebarMenuItem>
@@ -112,16 +93,13 @@ export function NavUser({
             <DropdownMenuLabel className='p-0 font-normal cursor-pointer'>
               <div className='flex flex-col space-y-1 my-3 ml-2'>
                 <div className='flex gap-4 '>
-
                   <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
                     <User className="h-4 w-4 text-primary-foreground" />
                   </div>
-
                   <div>
                     <p className='text-sm leading-none font-medium'>{userDetails?.name || 'Abishek Sharma'}</p>
                     <p className='flex py-1 text-green-600 font-semibold'>
                       {('Admin')}
-                      {/* appRole ? appRole.charAt(0).toUpperCase() + appRole.slice(1) :  */}
                     </p>
                   </div>
                 </div>

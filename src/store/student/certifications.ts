@@ -2,11 +2,6 @@ import { create } from 'zustand';
 import api from '@/utils/api';
 import { useNotificationStore } from '@/utils/notification';
 import { getStoredMentorId } from '@/utils/mentorSession';
-
-// ==========================================
-// TYPES
-// ==========================================
-
 export interface Certification {
   _id: string;
   studentId: string;
@@ -25,7 +20,6 @@ export interface Certification {
   createdAt: string;
   updatedAt: string;
 }
-
 export interface CreateCertificationPayload {
   mentorId?: string;
   title: string;
@@ -34,9 +28,7 @@ export interface CreateCertificationPayload {
   from: string;
   to: string;
 }
-
 export interface UpdateCertificationPayload extends Partial<CreateCertificationPayload> {}
-
 export interface CertificationFeedback {
   id: string;
   mentor: string;
@@ -45,19 +37,12 @@ export interface CertificationFeedback {
   createdAt: string;
   type: string;
 }
-
 export type CertStatusFilter = 'ALL' | 'PENDING' | 'APPROVED' | 'REJECTED';
-
 interface Pagination {
   total: number;
   limit: number;
   skip: number;
 }
-
-// ==========================================
-// STORE
-// ==========================================
-
 interface CertificationsState {
   certifications: Certification[];
   selectedCertification: Certification | null;
@@ -70,16 +55,12 @@ interface CertificationsState {
   isModalOpen: boolean;
   isFeedbackModalOpen: boolean;
   editingCertification: Certification | null;
-
-  // Actions
   fetchCertifications: (status?: CertStatusFilter) => Promise<void>;
   fetchCertificationById: (id: string) => Promise<void>;
   createCertification: (payload: CreateCertificationPayload) => Promise<boolean>;
   updateCertification: (id: string, payload: UpdateCertificationPayload) => Promise<boolean>;
   deleteCertification: (id: string) => Promise<boolean>;
   fetchFeedback: (id: string) => Promise<void>;
-
-  // UI
   setStatusFilter: (filter: CertStatusFilter) => void;
   setSearchQuery: (q: string) => void;
   setPage: (skip: number) => void;
@@ -89,7 +70,6 @@ interface CertificationsState {
   openFeedbackModal: (id: string) => Promise<void>;
   closeFeedbackModal: () => void;
 }
-
 export const useCertificationsStore = create<CertificationsState>((set, get) => ({
   certifications: [],
   selectedCertification: null,
@@ -102,21 +82,17 @@ export const useCertificationsStore = create<CertificationsState>((set, get) => 
   isModalOpen: false,
   isFeedbackModalOpen: false,
   editingCertification: null,
-
   fetchCertifications: async (status?) => {
     const { showNotification } = useNotificationStore.getState();
     const { pagination, statusFilter } = get();
     const activeFilter = status ?? statusFilter;
-
     try {
       set({ isLoading: true });
-
       const params = new URLSearchParams({
         limit: String(pagination.limit),
         skip: String(pagination.skip),
       });
       if (activeFilter !== 'ALL') params.append('status', activeFilter);
-
       const res = await api.get(`/api/student/certifications?${params}`);
       if (res.data.success) {
         set({
@@ -130,7 +106,6 @@ export const useCertificationsStore = create<CertificationsState>((set, get) => 
       set({ isLoading: false });
     }
   },
-
   fetchCertificationById: async (id) => {
     const { showNotification } = useNotificationStore.getState();
     try {
@@ -140,7 +115,6 @@ export const useCertificationsStore = create<CertificationsState>((set, get) => 
       showNotification(error.response?.data?.message || 'Failed to fetch certification', 'error');
     }
   },
-
   createCertification: async (payload) => {
     const { showNotification } = useNotificationStore.getState();
     try {
@@ -165,7 +139,6 @@ export const useCertificationsStore = create<CertificationsState>((set, get) => 
       set({ isSubmitting: false });
     }
   },
-
   updateCertification: async (id, payload) => {
     const { showNotification } = useNotificationStore.getState();
     try {
@@ -185,7 +158,6 @@ export const useCertificationsStore = create<CertificationsState>((set, get) => 
       set({ isSubmitting: false });
     }
   },
-
   deleteCertification: async (id) => {
     const { showNotification } = useNotificationStore.getState();
     try {
@@ -201,7 +173,6 @@ export const useCertificationsStore = create<CertificationsState>((set, get) => 
       return false;
     }
   },
-
   fetchFeedback: async (id) => {
     const { showNotification } = useNotificationStore.getState();
     try {
@@ -211,29 +182,21 @@ export const useCertificationsStore = create<CertificationsState>((set, get) => 
       showNotification(error.response?.data?.message || 'No feedback found', 'error');
     }
   },
-
   setStatusFilter: (filter) => {
     set({ statusFilter: filter, pagination: { ...get().pagination, skip: 0 } });
     get().fetchCertifications(filter);
   },
-
   setSearchQuery: (q) => set({ searchQuery: q }),
-
   setPage: (skip) => {
     set({ pagination: { ...get().pagination, skip } });
     get().fetchCertifications();
   },
-
   openCreateModal: () => set({ isModalOpen: true, editingCertification: null }),
-
   openEditModal: (cert) => set({ isModalOpen: true, editingCertification: cert }),
-
   closeModal: () => set({ isModalOpen: false, editingCertification: null }),
-
   openFeedbackModal: async (id) => {
     await get().fetchFeedback(id);
     set({ isFeedbackModalOpen: true });
   },
-
   closeFeedbackModal: () => set({ isFeedbackModalOpen: false, selectedFeedback: null }),
 }));

@@ -49,7 +49,7 @@ export const StatCard = ({
         <p className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-[0.15em] leading-none opacity-80">
           {label}
         </p>
-        <div 
+        <div
           className="w-10 h-10 rounded-xl flex items-center justify-center transition-all group-hover:scale-110 group-hover:rotate-3 duration-300 shadow-sm"
           style={{ background: `${color}12`, border: `1px solid ${color}20` }}
         >
@@ -68,8 +68,7 @@ export const StatCard = ({
         )}
       </div>
 
-      {/* Subtle background decoration */}
-      <div 
+      <div
         className="absolute -right-6 -bottom-6 w-24 h-24 rounded-full blur-3xl opacity-[0.08] group-hover:opacity-[0.15] transition-opacity duration-700 pointer-events-none"
         style={{ background: color }}
       />

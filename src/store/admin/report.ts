@@ -2,49 +2,36 @@ import { create } from 'zustand';
 import api from '@/utils/api';
 import { useNotificationStore } from '@/utils/notification';
 
-// ==========================================
-// TYPES & INTERFACES
-// ==========================================
-
 export type ReportType = 'pdf' | 'excel' | 'csv';
 export type ReportCategory = 'students' | 'mentors' | 'projects' | 'internships' | 'certifications' | 'performance' | 'comprehensive';
 
 export interface ReportFilter {
-  // Date Filters
   startDate?: string;
   endDate?: string;
 
-  // Student Filters
   department?: string;
   year?: string;
   status?: 'Active' | 'Inactive' | 'All';
 
-  // Performance Filters
   minPoints?: number;
   maxPoints?: number;
   designation?: 'Gold Scholar' | 'Silver Scholar' | 'Bronze Scholar' | 'All';
 
-  // Project Filters
   projectStatus?: 'Completed' | 'In Progress' | 'Pending' | 'All';
 
-  // Internship Filters
   internshipType?: 'Industry' | 'Research' | 'Startup' | 'All';
   internshipStatus?: 'Approved' | 'Pending' | 'Rejected' | 'All';
 
-  // Certification Filters
   certificationStatus?: 'Verified' | 'Pending' | 'All';
   platform?: string;
 
-  // Mentor Filters
   mentorId?: string;
 
-  // ========= Advanced Student Filters =========
   minProjects?: number;
   minInternships?: number;
   certificationName?: string;
   topNPoints?: number;
 
-  // Additional
   includeInactive?: boolean;
   sortBy?: 'name' | 'points' | 'date' | 'department';
   sortOrder?: 'asc' | 'desc';
@@ -72,43 +59,35 @@ export interface ReportPreview {
 }
 
 interface AdminReportsState {
-  // Data States
   currentRequest: ReportRequest | null;
   reportPreview: ReportPreview | null;
 
-  // Available Options
   departments: string[];
   years: string[];
   mentors: { id: string; name: string }[];
   platforms: string[];
 
-  // Filter States
   selectedType: ReportType;
   selectedCategory: ReportCategory;
   filters: ReportFilter;
 
-  // Loading States
   isGenerating: boolean;
   isLoadingPreview: boolean;
   isLoadingOptions: boolean;
 
-  // Actions
   generateReport: (request: ReportRequest) => Promise<void>;
   fetchReportPreview: (category: ReportCategory, filters: ReportFilter) => Promise<void>;
 
-  // Filter Actions
   setReportType: (type: ReportType) => void;
   setReportCategory: (category: ReportCategory) => void;
   updateFilters: (filters: Partial<ReportFilter>) => void;
   resetFilters: () => void;
 
-  // Options Actions
   fetchDepartments: () => Promise<void>;
   fetchYears: () => Promise<void>;
   fetchMentors: () => Promise<void>;
   fetchPlatforms: () => Promise<void>;
 
-  // Utility Actions
   validateFilters: () => boolean;
   getFilterSummary: () => string;
 }
@@ -126,7 +105,6 @@ const initialFilters: ReportFilter = {
 };
 
 export const useAdminReportsStore = create<AdminReportsState>((set, get) => ({
-  // Initial States
   currentRequest: null,
   reportPreview: null,
   departments: [],
@@ -134,19 +112,14 @@ export const useAdminReportsStore = create<AdminReportsState>((set, get) => ({
   mentors: [],
   platforms: [],
 
-  // Initial Filter States
   selectedType: 'pdf',
   selectedCategory: 'students',
   filters: initialFilters,
 
-  // Initial Loading States
   isGenerating: false,
   isLoadingPreview: false,
   isLoadingOptions: false,
 
-  // ==========================================
-  // Generate Report – instantly stream download
-  // ==========================================
   generateReport: async (request: ReportRequest) => {
     const { showNotification } = useNotificationStore.getState();
 
@@ -170,7 +143,6 @@ export const useAdminReportsStore = create<AdminReportsState>((set, get) => ({
       const link = document.createElement('a');
       link.href = url;
 
-      // Try to extract filename from Content-Disposition
       const contentDisposition = response.headers['content-disposition'];
       let filename = `${request.category}_report.${request.type}`;
       if (contentDisposition) {
@@ -207,9 +179,6 @@ export const useAdminReportsStore = create<AdminReportsState>((set, get) => ({
     }
   },
 
-  // ==========================================
-  // Preview Report
-  // ==========================================
   fetchReportPreview: async (category: ReportCategory, filters: ReportFilter) => {
     const { showNotification } = useNotificationStore.getState();
 

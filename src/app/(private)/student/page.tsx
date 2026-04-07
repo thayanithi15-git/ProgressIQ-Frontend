@@ -1,14 +1,10 @@
 'use client';
-
 import React from 'react';
 import { useRouter } from 'next/navigation';
-
 export default function StudentPage() {
   const router = useRouter();
-
   React.useEffect(() => {
     router.push('/student/dashboard');
   }, [router]);
-
   return null;
 }

@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 import {
   Dialog,
@@ -22,17 +21,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useUserManagementStore, StudentData, User, UpdateUserPayload } from "@/store/admin/user-manage";
 import { Mail, Phone, Calendar, MapPin, Book, Users, Award } from "lucide-react";
-
 interface EditUserDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   user: User | StudentData | null;
 }
-
 export function EditUserDialog({ open, onOpenChange, user }: EditUserDialogProps) {
   const { updateUser, isLoading } = useUserManagementStore();
   const [formData, setFormData] = useState<UpdateUserPayload>({});
-
   useEffect(() => {
     if (user) {
       setFormData({
@@ -55,22 +51,16 @@ export function EditUserDialog({ open, onOpenChange, user }: EditUserDialogProps
       });
     }
   }, [user, open]);
-
   const isStudentData = (user: User | StudentData | null): user is StudentData => {
     return user !== null && "firstName" in user;
   };
-
   const handleSubmit = async () => {
     if (!user) return;
-
     await updateUser(user._id, formData);
     onOpenChange(false);
   };
-
   if (!user) return null;
-
   const isStudent = isStudentData(user);
-
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
@@ -80,14 +70,11 @@ export function EditUserDialog({ open, onOpenChange, user }: EditUserDialogProps
             Update user information and settings
           </DialogDescription>
         </DialogHeader>
-
         <Tabs defaultValue="basic" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="basic">Basic Info</TabsTrigger>
             {isStudent && <TabsTrigger value="academic">Academic</TabsTrigger>}
           </TabsList>
-
-          {/* Basic Information */}
           <TabsContent value="basic" className="space-y-6 mt-4">
             <div className="grid grid-cols-2 gap-4">
               {isStudent && (
@@ -127,7 +114,6 @@ export function EditUserDialog({ open, onOpenChange, user }: EditUserDialogProps
                 </>
               )}
             </div>
-
             <div>
               <Label className="text-sm font-semibold text-foreground">Email</Label>
               <Input
@@ -140,7 +126,6 @@ export function EditUserDialog({ open, onOpenChange, user }: EditUserDialogProps
                 }
               />
             </div>
-
             {isStudent && (
               <>
                 <div className="grid grid-cols-2 gap-4">
@@ -183,7 +168,6 @@ export function EditUserDialog({ open, onOpenChange, user }: EditUserDialogProps
                     />
                   </div>
                 </div>
-
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label className="text-sm font-semibold text-foreground">
@@ -227,7 +211,6 @@ export function EditUserDialog({ open, onOpenChange, user }: EditUserDialogProps
                 </div>
               </>
             )}
-
             <div>
               <Label className="text-sm font-semibold text-foreground">Status</Label>
               <Select
@@ -246,8 +229,6 @@ export function EditUserDialog({ open, onOpenChange, user }: EditUserDialogProps
               </Select>
             </div>
           </TabsContent>
-
-          {/* Academic Information */}
           {isStudent && (
             <TabsContent value="academic" className="space-y-6 mt-4">
               <div className="grid grid-cols-2 gap-4">
@@ -290,7 +271,6 @@ export function EditUserDialog({ open, onOpenChange, user }: EditUserDialogProps
                   </Select>
                 </div>
               </div>
-
               <div>
                 <Label className="text-sm font-semibold text-foreground">
                   Academic Year
@@ -307,7 +287,6 @@ export function EditUserDialog({ open, onOpenChange, user }: EditUserDialogProps
                   }
                 />
               </div>
-
               <div className="border-t border-border pt-6">
                 <h3 className="font-semibold text-foreground mb-4">
                   Parent Information
@@ -347,7 +326,6 @@ export function EditUserDialog({ open, onOpenChange, user }: EditUserDialogProps
                   </div>
                 </div>
               </div>
-
               <div>
                 <Label className="text-sm font-semibold text-foreground">
                   Reward Points
@@ -369,8 +347,6 @@ export function EditUserDialog({ open, onOpenChange, user }: EditUserDialogProps
             </TabsContent>
           )}
         </Tabs>
-
-        {/* Action Buttons */}
         <div className="flex gap-3 pt-6 border-t border-border">
           <Button
             onClick={handleSubmit}

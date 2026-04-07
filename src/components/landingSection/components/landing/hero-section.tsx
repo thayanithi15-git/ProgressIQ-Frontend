@@ -24,12 +24,9 @@ export function HeroSection() {
 
   return (
     <section className="relative min-h-screen flex flex-col justify-center overflow-hidden">
-      {/* Animated sphere background */}
       <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[600px] h-[600px] lg:w-[800px] lg:h-[800px] opacity-40 pointer-events-none">
         <AnimatedSphere />
       </div>
-      
-      {/* Subtle grid lines */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-30">
         {[...Array(8)].map((_, i) => (
           <div
@@ -54,10 +51,8 @@ export function HeroSection() {
           />
         ))}
       </div>
-      
       <div className="relative z-10 max-w-[1400px] mb-10 mx-auto px-6 lg:px-12 py-32 lg:py-40">
-        {/* Eyebrow */}
-        <div 
+        <div
           className={`mb-8 transition-all duration-700 ${
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           }`}
@@ -67,10 +62,8 @@ export function HeroSection() {
             The evolution of activity tracking
           </span>
         </div>
-        
-        {/* Main headline */}
         <div className="mb-12">
-          <h1 
+          <h1
             className={`text-[clamp(3rem,12vw,10rem)] font-display leading-[0.9] tracking-tight transition-all duration-1000 ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}
@@ -79,7 +72,7 @@ export function HeroSection() {
             <span className="block">
               to{" "}
               <span className="relative inline-block">
-                <span 
+                <span
                   key={wordIndex}
                   className="inline-flex"
                 >
@@ -100,45 +93,38 @@ export function HeroSection() {
             </span>
           </h1>
         </div>
-        
-        {/* Description */}
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-24 items-end">
-          <p 
+          <p
             className={`text-xl lg:text-2xl text-muted-foreground leading-relaxed max-w-xl transition-all duration-700 delay-200 ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}
           >
-            Your comprehensive toolkit for activity tracking, mentor guidance, and institutional excellence. 
+            Your comprehensive toolkit for activity tracking, mentor guidance, and institutional excellence.
             Seamlessly monitor progress, award points, and drive results.
           </p>
-          
-          {/* CTAs */}
-          <div 
+          <div
             className={`flex flex-col sm:flex-row items-start gap-4 transition-all duration-700 delay-300 ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}
           >
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               className="bg-foreground hover:bg-foreground/90 text-background px-8 h-14 text-base rounded-full group"
             >
               Explore Roles
               <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
             </Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
+            <Button
+              size="lg"
+              variant="outline"
               className="h-14 px-8 text-base rounded-full border-foreground/20 hover:bg-foreground/5"
             >
               Contact support
             </Button>
           </div>
         </div>
-        
       </div>
-      
-      {/* Stats marquee - full width outside container */}
-      <div 
+      <div
         className={`absolute bottom-0 left-0 right-0 overflow-hidden transition-all duration-700 delay-500 ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}
@@ -164,9 +150,6 @@ export function HeroSection() {
           ))}
         </div>
       </div>
-      
-      {/* Scroll indicator */}
-      
     </section>
   );
 }

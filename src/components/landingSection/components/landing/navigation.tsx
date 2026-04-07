@@ -27,7 +27,6 @@ export function Navigation() {
   }, []);
 
   const router = useRouter();
-  
   const handleSignin = () => router.push("/student/signin");
   const handleSigninMentor = () => router.push("/mentor/signin");
 
@@ -48,12 +47,10 @@ export function Navigation() {
           className={`flex items-center justify-between transition-all duration-500 px-6 lg:px-8 ${isScrolled ? "h-14" : "h-20"
             }`}
         >
-          {/* Logo */}
           <a href="#" className="flex items-center gap-2 group">
             <span className={`font-display tracking-tight transition-all duration-500 ${isScrolled ? "text-xl" : "text-2xl"}`}>Progress IQ</span>
           </a>
 
-          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-12">
             {navLinks.map((link) => (
               <a
@@ -67,7 +64,6 @@ export function Navigation() {
             ))}
           </div>
 
-          {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
             <Button
               variant="ghost"
@@ -78,7 +74,7 @@ export function Navigation() {
             >
               {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
-            <a 
+            <a
               onClick={handleSignin} className={`cursor-pointer text-foreground/70 hover:text-foreground transition-all duration-500 ${isScrolled ? "text-xs" : "text-sm"}`}>
               Sign in
             </a>
@@ -93,8 +89,6 @@ export function Navigation() {
             </Button>
           </div>
 
-
-          {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="md:hidden p-2"
@@ -110,7 +104,6 @@ export function Navigation() {
 
       </nav>
 
-      {/* Mobile Menu - Full Screen Overlay */}
       <div
         className={`md:hidden fixed inset-0 bg-background z-40 transition-all duration-500 ${isMobileMenuOpen
             ? "opacity-100 pointer-events-auto"
@@ -119,7 +112,6 @@ export function Navigation() {
         style={{ top: 0 }}
       >
         <div className="flex flex-col h-full px-8 pt-28 pb-8">
-          {/* Navigation Links */}
           <div className="flex-1 flex flex-col justify-center gap-8">
             {navLinks.map((link, i) => (
               <a
@@ -137,7 +129,6 @@ export function Navigation() {
             ))}
           </div>
 
-          {/* Bottom CTAs */}
           <div className={`flex gap-4 pt-8 border-t border-foreground/10 transition-all duration-500 ${isMobileMenuOpen
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-4"
@@ -148,14 +139,12 @@ export function Navigation() {
               onClick={handleSignin}
               variant="outline"
               className="flex-1 rounded-full h-14 text-base"
-              // onClick={() => setIsMobileMenuOpen(false)}
             >
               Sign in
             </Button>
             <Button
               onClick={handleSigninMentor}
               className="flex-1 bg-foreground text-background rounded-full h-14 text-base"
-              // onClick={() => setIsMobileMenuOpen(false)}
             >
               Start as Mentor
             </Button>

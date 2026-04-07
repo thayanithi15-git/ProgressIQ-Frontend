@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -15,46 +14,37 @@ import GlobalNotification from "@/components/notify/notification";
 import Banner from "@/assets/loginBanner.jpg";
 import { GoogleLogin } from "@react-oauth/google";
 import { AnimatedSphere } from "@/components/landingSection/components/landing/animated-sphere";
-
 export default function StudentLoginPage() {
   const router = useRouter();
   const { login, googleLogin, isLoading, isAuthenticated, checkAuth } = useStudentAuthStore();
   const { initializeTheme, isDark } = useThemeStore();
-
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-
   useEffect(() => {
     initializeTheme();
   }, [initializeTheme]);
-
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
-
   useEffect(() => {
     if (isAuthenticated) {
       router.push("/student/dashboard");
     }
   }, [isAuthenticated, router]);
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg("");
-
     if (!form.email || !form.password) {
       setErrorMsg("Please enter both email and password.");
       return;
     }
-
     try {
       await login(form.email, form.password);
     } catch (error: any) {
@@ -62,13 +52,10 @@ export default function StudentLoginPage() {
       setErrorMsg(error?.response?.data?.message || "Invalid credentials. Please try again.");
     }
   };
-
   return (
     <>
       <GlobalNotification />
       <div className="min-h-screen w-full flex font-sans bg-background overflow-hidden relative">
-
-        {/* Background Grid (Same as landing) */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-30">
           {[...Array(8)].map((_, i) => (
             <div
@@ -85,8 +72,6 @@ export default function StudentLoginPage() {
             />
           ))}
         </div>
-
-        {/* LEFT PANEL - Login Form */}
         <div className="flex-1 flex items-center justify-center p-6 sm:p-12 relative z-10">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -94,13 +79,11 @@ export default function StudentLoginPage() {
             transition={{ duration: 0.6 }}
             className="w-full max-w-md"
           >
-            {/* Mobile Logo */}
             <div className="lg:hidden mb-12 flex flex-col items-center">
               <Image src="/progress_iq.png" alt="Logo" width={48} height={48} className="mb-4" />
               <h1 className="text-3xl font-display tracking-tight">Progress IQ</h1>
               <p className="text-muted-foreground font-mono text-xs uppercase tracking-widest mt-2">Student Portal</p>
             </div>
-
             <Card className="bg-card-glass border-2 border-foreground/5 shadow-2xl rounded-[2rem] overflow-hidden">
               <div className="p-8 lg:p-10">
                 <div className="mb-10 text-center">
@@ -110,7 +93,6 @@ export default function StudentLoginPage() {
                   <h2 className="text-4xl font-display tracking-tight mb-2">Welcome back</h2>
                   <p className="text-muted-foreground text-sm">Enter your credentials to access your dashboard</p>
                 </div>
-
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <AnimatePresence>
                     {errorMsg && (
@@ -124,7 +106,6 @@ export default function StudentLoginPage() {
                       </motion.div>
                     )}
                   </AnimatePresence>
-
                   <div className="space-y-2">
                     <Label className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-widest ml-1">Email Address</Label>
                     <div className="relative group">
@@ -140,7 +121,6 @@ export default function StudentLoginPage() {
                       />
                     </div>
                   </div>
-
                   <div className="space-y-2">
                     <div className="flex justify-between items-center ml-1">
                       <Label className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-widest">Password</Label>
@@ -168,7 +148,6 @@ export default function StudentLoginPage() {
                       </button>
                     </div>
                   </div>
-
                   <Button
                     type="submit"
                     className="w-full h-14 bg-foreground text-background hover:bg-foreground/90 rounded-2xl font-bold text-sm transition-all group"
@@ -177,7 +156,6 @@ export default function StudentLoginPage() {
                     {isLoading ? "Authenticating..." : "Access Dashboard"}
                     <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </Button>
-
                   <div className="relative my-8">
                     <div className="absolute inset-0 flex items-center">
                       <div className="w-full border-t border-foreground/10"></div>
@@ -186,7 +164,6 @@ export default function StudentLoginPage() {
                       <span className="bg-background px-4">Social Login</span>
                     </div>
                   </div>
-
                   <div className="flex justify-center social-login-wrapper">
                     <GoogleLogin
                       onSuccess={(credentialResponse) => {
@@ -204,20 +181,15 @@ export default function StudentLoginPage() {
                 </form>
               </div>
             </Card>
-
             <p className="mt-8 text-center text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-widest">
               Standard institutional security enforced
             </p>
           </motion.div>
         </div>
-
-        {/* RIGHT PANEL - Visual (Desktop Only) */}
         <div className="hidden lg:flex w-[50%] relative overflow-hidden bg-foreground flex-col">
-          {/* Animated sphere background */}
           <div className="absolute inset-0 opacity-20 pointer-events-none invert">
             <AnimatedSphere />
           </div>
-
           <div className="relative z-10 p-16 w-full h-full flex flex-col justify-between text-background">
             <motion.div
               initial={{ opacity: 0, y: -20 }}
@@ -231,7 +203,6 @@ export default function StudentLoginPage() {
                 <p className="text-background/60 text-[10px] font-mono font-bold uppercase tracking-widest mt-1">Education Platform</p>
               </div>
             </motion.div>
-
             <div className="max-w-xl">
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
@@ -248,7 +219,6 @@ export default function StudentLoginPage() {
                 <p className="text-lg text-background/60 leading-relaxed font-medium">
                   Track projects, manage internships, and build a standout portfolio all in one integrated institutional ecosystem.
                 </p>
-
                 <div className="flex gap-12 pt-8">
                   <div>
                     <div className="text-4xl font-display mb-1">10k+</div>
@@ -262,14 +232,12 @@ export default function StudentLoginPage() {
                 </div>
               </motion.div>
             </div>
-
             <div className="text-[10px] font-mono font-bold text-background/30 uppercase tracking-[0.2em]">
               © 2026 Progress IQ. All rights reserved.
             </div>
           </div>
         </div>
       </div>
-
       <style jsx global>{`
         .social-login-wrapper iframe {
           border-radius: 1rem !important;

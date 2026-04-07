@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { motion } from "framer-motion";
@@ -36,23 +35,18 @@ import {
 } from "@/components/ui/dialog";
 import { useMentorManagementStore, UpdateMentorPayload } from "@/store/admin/mentor-manage";
 import GlobalNotification from "@/components/notify/notification";
-
 export default function MentorProfilePage() {
   const router = useRouter();
   const params = useParams();
   const mentorId = params.id as string;
-
   const { currentMentor, isLoading, fetchMentorById, updateMentor } = useMentorManagementStore();
-
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editFormData, setEditFormData] = useState<UpdateMentorPayload>({});
-
   useEffect(() => {
     if (mentorId) {
       fetchMentorById(mentorId);
     }
   }, [mentorId]);
-
   useEffect(() => {
     if (currentMentor) {
       setEditFormData({
@@ -65,7 +59,6 @@ export default function MentorProfilePage() {
       });
     }
   }, [currentMentor]);
-
   const handleSaveEdit = async () => {
     if (currentMentor) {
       await updateMentor(currentMentor._id, editFormData);
@@ -73,7 +66,6 @@ export default function MentorProfilePage() {
       await fetchMentorById(currentMentor._id);
     }
   };
-
   const getDesignationColor = (designation: string) => {
     const colors: Record<string, string> = {
       Professor: "bg-purple-100 text-purple-800 border-purple-200",
@@ -83,7 +75,6 @@ export default function MentorProfilePage() {
     };
     return colors[designation] || "bg-gray-100 text-gray-800 border-gray-200";
   };
-
   if (isLoading) {
     return (
       <>
@@ -94,7 +85,6 @@ export default function MentorProfilePage() {
       </>
     );
   }
-
   if (!currentMentor) {
     return (
       <>
@@ -114,7 +104,6 @@ export default function MentorProfilePage() {
               Back to Mentors
             </Button>
           </motion.div>
-
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -127,12 +116,10 @@ export default function MentorProfilePage() {
       </>
     );
   }
-
   return (
     <>
       <GlobalNotification />
       <div className="min-h-screen bg-background p-6">
-        {/* Header with Back Button */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -147,7 +134,6 @@ export default function MentorProfilePage() {
             <ArrowLeft className="w-4 h-4" />
             Back to Mentors
           </Button>
-
           <Button
             onClick={() => setIsEditDialogOpen(true)}
             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold gap-2"
@@ -156,8 +142,6 @@ export default function MentorProfilePage() {
             Edit Profile
           </Button>
         </motion.div>
-
-        {/* Profile Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -197,10 +181,7 @@ export default function MentorProfilePage() {
             </CardContent>
           </Card>
         </motion.div>
-
-        {/* Main Content - Two Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left Column - Contact Information */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -214,7 +195,6 @@ export default function MentorProfilePage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                {/* Email */}
                 <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
                   <div className="flex items-center gap-3 mb-2">
                     <Mail className="w-5 h-5 text-blue-600" />
@@ -222,8 +202,6 @@ export default function MentorProfilePage() {
                   </div>
                   <p className="text-blue-900 font-medium ml-8">{currentMentor.email}</p>
                 </div>
-
-                {/* Phone */}
                 <div className="p-4 bg-green-50 rounded-lg border border-green-200">
                   <div className="flex items-center gap-3 mb-2">
                     <Phone className="w-5 h-5 text-green-600" />
@@ -231,8 +209,6 @@ export default function MentorProfilePage() {
                   </div>
                   <p className="text-green-900 font-medium ml-8">{currentMentor.contactNo}</p>
                 </div>
-
-                {/* Place */}
                 <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
                   <div className="flex items-center gap-3 mb-2">
                     <MapPin className="w-5 h-5 text-amber-600" />
@@ -243,8 +219,6 @@ export default function MentorProfilePage() {
               </CardContent>
             </Card>
           </motion.div>
-
-          {/* Right Column - Professional Information */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -258,7 +232,6 @@ export default function MentorProfilePage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                {/* Department */}
                 <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
                   <div className="flex items-center gap-3 mb-2">
                     <Book className="w-5 h-5 text-purple-600" />
@@ -268,8 +241,6 @@ export default function MentorProfilePage() {
                     {currentMentor.department}
                   </p>
                 </div>
-
-                {/* Designation */}
                 <div className="p-4 bg-indigo-50 rounded-lg border border-indigo-200">
                   <div className="flex items-center gap-3 mb-2">
                     <Award className="w-5 h-5 text-indigo-600" />
@@ -279,8 +250,6 @@ export default function MentorProfilePage() {
                     {currentMentor.designation}
                   </p>
                 </div>
-
-                {/* Mentor ID */}
                 <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
                   <div className="flex items-center gap-3 mb-2">
                     <User className="w-5 h-5 text-gray-600" />
@@ -294,8 +263,6 @@ export default function MentorProfilePage() {
             </Card>
           </motion.div>
         </div>
-
-        {/* Additional Info at Bottom - Profile Summary */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -308,7 +275,6 @@ export default function MentorProfilePage() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                {/* Name Card */}
                 <div className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg border border-blue-200">
                   <div className="flex items-center gap-2 mb-2">
                     <User className="w-4 h-4 text-blue-600" />
@@ -316,8 +282,6 @@ export default function MentorProfilePage() {
                   </div>
                   <p className="text-blue-900 font-bold">{currentMentor.name}</p>
                 </div>
-
-                {/* Department Card */}
                 <div className="p-4 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg border border-purple-200">
                   <div className="flex items-center gap-2 mb-2">
                     <Book className="w-4 h-4 text-purple-600" />
@@ -325,8 +289,6 @@ export default function MentorProfilePage() {
                   </div>
                   <p className="text-purple-900 font-bold">{currentMentor.department}</p>
                 </div>
-
-                {/* Designation Card */}
                 <div className="p-4 bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-lg border border-indigo-200">
                   <div className="flex items-center gap-2 mb-2">
                     <Award className="w-4 h-4 text-indigo-600" />
@@ -334,8 +296,6 @@ export default function MentorProfilePage() {
                   </div>
                   <p className="text-indigo-900 font-bold">{currentMentor.designation}</p>
                 </div>
-
-                {/* Location Card */}
                 <div className="p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-lg border border-green-200">
                   <div className="flex items-center gap-2 mb-2">
                     <MapPin className="w-4 h-4 text-green-600" />
@@ -347,8 +307,6 @@ export default function MentorProfilePage() {
             </CardContent>
           </Card>
         </motion.div>
-
-        {/* Quick Stats */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -378,17 +336,13 @@ export default function MentorProfilePage() {
           </Card>
         </motion.div>
       </div>
-
-      {/* Edit Profile Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-foreground">Edit Mentor Profile</DialogTitle>
             <DialogDescription>Update mentor information</DialogDescription>
           </DialogHeader>
-
           <div className="space-y-4">
-            {/* Name */}
             <div>
               <Label className="text-sm font-semibold text-foreground">Full Name</Label>
               <Input
@@ -397,8 +351,6 @@ export default function MentorProfilePage() {
                 onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
               />
             </div>
-
-            {/* Email & Contact */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label className="text-sm font-semibold text-foreground">Email</Label>
@@ -419,8 +371,6 @@ export default function MentorProfilePage() {
                 />
               </div>
             </div>
-
-            {/* Department & Designation */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label className="text-sm font-semibold text-foreground">Department</Label>
@@ -462,8 +412,6 @@ export default function MentorProfilePage() {
                 </Select>
               </div>
             </div>
-
-            {/* Place */}
             <div>
               <Label className="text-sm font-semibold text-foreground">Place</Label>
               <Input
@@ -472,8 +420,6 @@ export default function MentorProfilePage() {
                 onChange={(e) => setEditFormData({ ...editFormData, place: e.target.value })}
               />
             </div>
-
-            {/* Action Buttons */}
             <div className="flex gap-3 pt-4">
               <Button
                 onClick={handleSaveEdit}

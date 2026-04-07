@@ -1,12 +1,9 @@
 'use client';
-
 import React, { useEffect } from 'react';
 import { X, CheckCircle, AlertCircle, Info, AlertTriangle, Loader2 } from 'lucide-react';
 import { useNotificationStore } from '@/utils/notification';
-
 const GlobalNotification = () => {
   const { open, content, type, hideNotification } = useNotificationStore();
-
   useEffect(() => {
     if (open && type !== 'pending') {
       const timer = setTimeout(() => {
@@ -15,11 +12,9 @@ const GlobalNotification = () => {
       return () => clearTimeout(timer);
     }
   }, [open, type, hideNotification]);
-
   const handleClose = () => {
     hideNotification();
   };
-
   const getIcon = () => {
     switch (type) {
       case 'success':
@@ -34,7 +29,6 @@ const GlobalNotification = () => {
         return <Info className="w-5 h-5" />;
     }
   };
-
   const getColorClasses = () => {
     switch (type) {
       case 'success':
@@ -49,9 +43,7 @@ const GlobalNotification = () => {
         return 'bg-sky-500 border-sky-400 text-white shadow-sky-500/30';
     }
   };
-
   if (!open) return null;
-
   return (
     <div className="fixed top-6 right-6 z-[9999] animate-in slide-in-from-top-2 fade-in duration-300">
       <div className={`flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl border-2 min-w-[320px] max-w-[420px] font-poppins ${getColorClasses()}`}>
@@ -72,5 +64,4 @@ const GlobalNotification = () => {
     </div>
   );
 };
-
 export default GlobalNotification;

@@ -39,17 +39,14 @@ export function CtaSection() {
           }`}
           onMouseMove={handleMouseMove}
         >
-          {/* Spotlight effect */}
-          <div 
+          <div
             className="absolute inset-0 opacity-10 pointer-events-none transition-opacity duration-300"
             style={{
               background: `radial-gradient(600px circle at ${mousePosition.x}% ${mousePosition.y}%, rgba(0,0,0,0.15), transparent 40%)`
             }}
           />
-          
           <div className="relative z-10 px-8 lg:px-16 py-16 lg:py-24">
             <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
-              {/* Left content */}
               <div className="flex-1">
                 <h2 className="text-4xl lg:text-7xl font-display tracking-tight mb-8 leading-[0.95]">
                   Ready to transform
@@ -58,7 +55,7 @@ export function CtaSection() {
                 </h2>
 
                 <p className="text-xl text-muted-foreground mb-12 leading-relaxed max-w-xl">
-                  Join 50+ institutions that have already switched to Progress IQ. 
+                  Join 50+ institutions that have already switched to Progress IQ.
                   Eliminate spreadsheets, embrace intelligence.
                 </p>
 
@@ -84,14 +81,12 @@ export function CtaSection() {
                 </p>
               </div>
 
-              {/* Right animation */}
               <div className="hidden lg:flex items-center justify-center w-[500px] h-[500px] -mr-16">
                 <AnimatedTetrahedron />
               </div>
             </div>
           </div>
 
-          {/* Decorative corner */}
           <div className="absolute top-0 right-0 w-32 h-32 border-b border-l border-foreground/10" />
           <div className="absolute bottom-0 left-0 w-32 h-32 border-t border-r border-foreground/10" />
         </div>

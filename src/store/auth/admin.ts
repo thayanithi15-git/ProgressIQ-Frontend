@@ -27,7 +27,6 @@ export const useAdminAuthStore = create<AdminAuthState>((set) => ({
 
   login: async (email: string, password: string) => {
     const { showNotification } = useNotificationStore.getState();
-    
     try {
       set({ isLoading: true });
       showNotification('Signing in...', 'pending');
@@ -43,12 +42,10 @@ export const useAdminAuthStore = create<AdminAuthState>((set) => ({
         throw new Error('Unauthorized: Admin access only');
       }
 
-      // Encrypt and store sensitive data
       setEncryptedItem('token', token);
       setEncryptedItem('role', role);
       setEncryptedItem('userId', userId);
 
-      // Store user session for UI (fallback to email prefix as name)
       if (typeof window !== 'undefined') {
         const nameFromEmail = email.split('@')[0] || 'Admin';
         localStorage.setItem(
@@ -79,17 +76,14 @@ export const useAdminAuthStore = create<AdminAuthState>((set) => ({
       showNotification('Login successful! Welcome Admin.', 'success');
     } catch (error: any) {
       set({ isLoading: false, user: null, isAuthenticated: false });
-      
       const errorMessage = error.response?.data?.message || error.message || 'Login failed. Please try again.';
       showNotification(errorMessage, 'error');
-      
       throw error;
     }
   },
 
   googleLogin: async (credential: string) => {
     const { showNotification } = useNotificationStore.getState();
-    
     try {
       set({ isLoading: true });
       showNotification('Signing in with Google...', 'pending');
@@ -145,7 +139,6 @@ export const useAdminAuthStore = create<AdminAuthState>((set) => ({
 
   logout: () => {
     const { showNotification } = useNotificationStore.getState();
-    
     removeEncryptedItem('token');
     removeEncryptedItem('role');
     removeEncryptedItem('userId');

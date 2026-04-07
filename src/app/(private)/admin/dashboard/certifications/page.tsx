@@ -2,10 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  Award, Globe, Search, Filter, RefreshCw, 
-  ChevronLeft, ChevronRight, ExternalLink, 
-  ShieldCheck, Clock, XCircle, GraduationCap, 
+import {
+  Award, Globe, Search, Filter, RefreshCw,
+  ChevronLeft, ChevronRight, ExternalLink,
+  ShieldCheck, Clock, XCircle, GraduationCap,
   Building2, Calendar, Medal
 } from "lucide-react";
 import Link from "next/link";
@@ -25,7 +25,6 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAdminCertsStore } from "@/store/admin/certifications";
 
-// ─── TOKENS ─────────────────────────────────────────────────────────────────
 const STATUS_META: Record<string, { label: string; color: string; bg: string; icon: any }> = {
   "VERIFIED": {
     label: "Verified",
@@ -53,7 +52,6 @@ const STATUS_META: Record<string, { label: string; color: string; bg: string; ic
   }
 };
 
-// ─── COMPONENTS ──────────────────────────────────────────────────────────────
 const CertStatusBadge = ({ status }: { status: string }) => {
   const meta = STATUS_META[status?.toUpperCase()] || { label: status, color: "#6b7280", bg: "rgba(107, 114, 128, 0.12)", icon: Award };
   const Icon = meta.icon;
@@ -102,7 +100,6 @@ export default function CertificationsPage() {
       />
 
       <div className="p-4 lg:p-8 max-w-[1600px] mx-auto space-y-8">
-        {/* Advanced Control Bar */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="relative w-full md:w-[450px]">
              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -113,7 +110,7 @@ export default function CertificationsPage() {
                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                className="pl-11 h-12 rounded-2xl bg-muted/20 border-border/60 focus-visible:ring-primary/20 transition-all font-medium text-sm"
              />
-             <Button 
+             <Button
                 onClick={handleSearch}
                 className="absolute right-1.5 top-1.5 h-9 rounded-xl bg-primary text-primary-foreground font-semibold uppercase tracking-widest text-[10px] px-4"
              >
@@ -137,8 +134,8 @@ export default function CertificationsPage() {
                 </SelectContent>
              </Select>
 
-             <Button 
-                variant="outline" 
+             <Button
+                variant="outline"
                 onClick={() => fetchCerts()}
                 className="h-12 w-12 p-0 rounded-2xl border-border/60 hover:bg-muted/50 transition-all"
              >
@@ -147,7 +144,6 @@ export default function CertificationsPage() {
           </div>
         </div>
 
-        {/* Certificate Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <AnimatePresence mode="popLayout">
             {isLoading ? (
@@ -222,7 +218,6 @@ export default function CertificationsPage() {
                             <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-widest">Digital Credential</span>
                             <span className="text-[11px] font-gray-600 font-semibold text-foreground max-w-[120px] truncate">{cert.platform || "N/A"}</span>
                          </div>
-                         
                          {cert.platformLink ? (
                             <Link href={cert.platformLink} target="_blank">
                                <Button size="sm" className="h-9 rounded-xl px-4 bg-blue-700 hover:bg-blue-800 text-white font-semibold uppercase tracking-widest text-[9px] gap-2 shadow-sm flex items-center">
@@ -242,13 +237,11 @@ export default function CertificationsPage() {
           </AnimatePresence>
         </div>
 
-        {/* Pagination Footer */}
         {totalPages > 1 && (
           <div className="flex flex-col sm:flex-row items-center justify-between pt-10 border-t border-border/40 gap-4">
              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">
                 Ledger focus: <span className="text-foreground font-black">{certs.length}</span> / {total} entries
              </p>
-             
              <div className="flex items-center gap-3 bg-muted/20 p-1.5 rounded-2xl border border-border/40">
                 <Button
                    variant="ghost"
@@ -259,7 +252,6 @@ export default function CertificationsPage() {
                 >
                   <ChevronLeft size={16} />
                 </Button>
-                
                 <div className="w-[1px] h-4 bg-border/60 mx-1" />
                 <span className="text-xs font-black text-foreground px-2 tabular-nums">{page} / {totalPages}</span>
                 <div className="w-[1px] h-4 bg-border/60 mx-1" />

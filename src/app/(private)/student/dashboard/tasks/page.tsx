@@ -12,7 +12,6 @@ import { useTasksStore, Task, TaskStatusFilter } from "@/store/student/tasks";
 import Header from "@/components/layout/header";
 import { Button } from "@/components/ui/button";
 
-// ─── TOKENS ────────────────────────────────────────────────────────────────────
 const C = {
   blue:    "var(--piq-blue)",
   violet:  "#7C3AED",
@@ -32,7 +31,6 @@ const STATUS_META: Record<string, { label: string; color: string; bg: string; ic
   REJECTED:    { label: "Rejected",    color: C.rose,    bg: `${C.rose}18`,    icon: XCircle },
 };
 
-// ─── HELPERS ───────────────────────────────────────────────────────────────────
 const Sk = ({ h = 16, className = "" }: { h?: number; className?: string }) => (
   <div className={`animate-pulse bg-foreground/5 rounded-lg ${className}`} style={{ height: h }} />
 );
@@ -49,7 +47,6 @@ const mentorName = (m: any) =>
 const isOverdue = (due: string, status: string) =>
   !["SUBMITTED", "APPROVED"].includes(status) && new Date(due) < new Date();
 
-// ─── STATUS BADGE ──────────────────────────────────────────────────────────────
 const StatusBadge = ({ status, overdue }: { status: string; overdue?: boolean }) => {
   if (overdue && !["APPROVED", "SUBMITTED"].includes(status)) {
     return (
@@ -67,7 +64,6 @@ const StatusBadge = ({ status, overdue }: { status: string; overdue?: boolean })
   );
 };
 
-// ─── PILL ──────────────────────────────────────────────────────────────────────
 const Pill = ({ label, active, onClick, count }: { label:string; active:boolean; onClick:()=>void; count?:number }) => (
   <button onClick={onClick} className={`px-4 py-1.5 rounded-full border text-xs font-semibold flex items-center gap-2 whitespace-nowrap transition-all duration-300 ${active ? 'bg-primary text-primary-foreground border-primary shadow-md' : 'bg-card/50 text-muted-foreground border-transparent hover:bg-foreground/5'}`}>
     {label}
@@ -75,7 +71,6 @@ const Pill = ({ label, active, onClick, count }: { label:string; active:boolean;
   </button>
 );
 
-// ─── CONFIRM DIALOG ────────────────────────────────────────────────────────────
 const ConfirmDialog = ({ open, title, desc, confirmLabel = "Confirm", confirmColor = C.rose, onConfirm, onCancel, loading }: any) => (
   <AnimatePresence>
     {open && (
@@ -102,7 +97,6 @@ const ConfirmDialog = ({ open, title, desc, confirmLabel = "Confirm", confirmCol
   </AnimatePresence>
 );
 
-// ─── SUBMIT TASK MODAL ────────────────────────────────────────────────────────
 const SubmitModal = ({ open, onConfirm, onCancel, loading }: any) => {
   const [note, setNote] = useState("");
   useEffect(() => { if (!open) setNote(""); }, [open]);
@@ -135,14 +129,12 @@ const SubmitModal = ({ open, onConfirm, onCancel, loading }: any) => {
   );
 };
 
-// ─── DETAILS MODAL (feedback + submission note) ───────────────────────────────
 const DetailsModal = ({ task, onClose }: { task: Task | null; onClose: () => void }) => (
   <AnimatePresence>
     {task && (
       <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
         <motion.div initial={{ opacity:0, scale:0.95 }} animate={{ opacity:1, scale:1 }} exit={{ opacity:0, scale:0.95 }}
           onClick={(e) => e.stopPropagation()} className="bg-card-glass/80 backdrop-blur-2xl border border-border/40 shadow-2xl rounded-[1.5rem] w-full max-w-[540px] overflow-hidden flex flex-col max-h-[90vh]">
-          {/* Header */}
           <div className="p-6 pb-4 flex items-center justify-between border-b border-border/40">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-violet-500/10 flex items-center justify-center"><MessageSquare size={16} className="text-violet-600" /></div>
@@ -154,9 +146,7 @@ const DetailsModal = ({ task, onClose }: { task: Task | null; onClose: () => voi
             <button onClick={onClose} className="w-8 h-8 rounded-lg bg-foreground/5 hover:bg-foreground/10 flex items-center justify-center transition-colors"><X size={14} className="text-muted-foreground" /></button>
           </div>
 
-          {/* Body */}
           <div className="p-6 overflow-y-auto flex flex-col gap-4">
-            {/* Task info */}
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-background/40 border border-border/50 rounded-xl p-3.5">
                 <p className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-[0.15em] mb-1">Mentor</p>
@@ -168,13 +158,11 @@ const DetailsModal = ({ task, onClose }: { task: Task | null; onClose: () => voi
               </div>
             </div>
 
-            {/* Description */}
             <div className="bg-background/40 border border-border/50 rounded-xl p-4">
               <p className="text-[10px] font-mono font-bold text-muted-foreground uppercase tracking-[0.15em] mb-2">Description</p>
               <p className="text-sm text-muted-foreground leading-relaxed">{task.description}</p>
             </div>
 
-            {/* Submission Note */}
             {task.submissionNote && (
               <div className="bg-blue-500/5 border border-blue-500/20 rounded-xl p-4">
                 <p className="text-[10px] font-mono font-bold text-blue-600 uppercase tracking-[0.15em] mb-2">My Submission Note</p>
@@ -182,7 +170,6 @@ const DetailsModal = ({ task, onClose }: { task: Task | null; onClose: () => voi
               </div>
             )}
 
-            {/* Mentor Feedback */}
             {task.verificationNote ? (
               <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-2">
@@ -205,7 +192,6 @@ const DetailsModal = ({ task, onClose }: { task: Task | null; onClose: () => voi
   </AnimatePresence>
 );
 
-// ─── TASK FORM MODAL ───────────────────────────────────────────────────────────
 const TaskFormModal = ({ open, editing, onClose, onSubmit, loading }: any) => {
   const [form, setForm] = useState({ title:"", description:"", dueDate:"" });
   useEffect(() => {
@@ -258,7 +244,6 @@ const TaskFormModal = ({ open, editing, onClose, onSubmit, loading }: any) => {
   );
 };
 
-// ─── TASK ROW ─────────────────────────────────────────────────────────────────
 const TaskRow = ({ task, idx, onEdit, onDelete, onStart, onSubmit, onDetails }: {
   task: Task; idx: number;
   onEdit:(t:Task)=>void; onDelete:(t:Task)=>void;
@@ -311,7 +296,6 @@ const TaskRow = ({ task, idx, onEdit, onDelete, onStart, onSubmit, onDetails }: 
   );
 };
 
-// ─── MAIN PAGE ─────────────────────────────────────────────────────────────────
 export default function TasksPage() {
   const {
     tasks, pagination, statusFilter, searchQuery,
@@ -401,7 +385,6 @@ export default function TasksPage() {
 
       <main className="p-6 lg:padding-8 max-w-[1600px] mx-auto space-y-6">
 
-        {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {STATS.map(({ label, val, color }, i) => (
             <motion.div key={label} initial={{ opacity:0, y:8 }} animate={{ opacity:1, y:0 }} transition={{ delay:i*0.04 }}
@@ -412,7 +395,6 @@ export default function TasksPage() {
           ))}
         </div>
 
-        {/* Filters */}
         <div className="bg-card-glass/60 backdrop-blur-xl border border-border/40 shadow-sm rounded-2xl p-4 flex flex-col items-start md:flex-row md:items-center justify-between gap-4">
           <div className="flex gap-2 flex-wrap">
             {FILTERS.map(f => (
@@ -425,7 +407,6 @@ export default function TasksPage() {
           </div>
         </div>
 
-        {/* Table */}
         <div className="bg-card-glass/60 backdrop-blur-xl border border-border/40 shadow-sm rounded-2xl overflow-hidden">
           {isLoading ? (
             <div className="p-6 flex flex-col gap-3">
@@ -461,7 +442,6 @@ export default function TasksPage() {
           )}
         </div>
 
-        {/* Pagination bar */}
         {totalPages > 1 && (
           <div className="flex items-center justify-center gap-4 pt-2">
             <Button variant="outline" size="sm" onClick={() => setPage(pagination.skip - pagination.limit)} disabled={currentPage === 1} className="rounded-xl font-bold uppercase tracking-widest text-[10px] gap-2 h-9 px-4">
@@ -475,7 +455,6 @@ export default function TasksPage() {
         )}
       </main>
 
-      {/* Modals */}
       <TaskFormModal open={isModalOpen} editing={editingTask} onClose={closeModal} onSubmit={handleFormSubmit} loading={isSubmitting} />
       <SubmitModal   open={isCompleteModalOpen} onConfirm={handleSubmit} onCancel={closeCompleteModal} loading={isSubmitting} />
       <DetailsModal  task={detailTask} onClose={() => setDetailTask(null)} />

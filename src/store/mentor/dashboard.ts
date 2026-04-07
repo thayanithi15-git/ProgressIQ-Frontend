@@ -57,7 +57,6 @@ export interface ApprovalStats {
 }
 
 interface MentorDashboardState {
-  // Data
   stats: MentorStats | null;
   topStudents: TopStudent[];
   activityData: ActivityData[];
@@ -65,19 +64,16 @@ interface MentorDashboardState {
   workProgressData: WorkProgressData[];
   approvalStats: ApprovalStats | null;
 
-  // Loading
   isLoading: boolean;
   isLoadingStats: boolean;
   isLoadingCharts: boolean;
 
-  // Actions
   fetchStats: () => Promise<void>;
   fetchAllData: () => Promise<void>;
   refreshDashboard: () => Promise<void>;
 }
 
 export const useMentorDashboardStore = create<MentorDashboardState>((set, get) => ({
-  // Initial States
   stats: null,
   topStudents: [],
   activityData: [],
@@ -89,9 +85,6 @@ export const useMentorDashboardStore = create<MentorDashboardState>((set, get) =
   isLoadingStats: false,
   isLoadingCharts: false,
 
-  // =====================================
-  // FETCH STATS
-  // =====================================
   fetchStats: async () => {
     const { showNotification } = useNotificationStore.getState();
 
@@ -128,17 +121,11 @@ export const useMentorDashboardStore = create<MentorDashboardState>((set, get) =
     }
   },
 
-  // =====================================
-  // FETCH ALL DATA
-  // =====================================
   fetchAllData: async () => {
     const state = get();
     await state.fetchStats();
   },
 
-  // =====================================
-  // REFRESH DASHBOARD
-  // =====================================
   refreshDashboard: async () => {
     const { showNotification } = useNotificationStore.getState();
 

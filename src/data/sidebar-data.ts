@@ -24,30 +24,22 @@ import {
   Users,
   Wrench
 } from "lucide-react";
-
 import { type SidebarData } from "@/types/types";
 import { decryptData } from "@/utils/crypto";
-
-// Helper function to safely get localStorage values
 const getLocalStorageItem = (key: string, defaultValue: string): string => {
   if (typeof window === 'undefined') {
     return defaultValue;
   }
   return localStorage.getItem(key) || defaultValue;
 };
-
-// Function to generate sidebar data (call this from useEffect)
 export const generateSidebarData = (): SidebarData => {
   const name = getLocalStorageItem("name", "Guest User");
   const email = getLocalStorageItem("email", "guest@domain.com");
-
   const newEncryptedRole = localStorage.getItem("role");
   const appRole = newEncryptedRole ? decryptData(newEncryptedRole) : null;
-
   const formattedRole = appRole?.split(" ")
     .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ") || "Admin";
-
   return {
     user: {
       name: `${name} (${formattedRole})`,
@@ -74,7 +66,7 @@ export const generateSidebarData = (): SidebarData => {
         title: "Live Tracking",
         url: "/dashboard/live-tracking",
         icon: MapPin,
-      },      
+      },
       {
         title: "Risk Zones",
         url: "/dashboard/risk-zones",
@@ -125,8 +117,6 @@ export const generateSidebarData = (): SidebarData => {
 ]
   };
 };
-
-// Default export for initial render (with fallback values)
 export const sidebarData: SidebarData = {
   user: {
     name: "Guest User (Operator)",

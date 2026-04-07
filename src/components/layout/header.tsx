@@ -33,17 +33,13 @@ const Header: React.FC<HeaderProps> = ({
 
     const [sessionData, setSessionData] = useState<any>(null);
 
-    // ✅ Load session from localStorage
     useEffect(() => {
         const savedSession = localStorage.getItem("credxUser");
         if (savedSession) {
             setSessionData(JSON.parse(savedSession));
         } else {
-            // router.push("/");
         }
     }, []);
-
-    // console.log("Data " , sessionData);
 
     const sections =
         sessionData?.role?.toLowerCase();
@@ -92,7 +88,6 @@ const Header: React.FC<HeaderProps> = ({
     return (
         <header className="sticky top-0 z-50 w-full border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
             <div className="container flex h-16 items-center justify-between px-4">
-                {/* Left Section */}
                 <div className="flex items-center gap-3">
                     <Button
                         variant="ghost"
@@ -110,7 +105,6 @@ const Header: React.FC<HeaderProps> = ({
                     </div>
                 </div>
 
-                {/* Right Section */}
                 <div className="flex items-center gap-4">
                     <NotificationsDropdown />
 
@@ -138,7 +132,6 @@ const Header: React.FC<HeaderProps> = ({
                                 <p className='font-mono text-[13px] text-muted-foreground uppercase tracking-wider'>{displayRole}</p>
                             </div>
                             <div className="text-[10px] text-muted-foreground">
-                                {/* {displayEmail ? `${displayEmail}` : ''} */}
                             </div>
                         </div>
                         <Avatar className="h-11 w-11 border-2 border-sidebar-border shadow-sm">

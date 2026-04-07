@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { motion } from "framer-motion";
@@ -30,24 +29,19 @@ import {
 } from "@/components/ui/dialog";
 import { useStudentManagementStore, UpdateStudentPayload } from "@/store/admin/student-manage";
 import GlobalNotification from "@/components/notify/notification";
-
 export default function StudentProfilePage() {
   const router = useRouter();
   const params = useParams();
   const studentId = params.id as string;
-
   const { currentStudent, isLoading, fetchStudentById, updateStudent } =
     useStudentManagementStore();
-
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editFormData, setEditFormData] = useState<UpdateStudentPayload>({});
-
   useEffect(() => {
     if (studentId) {
       fetchStudentById(studentId);
     }
   }, [studentId]);
-
   useEffect(() => {
     if (currentStudent) {
       setEditFormData({
@@ -70,7 +64,6 @@ export default function StudentProfilePage() {
       });
     }
   }, [currentStudent]);
-
   const handleSaveEdit = async () => {
     if (currentStudent) {
       await updateStudent(currentStudent._id, editFormData);
@@ -78,7 +71,6 @@ export default function StudentProfilePage() {
       await fetchStudentById(currentStudent._id);
     }
   };
-
   if (isLoading) {
     return (
       <>
@@ -89,7 +81,6 @@ export default function StudentProfilePage() {
       </>
     );
   }
-
   if (!currentStudent) {
     return (
       <>
@@ -109,7 +100,6 @@ export default function StudentProfilePage() {
               Back to Students
             </Button>
           </motion.div>
-
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -122,12 +112,10 @@ export default function StudentProfilePage() {
       </>
     );
   }
-
   return (
     <>
       <GlobalNotification />
       <div className="min-h-screen bg-background p-6">
-        {/* Header with Back Button */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -142,7 +130,6 @@ export default function StudentProfilePage() {
             <ArrowLeft className="w-4 h-4" />
             Back to Students
           </Button>
-
           <Button
             onClick={() => setIsEditDialogOpen(true)}
             className="bg-blue-600 hover:bg-blue-700 text-white font-semibold gap-2"
@@ -151,8 +138,6 @@ export default function StudentProfilePage() {
             Edit Profile
           </Button>
         </motion.div>
-
-        {/* Profile Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -194,10 +179,7 @@ export default function StudentProfilePage() {
             </CardContent>
           </Card>
         </motion.div>
-
-        {/* Main Content - Two Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - Contact Info */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -211,27 +193,20 @@ export default function StudentProfilePage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                {/* Email */}
                 <div>
                   <p className="text-muted-foreground text-sm font-semibold">Email</p>
                   <p className="text-foreground font-medium mt-1">
                     {currentStudent.userId?.email || "Not linked"}
                   </p>
                 </div>
-
-                {/* Phone */}
                 <div>
                   <p className="text-muted-foreground text-sm font-semibold">Phone</p>
                   <p className="text-foreground font-medium mt-1">{currentStudent.phone}</p>
                 </div>
-
-                {/* Place */}
                 <div>
                   <p className="text-muted-foreground text-sm font-semibold">Place</p>
                   <p className="text-foreground font-medium mt-1">{currentStudent.place}</p>
                 </div>
-
-                {/* Created Date */}
                 <div>
                   <p className="text-muted-foreground text-sm font-semibold">Joined On</p>
                   <p className="text-foreground font-medium mt-1">
@@ -245,8 +220,6 @@ export default function StudentProfilePage() {
               </CardContent>
             </Card>
           </motion.div>
-
-          {/* Middle Column - Academic Info */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -260,27 +233,20 @@ export default function StudentProfilePage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                {/* Department */}
                 <div>
                   <p className="text-muted-foreground text-sm font-semibold">Department</p>
                   <p className="text-foreground font-medium mt-1">{currentStudent.department}</p>
                 </div>
-
-                {/* Year */}
                 <div>
                   <p className="text-muted-foreground text-sm font-semibold">Year</p>
                   <p className="text-foreground font-medium mt-1">{currentStudent.year} Year</p>
                 </div>
-
-                {/* Roll No */}
                 <div>
                   <p className="text-muted-foreground text-sm font-semibold">Roll Number</p>
                   <p className="text-foreground font-medium mt-1 uppercase">
                     {currentStudent.rollNo || "N/A"}
                   </p>
                 </div>
-
-                {/* CGPA & Arrears */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-muted-foreground text-sm font-semibold">CGPA</p>
@@ -295,8 +261,6 @@ export default function StudentProfilePage() {
                     </p>
                   </div>
                 </div>
-
-                {/* Good At */}
                 {currentStudent.goodAt && currentStudent.goodAt.length > 0 && (
                   <div>
                     <p className="text-muted-foreground text-sm font-semibold mb-2">Areas of Expertise</p>
@@ -309,16 +273,12 @@ export default function StudentProfilePage() {
                     </div>
                   </div>
                 )}
-
-                {/* Student ID */}
                 <div>
                   <p className="text-muted-foreground text-sm font-semibold">Student ID</p>
                   <p className="text-foreground font-medium mt-1 text-xs break-all">
                     {currentStudent._id}
                   </p>
                 </div>
-
-                {/* Reward Points */}
                 <div className="pt-4 border-t border-border">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -333,8 +293,6 @@ export default function StudentProfilePage() {
               </CardContent>
             </Card>
           </motion.div>
-
-          {/* Right Column - Parent Info */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -348,29 +306,22 @@ export default function StudentProfilePage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                {/* Parent Name */}
                 <div>
                   <p className="text-muted-foreground text-sm font-semibold">Parent Name</p>
                   <p className="text-foreground font-medium mt-1">{currentStudent.parentName}</p>
                 </div>
-
-                {/* Parent Phone */}
                 <div>
                   <p className="text-muted-foreground text-sm font-semibold">Parent Phone</p>
                   <p className="text-foreground font-medium mt-1">
                     {currentStudent.parentPhone}
                   </p>
                 </div>
-
-                {/* Family Income */}
                 <div>
                   <p className="text-muted-foreground text-sm font-semibold">Family Income</p>
                   <p className="text-foreground font-medium mt-1">
                     {currentStudent.familyIncome || "Not specified"}
                   </p>
                 </div>
-
-                {/* Student Name for Reference */}
                 <div className="pt-4 border-t border-border">
                   <p className="text-muted-foreground text-sm font-semibold">Student Name</p>
                   <p className="text-foreground font-medium mt-1">
@@ -381,8 +332,6 @@ export default function StudentProfilePage() {
             </Card>
           </motion.div>
         </div>
-
-        {/* Additional Info at Bottom */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -395,25 +344,18 @@ export default function StudentProfilePage() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {/* Status Card */}
                 <div className="p-4 bg-green-50 rounded-lg border border-green-200">
                   <p className="text-green-600 text-sm font-semibold">Status</p>
                   <p className="text-green-900 font-bold mt-2">{currentStudent.status}</p>
                 </div>
-
-                {/* Department Card */}
                 <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
                   <p className="text-blue-600 text-sm font-semibold">Department</p>
                   <p className="text-blue-900 font-bold mt-2">{currentStudent.department}</p>
                 </div>
-
-                {/* Year Card */}
                 <div className="p-4 bg-purple-50 rounded-lg border border-purple-200">
                   <p className="text-purple-600 text-sm font-semibold">Year</p>
                   <p className="text-purple-900 font-bold mt-2">{currentStudent.year}</p>
                 </div>
-
-                {/* Reward Points Card */}
                 <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
                   <p className="text-amber-600 text-sm font-semibold">Reward Points</p>
                   <p className="text-amber-900 font-bold mt-2">{currentStudent.rewardPoints}</p>
@@ -423,17 +365,13 @@ export default function StudentProfilePage() {
           </Card>
         </motion.div>
       </div>
-
-      {/* Edit Profile Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-foreground">Edit Student Profile</DialogTitle>
             <DialogDescription>Update student information</DialogDescription>
           </DialogHeader>
-
           <div className="space-y-4">
-            {/* Name Fields */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label className="text-sm font-semibold text-foreground">First Name</Label>
@@ -456,8 +394,6 @@ export default function StudentProfilePage() {
                 />
               </div>
             </div>
-
-            {/* Contact Fields */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label className="text-sm font-semibold text-foreground">Phone</Label>
@@ -480,8 +416,6 @@ export default function StudentProfilePage() {
                 />
               </div>
             </div>
-
-            {/* Academic Fields */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label className="text-sm font-semibold text-foreground">Department</Label>
@@ -504,7 +438,6 @@ export default function StudentProfilePage() {
                 />
               </div>
             </div>
-
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label className="text-sm font-semibold text-foreground">Roll No</Label>
@@ -527,7 +460,6 @@ export default function StudentProfilePage() {
                 />
               </div>
             </div>
-
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label className="text-sm font-semibold text-foreground">CGPA</Label>
@@ -553,7 +485,6 @@ export default function StudentProfilePage() {
                 />
               </div>
             </div>
-
             <div>
               <Label className="text-sm font-semibold text-foreground">Good At (comma separated)</Label>
               <Input
@@ -564,8 +495,6 @@ export default function StudentProfilePage() {
                 }
               />
             </div>
-
-            {/* Parent Fields */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label className="text-sm font-semibold text-foreground">Parent Name</Label>
@@ -588,8 +517,6 @@ export default function StudentProfilePage() {
                 />
               </div>
             </div>
-
-            {/* Reward Points */}
             <div>
               <Label className="text-sm font-semibold text-foreground">Reward Points</Label>
               <Input
@@ -604,8 +531,6 @@ export default function StudentProfilePage() {
                 }
               />
             </div>
-
-            {/* Action Buttons */}
             <div className="flex gap-3 pt-4">
               <Button
                 onClick={handleSaveEdit}

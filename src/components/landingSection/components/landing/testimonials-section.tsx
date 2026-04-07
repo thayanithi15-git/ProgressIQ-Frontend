@@ -53,7 +53,6 @@ export function TestimonialsSection() {
   return (
     <section className="relative py-32 lg:py-40 border-t border-foreground/10 lg:pb-14">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
-        {/* Section Label */}
         <div className="flex items-center gap-4 mb-16">
           <span className="font-mono text-xs tracking-widest text-muted-foreground uppercase">
             What people say
@@ -64,7 +63,6 @@ export function TestimonialsSection() {
           </span>
         </div>
 
-        {/* Main Quote */}
         <div className="grid lg:grid-cols-12 gap-12 lg:gap-20">
           <div className="lg:col-span-8">
             <blockquote
@@ -77,7 +75,6 @@ export function TestimonialsSection() {
               </p>
             </blockquote>
 
-            {/* Author */}
             <div
               className={`mt-12 flex items-center gap-6 transition-all duration-300 delay-100 ${
                 isAnimating ? "opacity-0" : "opacity-100"
@@ -97,7 +94,6 @@ export function TestimonialsSection() {
             </div>
           </div>
 
-          {/* Metric Highlight */}
           <div className="lg:col-span-4 flex flex-col justify-center">
             <div
               className={`p-8 border border-foreground/10 transition-all duration-300 ${
@@ -112,7 +108,6 @@ export function TestimonialsSection() {
               </p>
             </div>
 
-            {/* Navigation Dots */}
             <div className="flex gap-2 mt-8">
               {testimonials.map((_, idx) => (
                 <button
@@ -135,14 +130,12 @@ export function TestimonialsSection() {
           </div>
         </div>
 
-        {/* Company Logos Marquee Label */}
         <div className="mt-24 pt-12 border-t border-foreground/10">
           <p className="font-mono text-xs tracking-widest text-muted-foreground uppercase mb-8 text-center">
             Trusted by forward-thinking teams
           </p>
         </div>
       </div>
-      
       <div className="w-full overflow-hidden">
         <div className="flex gap-16 items-center marquee">
           {[...Array(2)].map((_, setIdx) => (

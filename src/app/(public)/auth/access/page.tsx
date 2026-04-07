@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -12,51 +11,36 @@ import { GoogleLogin } from "@react-oauth/google";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useNotificationStore } from "@/utils/notification";
-
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080/api";
-
 export default function LoginPage() {
   const [form, setForm] = useState({
     identifier: "",
     password: "",
   });
-
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { showNotification } = useNotificationStore();
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-
   const handleLoginSuccess = (data: any) => {
-    // Store in localStorage as expected by Header/Sidebar
     localStorage.setItem("credxUser", JSON.stringify(data));
     localStorage.setItem("role", data.role);
     localStorage.setItem("auth-token", data.token);
-
-    // Set cookie or encrypted item if needed (the app seems to use getEncryptedItem)
-    // For now, let's stick to what's used in Header/Sidebar
-    
     showNotification("Login successful!", "success");
-
-    // Redirect based on role
     const role = data.role.toLowerCase();
     if (role === "admin") router.push("/admin/dashboard");
     else if (role === "mentor") router.push("/mentor/dashboard");
     else router.push("/student/dashboard");
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
     if (!form.identifier || !form.password) {
       setError("Please enter email/username and password");
       return;
     }
-
     try {
       setLoading(true);
       const res = await axios.post(`${API_BASE_URL}/auth/login`, {
@@ -70,7 +54,6 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
-
   const handleGoogleSuccess = async (credentialResponse: any) => {
     try {
       setLoading(true);
@@ -84,10 +67,8 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
-
   return (
     <div className="min-h-screen grid lg:grid-cols-2 font-poppins">
-      {/* Left Image Section */}
       <div
         className="hidden lg:flex relative bg-cover bg-center"
         style={{
@@ -103,8 +84,6 @@ export default function LoginPage() {
           </p>
         </div>
       </div>
-
-      {/* Right Form Section */}
       <div className="flex items-center justify-center p-6 bg-gradient-to-br from-[#e2edfd] to-white">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -120,7 +99,6 @@ export default function LoginPage() {
                 Login to continue to Progress IQ
               </CardDescription>
             </CardHeader>
-
             <CardContent>
               <div className="space-y-5">
                 {error && (
@@ -128,7 +106,6 @@ export default function LoginPage() {
                     <AlertDescription>{error}</AlertDescription>
                   </Alert>
                 )}
-
                 <form onSubmit={handleSubmit} className="space-y-5">
                   <div className="space-y-2">
                     <Label>Email or Username</Label>
@@ -143,7 +120,6 @@ export default function LoginPage() {
                       />
                     </div>
                   </div>
-
                   <div className="space-y-2">
                     <Label>Password</Label>
                     <div className="relative">
@@ -158,13 +134,11 @@ export default function LoginPage() {
                       />
                     </div>
                   </div>
-
                   <div className="flex items-center justify-between text-sm">
                     <a className="text-[#1854bf] hover:underline cursor-pointer">
                       Forgot password?
                     </a>
                   </div>
-
                   <Button
                     type="submit"
                     className="w-full bg-[#0c9ced] hover:bg-[#1854bf]"
@@ -174,7 +148,6 @@ export default function LoginPage() {
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </form>
-
                 <div className="relative my-4">
                   <div className="absolute inset-0 flex items-center">
                     <span className="w-full border-t border-muted" />
@@ -183,7 +156,6 @@ export default function LoginPage() {
                     <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
                   </div>
                 </div>
-
                 <div className="flex justify-center">
                   <GoogleLogin
                     onSuccess={handleGoogleSuccess}
@@ -192,7 +164,6 @@ export default function LoginPage() {
                     width="100%"
                   />
                 </div>
-
                 <div className="text-center text-xs text-muted-foreground">
                   Secure access powered by Progress IQ
                 </div>

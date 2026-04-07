@@ -2,18 +2,14 @@ import { create } from 'zustand';
 import api from '@/utils/api';
 import { useNotificationStore } from '@/utils/notification';
 
-// ==========================================
-// TYPES
-// ==========================================
-
 export interface MentorTask {
   id: string;
-  _id?: string;        // alias so both id forms work
+  _id?: string;
   title: string;
   description: string;
-  assignedTo: string;  // student full name
-  status: string;      // display status  (To Do / In Progress / Submitted / Done / Rejected)
-  rawStatus: string;   // backend enum   (PENDING / IN_PROGRESS / SUBMITTED / APPROVED / REJECTED)
+  assignedTo: string;
+  status: string;
+  rawStatus: string;
   dueDate: string;
   priority: string;
   student: {
@@ -30,11 +26,9 @@ export interface MentorTask {
 }
 
 interface TasksState {
-  // Data
   tasks: MentorTask[];
   taskDetail: MentorTask | null;
 
-  // Filters
   searchQuery: string;
   statusFilter: string;
   departmentFilter: string;
@@ -42,18 +36,15 @@ interface TasksState {
   sortBy: 'title' | 'student' | 'status' | 'dueDate';
   sortOrder: 'asc' | 'desc';
 
-  // Pagination
   page: number;
   limit: number;
   total: number;
   totalPages: number;
 
-  // Loading
   isLoading: boolean;
   isLoadingDetail: boolean;
   isSubmitting: boolean;
 
-  // Actions
   fetchTasks: () => Promise<void>;
   fetchTaskDetail: (id: string) => Promise<void>;
   createTask: (title: string, description: string, dueDate: string, studentIds: string[]) => Promise<void>;
@@ -62,7 +53,6 @@ interface TasksState {
   verifyTask: (id: string, status: 'APPROVED' | 'REJECTED', verificationNote: string, points: number) => Promise<void>;
   notifyStudents: (id: string, message: string) => Promise<void>;
 
-  // UI
   setSearchQuery: (query: string) => void;
   setStatusFilter: (status: string) => void;
   setDepartmentFilter: (dept: string) => void;
@@ -94,7 +84,6 @@ export const useMentorTasksStore = create<TasksState>((set, get) => ({
   isLoadingDetail: false,
   isSubmitting: false,
 
-  // ─── FETCH LIST ────────────────────────────────────────────
   fetchTasks: async () => {
     const { showNotification } = useNotificationStore.getState();
     const state = get();
@@ -127,7 +116,6 @@ export const useMentorTasksStore = create<TasksState>((set, get) => ({
     }
   },
 
-  // ─── FETCH DETAIL ──────────────────────────────────────────
   fetchTaskDetail: async (id) => {
     const { showNotification } = useNotificationStore.getState();
     try {
@@ -141,7 +129,6 @@ export const useMentorTasksStore = create<TasksState>((set, get) => ({
     }
   },
 
-  // ─── CREATE ────────────────────────────────────────────────
   createTask: async (title, description, dueDate, studentIds) => {
     const { showNotification } = useNotificationStore.getState();
     try {
@@ -158,7 +145,6 @@ export const useMentorTasksStore = create<TasksState>((set, get) => ({
     }
   },
 
-  // ─── UPDATE ────────────────────────────────────────────────
   updateTask: async (id, data) => {
     const { showNotification } = useNotificationStore.getState();
     try {
@@ -175,7 +161,6 @@ export const useMentorTasksStore = create<TasksState>((set, get) => ({
     }
   },
 
-  // ─── DELETE ────────────────────────────────────────────────
   deleteTask: async (id) => {
     const { showNotification } = useNotificationStore.getState();
     try {
@@ -193,7 +178,6 @@ export const useMentorTasksStore = create<TasksState>((set, get) => ({
     }
   },
 
-  // ─── VERIFY ────────────────────────────────────────────────
   verifyTask: async (id, status, verificationNote, points) => {
     const { showNotification } = useNotificationStore.getState();
     try {
@@ -211,7 +195,6 @@ export const useMentorTasksStore = create<TasksState>((set, get) => ({
     }
   },
 
-  // ─── NOTIFY ────────────────────────────────────────────────
   notifyStudents: async (id, message) => {
     const { showNotification } = useNotificationStore.getState();
     try {
@@ -227,7 +210,6 @@ export const useMentorTasksStore = create<TasksState>((set, get) => ({
     }
   },
 
-  // ─── UI / FILTERS ──────────────────────────────────────────
   setSearchQuery: (query) => { set({ searchQuery: query, page: 1 }); get().fetchTasks(); },
   setStatusFilter: (status) => { set({ statusFilter: status, page: 1 }); get().fetchTasks(); },
   setDepartmentFilter: (dept) => { set({ departmentFilter: dept, page: 1 }); get().fetchTasks(); },

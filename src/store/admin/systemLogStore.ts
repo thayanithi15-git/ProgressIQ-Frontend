@@ -47,7 +47,6 @@ export const useSystemLogStore = create<SystemLogState>((set, get) => ({
       });
 
       const response = await api.get(`/api/admin/system-logs?${params}`);
-      
       set({
         logs: response.data.logs || [],
         total: response.data.total || 0,
