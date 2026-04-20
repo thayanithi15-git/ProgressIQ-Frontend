@@ -106,9 +106,9 @@ const QuestionInput = ({ q, idx, value, onChange, readOnly = false }: { q: Surve
 const AnswerModal = ({ open, survey, answers, onAnswer, onSubmit, onClose, isSubmitting, isLoading }: any) => (
   <AnimatePresence>
     {open && (
-      <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] z-50 flex items-end justify-center sm:p-4" onClick={onClose}>
+      <div className="fixed inset-0 bg-black/40 z-50 flex items-end justify-center sm:p-4" onClick={onClose}>
         <motion.div initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }} transition={{ type: "spring", damping: 28, stiffness: 300 }}
-          className="bg-card-glass/90 backdrop-blur-2xl border border-border/40 shadow-2xl rounded-t-3xl sm:rounded-3xl w-full max-w-[680px] max-h-[92vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
+          className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-2xl rounded-t-3xl sm:rounded-3xl w-full max-w-[680px] max-h-[92vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
           <div className="flex justify-center pt-3 pb-1">
             <div className="w-12 h-1.5 rounded-full bg-border/50" />
           </div>
@@ -179,9 +179,9 @@ const AnswerModal = ({ open, survey, answers, onAnswer, onSubmit, onClose, isSub
 const ViewResponseModal = ({ open, response, onClose }: any) => (
   <AnimatePresence>
     {open && (
-      <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={onClose}>
         <motion.div initial={{ opacity: 0, scale: 0.95, y: 10 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 10 }} transition={{ duration: 0.2 }}
-          className="bg-card-glass/90 backdrop-blur-2xl border border-border/40 shadow-2xl rounded-[1.5rem] w-full max-w-[640px] max-h-[85vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
+          className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-2xl rounded-[1.5rem] w-full max-w-[640px] max-h-[85vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
           <div className="px-6 py-5 flex items-center justify-between border-b border-border/40">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
