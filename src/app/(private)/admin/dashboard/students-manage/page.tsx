@@ -496,6 +496,29 @@ export default function StudentListPage() {
                     <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Date of Birth</Label>
                     <Input className="h-11 rounded-xl bg-muted/20 border-border/40" type="date" value={createFormData.dob} onChange={e => setCreateFormData({...createFormData, dob: e.target.value})} />
                   </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Gender</Label>
+                    <Select value={createFormData.gender} onValueChange={v => setCreateFormData({...createFormData, gender: v as any})}>
+                      <SelectTrigger className="h-11 rounded-xl bg-muted/20 border-border/40 text-[11px] font-semibold uppercase tracking-wider"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Male">Male</SelectItem>
+                        <SelectItem value="Female">Female</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Place / City</Label>
+                    <Input className="h-11 rounded-xl bg-muted/20 border-border/40" value={createFormData.place} onChange={e => setCreateFormData({...createFormData, place: e.target.value})} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Parent Name</Label>
+                    <Input className="h-11 rounded-xl bg-muted/20 border-border/40" value={createFormData.parentName} onChange={e => setCreateFormData({...createFormData, parentName: e.target.value})} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Parent Phone</Label>
+                    <Input className="h-11 rounded-xl bg-muted/20 border-border/40" value={createFormData.parentPhone} onChange={e => setCreateFormData({...createFormData, parentPhone: e.target.value})} />
+                  </div>
                 </div>
               </TabsContent>
 
@@ -518,12 +541,20 @@ export default function StudentListPage() {
                     </Select>
                   </div>
                   <div className="space-y-1.5">
+                    <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Academic Year</Label>
+                    <Input className="h-11 rounded-xl bg-muted/20 border-border/40" placeholder="e.g. 2021-2025" value={createFormData.academicYear} onChange={e => setCreateFormData({...createFormData, academicYear: e.target.value})} />
+                  </div>
+                  <div className="space-y-1.5">
                     <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Roll No</Label>
                     <Input className="h-11 rounded-xl bg-muted/20 border-border/40" value={createFormData.rollNo} onChange={e => setCreateFormData({...createFormData, rollNo: e.target.value})} />
                   </div>
                   <div className="space-y-1.5">
                     <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Current CGPA</Label>
                     <Input className="h-11 rounded-xl bg-muted/20 border-border/40" type="number" step="0.01" value={createFormData.cgpa} onChange={e => setCreateFormData({...createFormData, cgpa: parseFloat(e.target.value)})} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Family Income</Label>
+                    <Input className="h-11 rounded-xl bg-muted/20 border-border/40" value={createFormData.familyIncome} onChange={e => setCreateFormData({...createFormData, familyIncome: e.target.value})} />
                   </div>
                 </div>
               </TabsContent>
