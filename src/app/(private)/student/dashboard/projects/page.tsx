@@ -88,10 +88,10 @@ const Pill = ({ label, active, onClick, count }: any) => (
 const ConfirmDialog = ({ open, title, desc, confirmLabel = "Confirm", confirmColor = C.rose, onConfirm, onCancel, loading }: any) => (
   <AnimatePresence>
     {open && (
-      <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] z-50 flex items-center justify-center p-4" onClick={onCancel}>
+      <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={onCancel}>
         <motion.div initial={{ opacity:0, scale:0.95 }} animate={{ opacity:1, scale:1 }} exit={{ opacity:0, scale:0.95 }}
           onClick={e => e.stopPropagation()}
-          className="bg-card-glass/60 backdrop-blur-xl border border-border/40 shadow-2xl rounded-2xl p-6 max-w-[400px] w-full">
+          className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-2xl rounded-2xl p-6 max-w-[400px] w-full">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${confirmColor}18` }}>
               <AlertTriangle size={18} color={confirmColor} />
@@ -117,10 +117,10 @@ const SubmitModal = ({ open, onConfirm, onCancel, loading }: any) => {
   return (
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] z-50 flex items-center justify-center p-4" onClick={onCancel}>
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={onCancel}>
           <motion.div initial={{ opacity:0, scale:0.95 }} animate={{ opacity:1, scale:1 }} exit={{ opacity:0, scale:0.95 }}
             onClick={e => e.stopPropagation()}
-            className="bg-card-glass/60 backdrop-blur-xl border border-border/40 shadow-2xl rounded-2xl p-6 max-w-[440px] w-full">
+            className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-2xl rounded-2xl p-6 max-w-[440px] w-full">
             <div className="flex items-center gap-3 mb-5">
               <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center"><Send size={18} className="text-primary" /></div>
               <div>
@@ -146,9 +146,9 @@ const SubmitModal = ({ open, onConfirm, onCancel, loading }: any) => {
 const DetailsModal = ({ project, onClose }: { project: Project | null; onClose: () => void }) => (
   <AnimatePresence>
     {project && (
-      <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={onClose}>
         <motion.div initial={{ opacity:0, scale:0.95 }} animate={{ opacity:1, scale:1 }} exit={{ opacity:0, scale:0.95 }}
-          onClick={e => e.stopPropagation()} className="bg-card-glass/80 backdrop-blur-2xl border border-border/40 shadow-2xl rounded-[1.5rem] p-0 w-full max-w-[540px] overflow-hidden flex flex-col max-h-[90vh]">
+          onClick={e => e.stopPropagation()} className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-2xl rounded-[1.5rem] p-0 w-full max-w-[540px] overflow-hidden flex flex-col max-h-[90vh]">
           <div className="p-6 pb-4 flex items-center justify-between border-b border-border/40">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center"><Briefcase size={16} className="text-primary" /></div>
@@ -222,9 +222,9 @@ const ProjectFormModal = ({ open, editing, onClose, onSubmit, loading }: any) =>
   return (
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] z-50 flex items-center justify-center p-4" onClick={onClose}>
+        <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={onClose}>
           <motion.div initial={{ opacity:0, scale:0.95, y:10 }} animate={{ opacity:1, scale:1, y:0 }} exit={{ opacity:0, scale:0.95, y:10 }}
-            onClick={e => e.stopPropagation()} className="bg-card-glass/80 backdrop-blur-2xl border border-border/40 shadow-2xl rounded-[1.5rem] w-full max-w-[540px] overflow-hidden flex flex-col max-h-[90vh]">
+            onClick={e => e.stopPropagation()} className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-2xl rounded-[1.5rem] w-full max-w-[540px] overflow-hidden flex flex-col max-h-[90vh]">
             <div className="p-6 pb-4 flex items-center justify-between border-b border-border/40">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center"><Briefcase size={16} className="text-primary" /></div>
