@@ -430,21 +430,38 @@ const MiniDonut = ({ data, dataKey, nameKey }: any) => {
     </div>
   );
 };
-const FeedbackCard = ({ item, index }: any) => (
-  <motion.div initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.05 }}
-    style={{ padding: "12px 14px", borderRadius: 12, background: "var(--body-bg)", border: "1px solid var(--card-border)", display: "flex", flexDirection: "column", gap: 6 }}>
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
-        <div style={{ width: 28, height: 28, borderRadius: "50%", background: `${C.violet}22`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: C.violet }}>
-          {item.mentor?.charAt(0) ?? "M"}
+const FeedbackCard = ({ item, index }: any) => {
+  const isApproved = item.status === 'APPROVED' || item.status === 'Approved';
+  const isRejected = item.status === 'REJECTED' || item.status === 'Rejected';
+  const statusColor = isApproved ? "#059669" : isRejected ? "#dc2626" : "#6b7280";
+  const statusBg = isApproved ? "rgba(16, 185, 129, 0.1)" : isRejected ? "rgba(239, 68, 68, 0.1)" : "rgba(107, 114, 128, 0.1)";
+
+  return (
+    <motion.div initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.05 }}
+      style={{ padding: "12px 14px", borderRadius: 12, background: "var(--body-bg)", border: "1px solid var(--card-border)", display: "flex", flexDirection: "column", gap: 6 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+          <div style={{ width: 28, height: 28, borderRadius: "50%", background: `${C.violet}22`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: C.violet }}>
+            {item.mentor?.charAt(0) ?? "M"}
+          </div>
+          <div>
+             <span style={{ fontSize: 12, fontWeight: 700, color: "var(--text-primary)", display: "block" }}>{item.mentor ?? "Mentor"}</span>
+             <span style={{ fontSize: 9, fontWeight: 800, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.05em" }}>{item.source || "General Feedback"}</span>
+          </div>
         </div>
-        <span style={{ fontSize: 12, fontWeight: 700, color: "var(--text-primary)" }}>{item.mentor ?? "Mentor"}</span>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 3 }}>
+           <span style={{ fontSize: 10, color: "var(--text-muted)", fontWeight: 500 }}>{fmtDate(item.date)}</span>
+           {item.status && (
+             <span style={{ fontSize: 8, fontWeight: 900, color: statusColor, background: statusBg, padding: "2px 6px", borderRadius: 4, textTransform: "uppercase", letterSpacing: "0.05em", border: `1px solid ${statusColor}20` }}>
+               {item.status}
+             </span>
+           )}
+        </div>
       </div>
-      <span style={{ fontSize: 10, color: "var(--text-muted)", fontWeight: 500 }}>{fmtDate(item.date)}</span>
-    </div>
-    <p style={{ fontSize: 12, color: "var(--text-secondary)", lineHeight: 1.5, margin: 0 }}>{item.message}</p>
-  </motion.div>
-);
+      <p style={{ fontSize: 12, color: "var(--text-secondary)", lineHeight: 1.5, margin: 0 }}>{item.message}</p>
+    </motion.div>
+  );
+};
 const ActivityRow = ({ item, index }: any) => (
   <motion.div initial={{ opacity: 0, x: -6 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.04 }}
     style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "9px 12px", borderRadius: 10, transition: "background 0.14s" }}

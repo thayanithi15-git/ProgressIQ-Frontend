@@ -88,7 +88,7 @@ const Pill = ({ label, active, onClick, count }: any) => (
 const ConfirmDialog = ({ open, title, desc, confirmLabel = "Confirm", confirmColor = C.rose, onConfirm, onCancel, loading }: any) => (
   <AnimatePresence>
     {open && (
-      <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onCancel}>
+      <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] z-50 flex items-center justify-center p-4" onClick={onCancel}>
         <motion.div initial={{ opacity:0, scale:0.95 }} animate={{ opacity:1, scale:1 }} exit={{ opacity:0, scale:0.95 }}
           onClick={e => e.stopPropagation()}
           className="bg-card-glass/60 backdrop-blur-xl border border-border/40 shadow-2xl rounded-2xl p-6 max-w-[400px] w-full">
@@ -117,7 +117,7 @@ const SubmitModal = ({ open, onConfirm, onCancel, loading }: any) => {
   return (
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onCancel}>
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] z-50 flex items-center justify-center p-4" onClick={onCancel}>
           <motion.div initial={{ opacity:0, scale:0.95 }} animate={{ opacity:1, scale:1 }} exit={{ opacity:0, scale:0.95 }}
             onClick={e => e.stopPropagation()}
             className="bg-card-glass/60 backdrop-blur-xl border border-border/40 shadow-2xl rounded-2xl p-6 max-w-[440px] w-full">
@@ -146,7 +146,7 @@ const SubmitModal = ({ open, onConfirm, onCancel, loading }: any) => {
 const DetailsModal = ({ project, onClose }: { project: Project | null; onClose: () => void }) => (
   <AnimatePresence>
     {project && (
-      <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] z-50 flex items-center justify-center p-4" onClick={onClose}>
         <motion.div initial={{ opacity:0, scale:0.95 }} animate={{ opacity:1, scale:1 }} exit={{ opacity:0, scale:0.95 }}
           onClick={e => e.stopPropagation()} className="bg-card-glass/80 backdrop-blur-2xl border border-border/40 shadow-2xl rounded-[1.5rem] p-0 w-full max-w-[540px] overflow-hidden flex flex-col max-h-[90vh]">
           <div className="p-6 pb-4 flex items-center justify-between border-b border-border/40">
@@ -222,7 +222,7 @@ const ProjectFormModal = ({ open, editing, onClose, onSubmit, loading }: any) =>
   return (
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-[2px] z-50 flex items-center justify-center p-4" onClick={onClose}>
           <motion.div initial={{ opacity:0, scale:0.95, y:10 }} animate={{ opacity:1, scale:1, y:0 }} exit={{ opacity:0, scale:0.95, y:10 }}
             onClick={e => e.stopPropagation()} className="bg-card-glass/80 backdrop-blur-2xl border border-border/40 shadow-2xl rounded-[1.5rem] w-full max-w-[540px] overflow-hidden flex flex-col max-h-[90vh]">
             <div className="p-6 pb-4 flex items-center justify-between border-b border-border/40">
