@@ -24,10 +24,12 @@ export interface Student {
   rewardPoints: number;
   status: string;
   createdAt: string;
+  currentMentorName?: string;
 }
 export interface CreateMentorPayload {
   name: string;
   email: string;
+  password?: string;
   contactNo: string;
   place: string;
   department: string;

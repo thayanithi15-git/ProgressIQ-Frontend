@@ -91,7 +91,7 @@ export default function MentorListPage() {
   const [isBulkUploadDialogOpen, setIsBulkUploadDialogOpen] = useState(false);
 
   const [createFormData, setCreateFormData] = useState<Partial<CreateMentorPayload>>({
-    name: "", email: "", contactNo: "", place: "", department: "", designation: "",
+    name: "", email: "", password: "", contactNo: "", place: "", department: "", designation: "",
   });
 
   const [editFormData, setEditFormData] = useState<UpdateMentorPayload>({});
@@ -120,7 +120,7 @@ export default function MentorListPage() {
   const handleCreateMentor = async () => {
     await createMentor(createFormData as CreateMentorPayload);
     setIsCreateDialogOpen(false);
-    setCreateFormData({ name: "", email: "", contactNo: "", place: "", department: "", designation: "" });
+    setCreateFormData({ name: "", email: "", password: "", contactNo: "", place: "", department: "", designation: "" });
   };
 
   const handleEditMentor = (mentorId: string) => {
@@ -470,6 +470,16 @@ export default function MentorListPage() {
               </div>
               <div className="grid grid-cols-2 gap-4">
                  <div className="space-y-1.5">
+                   <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Location / Hub</Label>
+                   <Input className="h-11 rounded-xl bg-muted/20 border-border/60" value={createFormData.place} onChange={e => setCreateFormData({...createFormData, place: e.target.value})} />
+                 </div>
+                 <div className="space-y-1.5">
+                   <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Access Password</Label>
+                   <Input type="password" placeholder="••••••••" className="h-11 rounded-xl bg-muted/20 border-border/60" value={createFormData.password} onChange={e => setCreateFormData({...createFormData, password: e.target.value})} />
+                 </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                 <div className="space-y-1.5">
                    <Label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Department</Label>
                    <Input className="h-11 rounded-xl bg-muted/20 border-border/60" value={createFormData.department} onChange={e => setCreateFormData({...createFormData, department: e.target.value})} />
                  </div>
@@ -546,17 +556,28 @@ export default function MentorListPage() {
                   <div className="p-10 text-center text-[10px] font-bold text-muted-foreground uppercase">No unmapped students available</div>
                 ) : (
                   students.map((student) => (
-                    <div key={student._id} className="p-4 flex items-center justify-between hover:bg-muted/20 transition-colors">
+                    <div key={student._id} className={`p-4 flex items-center justify-between hover:bg-muted/20 transition-colors ${student.currentMentorName ? 'opacity-60 bg-muted/5' : ''}`}>
                        <div className="flex items-center gap-3 min-w-0">
                           <Checkbox
                             id={student._id}
                             className="rounded-md border-border/60"
+                            disabled={!!student.currentMentorName}
                             checked={selectedStudents.includes(student._id)}
                             onCheckedChange={() => setSelectedStudents(prev => prev.includes(student._id) ? prev.filter(id => id !== student._id) : [...prev, student._id])}
                           />
-                          <div className="min-w-0 cursor-pointer" onClick={() => setSelectedStudents(prev => prev.includes(student._id) ? prev.filter(id => id !== student._id) : [...prev, student._id])}>
+                          <div 
+                            className={`min-w-0 ${!student.currentMentorName ? 'cursor-pointer' : ''}`} 
+                            onClick={() => !student.currentMentorName && setSelectedStudents(prev => prev.includes(student._id) ? prev.filter(id => id !== student._id) : [...prev, student._id])}
+                          >
                             <p className="text-xs font-semibold text-foreground truncate">{student.firstName} {student.lastName}</p>
-                            <p className="text-[9px] text-muted-foreground uppercase font-bold">{student.department} • {student.year}</p>
+                            <div className="flex items-center gap-2">
+                              <p className="text-[9px] text-muted-foreground uppercase font-bold">{student.department} • {student.year}</p>
+                              {student.currentMentorName && (
+                                <Badge variant="outline" className="text-[7px] px-1 py-0 border-amber-500/20 text-amber-600 bg-amber-500/5 uppercase font-black tracking-tighter">
+                                  Assigned to: {student.currentMentorName}
+                                </Badge>
+                              )}
+                            </div>
                           </div>
                        </div>
                        <Badge variant="secondary" className="text-[8px] font-bold rounded-md bg-muted/40">{student.rollNo}</Badge>
