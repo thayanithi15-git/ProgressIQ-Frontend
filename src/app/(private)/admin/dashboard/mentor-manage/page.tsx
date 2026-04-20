@@ -543,10 +543,10 @@ export default function MentorListPage() {
                    <Checkbox
                       id="select-all"
                       className="rounded-md border-border/60"
-                      checked={selectedStudents.length === students.length && students.length > 0}
-                      onCheckedChange={(checked) => setSelectedStudents(checked ? students.map(s => s._id) : [])}
+                      checked={selectedStudents.length === students.filter(s => !s.currentMentorName).length && students.length > 0}
+                      onCheckedChange={(checked) => setSelectedStudents(checked ? students.filter(s => !s.currentMentorName).map(s => s._id) : [])}
                    />
-                   <Label htmlFor="select-all" className="text-[10px] font-bold uppercase tracking-widest cursor-pointer">Global Select</Label>
+                   <Label htmlFor="select-all" className="text-[10px] font-bold uppercase tracking-widest cursor-pointer">Select All (Unassigned)</Label>
                 </div>
               </div>
               <div className="max-h-[350px] overflow-y-auto border border-border/40 rounded-xl divide-y divide-border/40">
