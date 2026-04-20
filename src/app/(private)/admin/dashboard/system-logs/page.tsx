@@ -25,9 +25,9 @@ import { Button } from "@/components/ui/button";
 import Header from "@/components/layout/header";
 
 const ROLE_META: Record<string, { label: string; color: string; bg: string }> = {
-  Admin:   { label: "Administrator", color: "#7c3aed", bg: "rgba(124, 58, 237, 0.12)" },
-  Mentor:  { label: "Academic Mentor", color: "#059669", bg: "rgba(5, 150, 105, 0.12)" },
-  Student: { label: "Learner Profile", color: "#2563eb", bg: "rgba(37, 99, 235, 0.12)" },
+  Admin:   { label: "ADMIN", color: "#7c3aed", bg: "rgba(124, 58, 237, 0.12)" },
+  Mentor:  { label: "MENTOR", color: "#059669", bg: "rgba(5, 150, 105, 0.12)" },
+  Student: { label: "STUDENT", color: "#2563eb", bg: "rgba(37, 99, 235, 0.12)" },
 };
 
 const RoleBadge = ({ role }: { role: string }) => {
