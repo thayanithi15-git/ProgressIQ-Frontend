@@ -111,7 +111,7 @@ const MyPositionBanner = ({ myPosition, loading }: any) => {
 
 const Top3Podium = ({ top3, isMe }: { top3: (RankingEntry | DepartmentRankingEntry)[]; isMe: (id: string) => boolean }) => (
   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-fr items-end" style={{ minHeight: '260px' }}>
-    {[1, 0, 2].map((idx) => {
+    {[1, 0, 2].map((idx, i) => {
       const entry = top3[idx];
       if (!entry) return <div key={`empty-${idx}`} />;
       const meta = RANK_COLORS[idx];
@@ -132,7 +132,7 @@ const Top3Podium = ({ top3, isMe }: { top3: (RankingEntry | DepartmentRankingEnt
           <div className="text-xl font-display font-bold mt-1" style={{ color: meta.color }}>{entry.points.toLocaleString()}</div>
           <div className="text-[10px] font-mono font-bold uppercase tracking-widest opacity-70 mb-4" style={{ color: meta.color }}>Points</div>
           <div className={`mt-auto w-full flex items-end justify-center pb-2 rounded-b-xl ${podiumHeightClass}`} style={{ background: `${meta.border}50` }}>
-             <span className="text-2xl font-display font-black opacity-40 mix-blend-color-burn">#{idx === 0 ? 2 : idx === 1 ? 1 : 3}</span>
+             <span className="text-2xl font-display font-black opacity-40 mix-blend-color-burn">#{i === 0 ? 2 : i === 1 ? 1 : 3}</span>
           </div>
         </motion.div>
       );
