@@ -286,14 +286,14 @@ export default function RankingsPage() {
               ))}
             </div>
 
-            {activeView === "overall" && (
+            {/* {activeView === "overall" && (
               <>
                 <div className="w-px h-6 bg-border/50 hidden md:block" />
                 <div className="flex gap-2 flex-wrap">
                   {years.map(y => <Pill key={y} label={y === "ALL" ? "All Years" : y} active={selectedYear === y} onClick={() => setSelectedYear(y)} />)}
                 </div>
               </>
-            )}
+            )} */}
           </div>
 
           <div className="relative w-full xl:max-w-[280px]">
